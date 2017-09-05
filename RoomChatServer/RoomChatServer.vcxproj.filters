@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Room">
+      <UniqueIdentifier>{2c9783e2-ef3f-475a-87d8-d8469d4cab83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Channel">
+      <UniqueIdentifier>{a89e6cd6-486b-465b-9146-93f8d426493e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetWork">
+      <UniqueIdentifier>{e56956a5-a7c1-4ec1-ac4a-7f31d2595b0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Link">
+      <UniqueIdentifier>{c26d0160-7f8c-49f9-9bdc-ef72cb6e1812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Channel\ChannelManager">
+      <UniqueIdentifier>{d4a39a6d-cbb7-4667-9b1f-822a8799ab8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Room\RoomManager">
+      <UniqueIdentifier>{1cfe705c-4168-4426-bdf0-fedffe93065b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ActionNetWork">
+      <UniqueIdentifier>{2f7679ea-9c31-48fe-8736-e94f239d7c9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ReadyNetWork">
+      <UniqueIdentifier>{46f6a419-9e04-417e-ad42-451aac251820}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lobby">
+      <UniqueIdentifier>{e40ff6c1-4241-4165-9ba1-646ae3b15440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ErrorHandler">
+      <UniqueIdentifier>{6c5b7516-5d53-41a7-9a9e-faff03e57905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MinidumpHelp">
+      <UniqueIdentifier>{fbbea6df-ee9b-4470-87e5-d64a9793dfa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOHandler">
+      <UniqueIdentifier>{32d9f017-df9b-4311-8a96-a86d25e0eb5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOHandler\hRead">
+      <UniqueIdentifier>{98d0897c-2b6d-4804-8a04-aef003b74b83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IOHandler\hWrite">
+      <UniqueIdentifier>{10e60441-2645-4db2-81f8-b5f2ef7434c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Goods">
+      <UniqueIdentifier>{0ef36b2a-d34d-4279-91a1-da901f031d2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ExcelReder">
+      <UniqueIdentifier>{dde51d17-a90c-41b5-a578-f75ab548cfc8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Room.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
+    <ClCompile Include="Channel.cpp">
+      <Filter>Channel</Filter>
+    </ClCompile>
+    <ClCompile Include="MainProc.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandController.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="Link.cpp">
+      <Filter>Link</Filter>
+    </ClCompile>
+    <ClCompile Include="ChannelManager.cpp">
+      <Filter>Channel\ChannelManager</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>Room\RoomManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadyNetWork.cpp">
+      <Filter>ReadyNetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="WriteHandler.cpp">
+      <Filter>IOHandler\hWrite</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadHandler.cpp">
+      <Filter>IOHandler\hRead</Filter>
+    </ClCompile>
+    <ClCompile Include="Lobby.cpp">
+      <Filter>Lobby</Filter>
+    </ClCompile>
+    <ClCompile Include="ErrorHandler.cpp">
+      <Filter>ErrorHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="MinidumpHelp.cpp">
+      <Filter>MinidumpHelp</Filter>
+    </ClCompile>
+    <ClCompile Include="Goods.cpp">
+      <Filter>Goods</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>ActionNetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="GuestLink.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicExcel.cpp">
+      <Filter>ExcelReder</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Room.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="Channel.h">
+      <Filter>Channel</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandController.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="ChannelManager.h">
+      <Filter>Channel\ChannelManager</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h">
+      <Filter>Room\RoomManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadyNetWork.h">
+      <Filter>ReadyNetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="WriteHandler.h">
+      <Filter>IOHandler\hWrite</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadHandler.h">
+      <Filter>IOHandler\hRead</Filter>
+    </ClInclude>
+    <ClInclude Include="Lobby.h">
+      <Filter>Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstEnumInfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RAII.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorCode.h">
+      <Filter>ErrorHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorHandler.h">
+      <Filter>ErrorHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="MinidumpHelp.h">
+      <Filter>MinidumpHelp</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Goods.h">
+      <Filter>Goods</Filter>
+    </ClInclude>
+    <ClInclude Include="Link.h">
+      <Filter>Link</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>ActionNetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="GuestLink.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicExcel.hpp">
+      <Filter>ExcelReder</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RoomChatServer.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
