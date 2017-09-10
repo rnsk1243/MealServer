@@ -133,3 +133,42 @@ static const int RandNumber(int max = 100)
 	return range(rnd);
 }
 
+// ANSI 문자열을 UTF-8로 변환
+static char* ANSIToUTF8(const char * pszCode)
+{
+	BSTR    bstrWide;
+	char*   pszAnsi;
+	int     nLength;
+
+	nLength = MultiByteToWideChar(CP_UTF8, 0, pszCode, lstrlen(pszCode) + 1, NULL, NULL);
+	bstrWide = SysAllocStringLen(NULL, nLength);
+
+	MultiByteToWideChar(CP_UTF8, 0, pszCode, lstrlen(pszCode) + 1, bstrWide, nLength);
+
+	nLength = WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, NULL, 0, NULL, NULL);
+	pszAnsi = new char[nLength];
+
+	WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, pszAnsi, nLength, NULL, NULL);
+	SysFreeString(bstrWide);
+
+	return pszAnsi;
+}
+
+// UTF8에서 ANSI로
+static char* UTF8ToANSI(const char * pszCode)
+{
+	int     nLength, nLength2;
+	BSTR    bstrCode;
+	char*   pszUTFCode = NULL;
+
+	nLength = MultiByteToWideChar(CP_ACP, 0, pszCode, lstrlen(pszCode), NULL, NULL);
+	bstrCode = SysAllocStringLen(NULL, nLength);
+	MultiByteToWideChar(CP_ACP, 0, pszCode, lstrlen(pszCode), bstrCode, nLength);
+
+	nLength2 = WideCharToMultiByte(CP_UTF8, 0, bstrCode, -1, pszUTFCode, 0, NULL, NULL);
+	pszUTFCode = (char*)malloc(nLength2 + 1);
+	WideCharToMultiByte(CP_UTF8, 0, bstrCode, -1, pszUTFCode, nLength2, NULL, NULL);
+
+	return pszUTFCode;
+
+}
