@@ -1,5 +1,8 @@
 #include"Link.h"
 #include"ErrorHandler.h"
+#include<atlstr.h>
+#include"Util.h"
+
 
 CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* name) :
 	mClientSocket(clientSocket),
@@ -225,12 +228,20 @@ void CLink::LostWillMoney(const int& fine)
 void CLink::SendnMine(const string & message, int flags)
 {
 	int isSuccess = 0;
-	const char* chMessage = message.c_str();
+
+	/// UTF8 인코딩
+	
+	//wstring strUni = CA2W(message.c_str());
+	//string strUTF8(CW2A(strUni.c_str(), CP_UTF8));
+	///
+
+	const char* chMessage = UTF8ToANSI(message.c_str());
 	size_t size = strlen(chMessage);
 	isSuccess = send(*mClientSocket, (char*)&size, IntSize, flags); // 사이즈 보내기
 	if (isSuccess == SOCKET_ERROR)
 	{
-		//return ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND);
+		//ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND, LinkPtr(this));
+		return;
 	}
 	int temp = 0;
 	while (true)
@@ -238,7 +249,8 @@ void CLink::SendnMine(const string & message, int flags)
 		temp += send(*mClientSocket, chMessage, (int)size, flags);
 		if (temp == SOCKET_ERROR)
 		{
-			//return ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND);
+			//ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND, LinkPtr(this));
+			return;
 		}
 		if (temp >= (int)size)
 			break;

@@ -1,10 +1,3 @@
-﻿  ReadHandler.cpp
-  코드를 생성하고 있습니다...
-  컴파일하고 있습니다...
-  WriteHandler.cpp
-  Lobby.cpp
-  Goods.cpp
-  ErrorHandler.cpp
-  코드를 생성하고 있습니다...
-  RoomChatServer.vcxproj -> I:\Server\x64\Debug\RoomChatServer.exe
-  RoomChatServer.vcxproj -> I:\Server\x64\Debug\RoomChatServer.pdb (Full PDB)
+﻿  Link.cpp
+  RoomChatServer.vcxproj -> I:\Server\MealServer\x64\Debug\RoomChatServer.exe
+  RoomChatServer.vcxproj -> I:\Server\MealServer\x64\Debug\RoomChatServer.pdb (Full PDB)

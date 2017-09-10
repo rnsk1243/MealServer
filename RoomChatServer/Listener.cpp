@@ -4,7 +4,7 @@
 #include "ChannelManager.h"
 #include"RoomManager.h"
 #include"ReadHandler.h"
-
+#include"Util.h"
 
 CListener::CListener()
 {
@@ -18,7 +18,6 @@ CListener* CListener::GetInstance()
 	}
 	return ListenerStatic;
 }
-
 
 CListener::~CListener()
 {
@@ -53,7 +52,13 @@ int CListener::Recvn(const SOCKET* socket, string& strMessage, int flags)
 	}
 	recvedMessage[sendRecvSize] = '\0';
 #pragma endregion
+
+	string messageStr = ANSIToUTF8(recvedMessage); // ANSI 문자열을 UTF-8로 변환
+
 	//cout << "받은 idPw메시지 = " << MS.message << endl;
-	strMessage = recvedMessage;
+	//strMessage = messageStr;
+	strMessage.assign(messageStr.begin(), messageStr.end());
+	cout << "받은 메세지 = " << strMessage.c_str() << endl;
 	return SUCCES_RECV;
 }
+

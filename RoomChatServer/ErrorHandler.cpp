@@ -173,6 +173,7 @@ EnumErrorCode CErrorHandler::ErrorHandler(EnumErrorCode code, LinkPtr client)
 	case ERROR_INIT_MONEY:
 	case ERROR_RECV:
 	case ERROR_SEND:
+	case ERROR_NULL_LINK_SEND:
 		return CriticalError(code, client);
 	default:
 		return TakeError(code, client);
