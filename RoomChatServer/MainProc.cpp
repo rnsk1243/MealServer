@@ -69,15 +69,6 @@ int thSendRecv(void* v_clientSocket)
 	while (SUCCES_LOGIN != isLogin)
 	{
 		isLogin = LobbyStatic->ActionServiceLobby(&guest, userInfo);
-		if (ERROR_NULL_LINK_RECV == isLogin || ERROR_NULL_LINK_SEND == isLogin)
-		{
-			cout << "종료" << endl;
-			closesocket(*clientSocket);
-			delete clientSocket;
-			return ErrorHandStatic->ErrorHandler(EnumErrorCode(isLogin));
-			//_endthreadex(0);
-		}
-		ErrorHandStatic->ErrorHandler(EnumErrorCode(isLogin));
 	}
 	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str()));
 
@@ -93,18 +84,9 @@ int thSendRecv(void* v_clientSocket)
 	while (true)
 	{
 		string recvMessage;
-		int isRecvSuccesResultValue = ListenerStatic->Recvn(shared_clientInfo.get()->GetClientSocket(), recvMessage);
-		if (SUCCES_RECV == isRecvSuccesResultValue)// 메시지 받기 성공 일때 각 클라이언트에게 메시지 보냄
-		{
-			vector<string> commandMessage = ReadHandlerStatic->Parse(recvMessage, '/');
-			CommandControllerStatic->CommandHandling(shared_clientInfo, commandMessage);
-		}
-		else if (ERROR_RECV == isRecvSuccesResultValue || ERROR_NULL_LINK_RECV == isRecvSuccesResultValue) // 메시지 받기 실패 소켓 해제
-		{
-			cout << "소켓 오류로 인하여 서버에서 나갔습니다." << endl;
-			CommandControllerStatic->DeleteClientSocket(shared_clientInfo);
-			return 0;
-		}
+		ListenerStatic->RecvnLink(shared_clientInfo, recvMessage);
+		vector<string> commandMessage = ReadHandlerStatic->Parse(recvMessage, '/');
+		CommandControllerStatic->CommandHandling(shared_clientInfo, commandMessage);
 	}
 }
 

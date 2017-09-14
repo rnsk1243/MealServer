@@ -1,5 +1,6 @@
 #include "GuestLink.h"
 #include<atlstr.h>
+#include"ErrorHandler.h"
 
 
 CGuestLink::CGuestLink(const SOCKET * clientSocket):mClientSocket(clientSocket)
@@ -8,6 +9,7 @@ CGuestLink::CGuestLink(const SOCKET * clientSocket):mClientSocket(clientSocket)
 
 CGuestLink::~CGuestLink()
 {
+	cout << "CGuestLink 소멸자 호출" << endl;
 }
 
 const SOCKET* CGuestLink::GetClientSocket() const
@@ -32,7 +34,10 @@ void CGuestLink::Sendn(const string & message, int flags) const
 	isSuccess = send(*mClientSocket, (char*)&size, IntSize, flags); // 사이즈 보내기
 	if (isSuccess == SOCKET_ERROR)
 	{
-		//return ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND);
+		closesocket(*mClientSocket);
+		delete mClientSocket;
+		ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND);
+		_endthreadex(0);
 	}
 	int temp = 0;
 	while (true)
@@ -40,7 +45,10 @@ void CGuestLink::Sendn(const string & message, int flags) const
 		temp += send(*mClientSocket, chMessage, (int)size, flags);
 		if (temp == SOCKET_ERROR)
 		{
-			//return ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND);
+			closesocket(*mClientSocket);
+			delete mClientSocket;
+			ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND);
+			_endthreadex(0);
 		}
 		if (temp >= (int)size)
 			break;

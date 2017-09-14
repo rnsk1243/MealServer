@@ -12,9 +12,12 @@ EnumErrorCode CErrorHandler::CriticalError(EnumErrorCode code, LinkPtr client)
 	GetErrorLevel(ErrorLevel::Serious, errorMessageVec);
 	GetErrorCode(code, errorMessageVec);
 	GetErrorMemberInfo(client, errorMessageVec);
-    
+	if (nullptr != client)
+	{
+		CCommandController::GetInstance()->DeleteClientSocket(client);
+	}
 	WriteHandlerStatic->Write(ErrorLogTxt.c_str(), errorMessageVec);
-	//_endthreadex(0);
+	_endthreadex(0);
 	return code;
 }
 
@@ -173,7 +176,6 @@ EnumErrorCode CErrorHandler::ErrorHandler(EnumErrorCode code, LinkPtr client)
 	case ERROR_INIT_MONEY:
 	case ERROR_RECV:
 	case ERROR_SEND:
-	case ERROR_NULL_LINK_SEND:
 		return CriticalError(code, client);
 	default:
 		return TakeError(code, client);

@@ -240,7 +240,7 @@ void CLink::SendnMine(const string & message, int flags)
 	isSuccess = send(*mClientSocket, (char*)&size, IntSize, flags); // 사이즈 보내기
 	if (isSuccess == SOCKET_ERROR)
 	{
-		//ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND, LinkPtr(this));
+		ErrorHandStatic->ErrorHandler(ERROR_SEND, LinkPtr(this));
 		return;
 	}
 	int temp = 0;
@@ -249,7 +249,7 @@ void CLink::SendnMine(const string & message, int flags)
 		temp += send(*mClientSocket, chMessage, (int)size, flags);
 		if (temp == SOCKET_ERROR)
 		{
-			//ErrorHandStatic->ErrorHandler(ERROR_NULL_LINK_SEND, LinkPtr(this));
+			ErrorHandStatic->ErrorHandler(ERROR_SEND, LinkPtr(this));
 			return;
 		}
 		if (temp >= (int)size)

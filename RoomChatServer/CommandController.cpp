@@ -83,14 +83,16 @@ void CCommandController::DeleteClientSocket(const LinkPtr & shared_clientInfo)
 	if (NoneRoom == myRoomNum)
 	{
 		// 채널일때
-		cout << "channel에서 나갑니다." << endl;
-		mChannelManager.ExitChannel(shared_clientInfo);
+		if (mChannelManager.ExitChannel(shared_clientInfo))
+		{
+			cout << "channel에서 나갔습니다." << endl;
+		}
 	}
 	else
 	{
 		// 방일때
-		cout << "room에서 나갑니다." << endl;
 		OutRoom(shared_clientInfo);
+		cout << "room에서 나갑니다." << endl;
 	}
 }
 

@@ -37,9 +37,13 @@ bool CChannel::PushClient(const LinkPtr& shared_client, const int& channelNumber
 	return true;
 }
 
-LinkListIt CChannel::EraseClient(const LinkPtr& shared_clientInfo)
+bool CChannel::EraseClient(const LinkPtr& shared_clientInfo)
 {
 	LinkListIt eraseClientIter = find(mClientInfos.begin(), mClientInfos.end(), shared_clientInfo);
+	if (mClientInfos.end() == eraseClientIter)
+	{
+		return false;
+	}
 	{
 		ScopeLock<MUTEX> MU(mRAII_ChannelMUTEX);
 		eraseClientIter = mClientInfos.erase(eraseClientIter);
@@ -48,7 +52,7 @@ LinkListIt CChannel::EraseClient(const LinkPtr& shared_clientInfo)
 			--mPeopleAmount;
 		}
 	}
-	return eraseClientIter;
+	return true;
 }
 
 void CChannel::Broadcast(const string & message, int flags)

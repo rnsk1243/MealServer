@@ -66,8 +66,11 @@ bool CChannelManager::ExitChannel(const LinkPtr& shared_clientInfo)
 	CChannel* nextChannel = GetMyChannel(curChannelNumber);
 	if (nullptr == nextChannel)
 		return false;
-	nextChannel->EraseClient(shared_clientInfo);
-	client->SendnMine("내 채널에서 나왔습니다.");
+	if (true == nextChannel->EraseClient(shared_clientInfo))
+	{
+		client->SendnMine("내 채널에서 나왔습니다.");
+		return false;
+	}	
 	return true;
 }
 
