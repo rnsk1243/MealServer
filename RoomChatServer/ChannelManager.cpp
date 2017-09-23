@@ -68,7 +68,7 @@ bool CChannelManager::ExitChannel(const LinkPtr& shared_clientInfo)
 		return false;
 	if (true == nextChannel->EraseClient(shared_clientInfo))
 	{
-		client->SendnMine("내 채널에서 나왔습니다.");
+		client->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "내 채널에서 나왔습니다."));
 		return false;
 	}	
 	return true;
@@ -85,7 +85,7 @@ bool CChannelManager::EnterMyChannel(const LinkPtr & shared_clientInfo)
 	return nextChannel->PushClient(shared_clientInfo, myChannelNumber);
 }
 
-void CChannelManager::Talk(const LinkPtr & shared_clientInfo, const string & message, int flags)
+void CChannelManager::Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr == client)
@@ -93,7 +93,7 @@ void CChannelManager::Talk(const LinkPtr & shared_clientInfo, const string & mes
 	CChannel* myChannel = GetMyChannel(client->GetMyChannelNum());
 	if (nullptr != myChannel)
 	{
-		myChannel->Talk(shared_clientInfo, message, flags);
+		myChannel->Talk(shared_clientInfo, packet, flags);
 	}
 }
 

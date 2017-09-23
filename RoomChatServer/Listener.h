@@ -11,7 +11,7 @@ public:
 	CListener& operator=(const CListener&) = delete;
 	~CListener();
 	// 클라이언트에게 답장 받기
-	void Recvn(const SOCKET* socket, string& strMessage, int flags = 0);
-	void RecvnLink(const LinkPtr& socket, string & strMessage, int flags = 0);
+	void Recvn(const SOCKET* socket, Packet& packet, int flags = 0);
+	void RecvnLink(const LinkPtr& link, Packet & packet, int flags = 0);
 };
 static CListener* ListenerStatic = CListener::GetInstance();

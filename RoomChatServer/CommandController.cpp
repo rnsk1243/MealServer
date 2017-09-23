@@ -51,13 +51,13 @@ void CCommandController::ChangeChannel(const LinkPtr& shared_clientInfo, const i
 	}
 }
 
-void CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName, const int & battingMoney)
+void CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr != client && (false == client->IsRoomEnterState()))
 	{
 		// 룸을 만들고
-		int newRoomNumber = mRoomManager.MakeRoom(shared_clientInfo, roomName, battingMoney);
+		int newRoomNumber = mRoomManager.MakeRoom(shared_clientInfo, roomName);
 		if (-1 != newRoomNumber)
 		{
 			// 룸에 들어가고
@@ -101,11 +101,11 @@ void CCommandController::SendAllReadyGameNotice(const LinkPtr & shared_clientInf
 	if (mRoomManager.IsAllReadyGame(shared_clientInfo))
 	{
 		// 룸메니저를 통해 방 멤버 함수 호출 할 것.
-		mRoomManager.Broadcast(shared_clientInfo, "모든 플레이어가 준비 되었습니다.");
+		mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "모든 플레이어가 준비 되었습니다."));
 	}
 	else
 	{
-		shared_clientInfo.get()->SendnMine("다른 모든 플레이어가 준비 되어야 합니다.");
+		shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage,ProtocolDetail::Message, ProtocolMessageTag::Text, "다른 모든 플레이어가 준비 되어야 합니다."));
 	}
 	
 }
@@ -121,43 +121,43 @@ CCommandController * CCommandController::GetInstance()
 
 
 
-void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, vector<string>& commandString)
+void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packet& packet)
 {
 	try
 	{
-		if (0 == commandString.at(0).compare(CommandEnter)) // 방에 입장
+		if (ProtocolDetail::EnterRoom == packet.InfoProtocolDetail) // 방에 입장
 		{
-			EnterRoom(shared_clientInfo, stoi(commandString.at(1)));
+			EnterRoom(shared_clientInfo, stoi(packet.InfoValue/*commandString.at(1)*/));
 		}
-		else if (0 == commandString.at(0).compare(CommandChannal))
+		else if (ProtocolDetail::EnterChanel == packet.InfoProtocolDetail)
 		{
-			ChangeChannel(shared_clientInfo, stoi(commandString.at(1)));
+			ChangeChannel(shared_clientInfo, stoi(packet.InfoValue));
 		}
-		else if (0 == commandString.at(0).compare(CommandMakeRoom))
+		else if (ProtocolDetail::MakeRoom == packet.InfoProtocolDetail)
 		{
-			int battingMoney = stoi(commandString.at(2));
-			MakeRoom(shared_clientInfo, commandString.at(1), battingMoney);
+			//int battingMoney = stoi(commandString.at(2));
+			MakeRoom(shared_clientInfo, packet.InfoValue);
 		}
-		else if (0 == commandString.at(0).compare(CommandOutRoom))
+		else if (ProtocolDetail::OutRoom == packet.InfoProtocolDetail)
 		{
 			if (true == mChannelManager.EnterMyChannel(shared_clientInfo)) // 채널에 들어가기
 			{
 				OutRoom(shared_clientInfo);
 			}
 		}
-		else if (0 == commandString.at(0).compare(CommandGameStart))
+		else if (ProtocolDetail::ReadyGame == packet.InfoProtocolDetail)
 		{
 			SendAllReadyGameNotice(shared_clientInfo);
 		}
-		else
+		else if(ProtocolDetail::Message == packet.InfoProtocolDetail)
 		{
 			if (shared_clientInfo.get()->IsRoomEnterState())
 			{
-				mRoomManager.Talk(shared_clientInfo, commandString.at(0));
+				mRoomManager.Talk(shared_clientInfo, packet);
 			}
 			else
 			{
-				mChannelManager.Talk(shared_clientInfo, commandString.at(0));
+				mChannelManager.Talk(shared_clientInfo, packet);
 			}
 		}
 	}

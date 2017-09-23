@@ -33,16 +33,16 @@ public:
 	// room에서 나가기 (나가고자하는 소켓)
 	RoomListIt ExitRoom(const LinkPtr & shared_clientInfo);
 	// 현재 자신이 속한 방이 없을때 방 만들기(들어갈 소켓, 만드는 방 번호) 
-	int MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const int& battingMoney);
+	int MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName);
 	// 현재 자신이 속한 방이 없을때 방 입장 하기
 	bool EnterRoom(const LinkPtr& shared_clientInfo, int targetRoomNumBer);
 	// 방에 있는 사람 전부 배팅 준비 됐나?
 	bool IsAllReadyGame(const LinkPtr& shared_clientInfo);
 	// 게임 결과 판별
-	void ResultGame(const LinkPtr& shared_clientInfo);
+	//void ResultGame(const LinkPtr& shared_clientInfo);
 	// 해당 링크가 들어있는 방 방송
-	void Broadcast(const LinkPtr& shared_clientInfo, const string& message, int flags = 0);
+	void Broadcast(const LinkPtr& shared_clientInfo, const Packet& packet, int flags = 0);
 	// 해당 링크가 들어있는 수다
-	void Talk(const LinkPtr& shared_clientInfo, const string& message, int flags = 0);
+	void Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags = 0);
 };
  

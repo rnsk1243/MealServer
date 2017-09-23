@@ -5,8 +5,8 @@
 
 class CLobby
 {
-	void AskedID(const CGuestLink * guest, string & id);
-	void AskedPW(const CGuestLink * guest, string & pw);
+	void AskedID(const CGuestLink * guest, Packet & packetID);
+	void AskedPW(const CGuestLink * guest, Packet & packetPW);
 	int Login(const CGuestLink * guest, vector<string>& tempUserInfo);
 	int JoinMember(const CGuestLink* guest, vector<string>& tempUserInfo);
 	int ChooseMenu(const char * message, const CGuestLink* guest);

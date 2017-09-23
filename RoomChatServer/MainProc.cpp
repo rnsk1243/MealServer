@@ -78,15 +78,16 @@ int thSendRecv(void* v_clientSocket)
 	if (false == ReadHandlerStatic->ReadUserGoods(shared_clientInfo, NameMemberGoodsTxt))
 		return 0;
 
-	cout << "보유 재화 = " << shared_clientInfo->GetMyMoney() << endl;
-	shared_clientInfo.get()->SendnMine("로그인 성공");
+	//cout << "보유 재화 = " << shared_clientInfo->GetMyMoney() << endl;
+	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "로그인 성공"));
+	//shared_clientInfo.get()->SendnMine("로그인 성공");
 	ErrorHandStatic->ErrorHandler(SUCCES_LOGIN, shared_clientInfo);
 	while (true)
 	{
-		string recvMessage;
-		ListenerStatic->RecvnLink(shared_clientInfo, recvMessage);
-		vector<string> commandMessage = ReadHandlerStatic->Parse(recvMessage, '/');
-		CommandControllerStatic->CommandHandling(shared_clientInfo, commandMessage);
+		Packet packet;
+		ListenerStatic->RecvnLink(shared_clientInfo, packet);
+		//vector<string> commandMessage = ReadHandlerStatic->Parse(recvMessage, '/');
+		CommandControllerStatic->CommandHandling(shared_clientInfo, packet);
 	}
 }
 

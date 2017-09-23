@@ -33,7 +33,11 @@ bool CChannel::PushClient(const LinkPtr& shared_client, const int& channelNumber
 	mClientInfos.push_back(shared_client);
 	shared_client.get()->SetMyChannelNum(channelNumber);
 	mPeopleAmount++;
-	shared_client.get()->SendnMine("채널에 들어왔습니다.");
+	shared_client.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "채널에 들어왔습니다."));
+
+	Packet p1(ProtocolInfo::PlayerInfo, ProtocolDetail::Image, ProtocolCharacterTagIndex::Red01, CharacterImageName[0].c_str());
+	shared_client.get()->SendnMine((p1));
+
 	return true;
 }
 
@@ -55,29 +59,29 @@ bool CChannel::EraseClient(const LinkPtr& shared_clientInfo)
 	return true;
 }
 
-void CChannel::Broadcast(const string & message, int flags)
+void CChannel::Broadcast(const Packet & packet, int flags)
 {
 	LinkListIt clientIterBegin = mClientInfos.begin();
 	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
 	{
-		(*clientIterBegin).get()->SendnMine(message, flags);
+		(*clientIterBegin).get()->SendnMine(packet, flags);
 	}
 }
 
-void CChannel::Talk(const LinkPtr & myClient, const string & message, int flags)
+void CChannel::Talk(const LinkPtr & myClient, const Packet & packet, int flags)
 {
 	LinkListIt clientIterBegin = mClientInfos.begin();
 	LinkListIt myIter = find(mClientInfos.begin(), mClientInfos.end(), myClient);
 	if (mClientInfos.end() == myIter)
 	{
-		Broadcast(message, flags);
+		Broadcast(packet, flags);
 		return;
 	}
 	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
 	{
 		if (clientIterBegin != myIter)
 		{
-			(*clientIterBegin).get()->SendnMine(message, flags);
+			(*clientIterBegin).get()->SendnMine(packet, flags);
 		}
 	}
 }

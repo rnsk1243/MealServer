@@ -58,7 +58,7 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo)
 	if (mRooms.end() != myRoomIter)
 	{
 		string outClientName(shared_clientInfo.get()->GetMyName() + " 님이 방에서 나가셨습니다.");
-		(*myRoomIter).get()->Talk(shared_clientInfo, outClientName);
+		(*myRoomIter).get()->Talk(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, outClientName.c_str()));
 		client->SetMyRoomNum(NoneRoom);
 		client->InitBetting(); // 베팅 초기화 시킴
 		if (true == (*myRoomIter)->IsGame())					// 게임중에 나갔나?
@@ -73,22 +73,27 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo)
 	return mRooms.end();
 }
 
-int CRoomManager::MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const int& battingMoney)
+int CRoomManager::MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName)
 {
 	CLink* client = shared_clientInfo.get();
-	if (client->GetMyMoney() >= battingMoney && battingMoney >= 0)
-	{
-		RoomPtr newRoom(new CRoom(newRoomNumber, client->GetMyChannelNum(), roomName, battingMoney));
-		int makedRoomNumber = newRoomNumber; // PushRoom을 호출하면 newRoomNumber가 1 증가하기때문에
-		PushRoom(newRoom);
-		return makedRoomNumber;
-	}
-	else
-	{
-		client->SendnMine("베팅에 필요한 돈이 부족하여 방을 만들 수 없습니다.");
-		ErrorHandStatic->ErrorHandler(ERROR_ROOM_ENTRER_BATTING_MONEY);
-		return -1;
-	}
+	RoomPtr newRoom(new CRoom(newRoomNumber, client->GetMyChannelNum(), roomName, 0));
+	int makedRoomNumber = newRoomNumber; // PushRoom을 호출하면 newRoomNumber가 1 증가하기때문에
+	PushRoom(newRoom);
+	return makedRoomNumber;
+
+	//if (client->GetMyMoney() >= battingMoney && battingMoney >= 0)
+	//{
+	//	RoomPtr newRoom(new CRoom(newRoomNumber, client->GetMyChannelNum(), roomName, battingMoney));
+	//	int makedRoomNumber = newRoomNumber; // PushRoom을 호출하면 newRoomNumber가 1 증가하기때문에
+	//	PushRoom(newRoom);
+	//	return makedRoomNumber;
+	//}
+	//else
+	//{
+	//	client->SendnMine("베팅에 필요한 돈이 부족하여 방을 만들 수 없습니다.");
+	//	ErrorHandStatic->ErrorHandler(ERROR_ROOM_ENTRER_BATTING_MONEY);
+	//	return -1;
+	//}
 }
 
 bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNumBer)
@@ -99,24 +104,27 @@ bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNu
 	if (true == client->IsRoomEnterState()) // 이미 방에 있는지 확인
 		return false;
 	RoomListIt targetRoomIter = GetMyRoomIter(client->GetMyChannelNum(), targetRoomNumBer);
-	if (EnterRoomPeopleLimit <= (*targetRoomIter).get()->GetAmountPeople())
-	{
-		shared_clientInfo.get()->SendnMine(DialogEnterRoomPeopleLimit);
-		return false;
-	}
+	
 	if (mRooms.end() != targetRoomIter)
 	{
-		int BattingMoney = (*targetRoomIter)->GetBattingMoney();
-		if (BattingMoney <= client->GetMyMoney())
+		if (EnterRoomPeopleLimit <= (*targetRoomIter).get()->GetAmountPeople())
 		{
-			(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);
-			return true;
+			shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, DialogEnterRoomPeopleLimit.c_str()));
+			return false;
 		}
-		else
-		{
-			shared_clientInfo.get()->SendnMine(EnterRoomMoneyLack);
-			ErrorHandStatic->ErrorHandler(ERROR_ROOM_ENTRER_BATTING_MONEY, shared_clientInfo);
-		}
+		(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);
+		return true;
+		//int BattingMoney = (*targetRoomIter)->GetBattingMoney();
+		//if (BattingMoney <= client->GetMyMoney())
+		//{
+		//	(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);
+		//	return true;
+		//}
+		//else
+		//{
+		//	shared_clientInfo.get()->SendnMine(EnterRoomMoneyLack);
+		//	ErrorHandStatic->ErrorHandler(ERROR_ROOM_ENTRER_BATTING_MONEY, shared_clientInfo);
+		//}
 	}
 	return false;
 }
@@ -135,7 +143,7 @@ bool CRoomManager::IsAllReadyGame(const LinkPtr & shared_clientInfo)
 	return false;
 }
 
-void CRoomManager::Broadcast(const LinkPtr & shared_clientInfo, const string & message, int flags)
+void CRoomManager::Broadcast(const LinkPtr & shared_clientInfo, const Packet & packet, int flags)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr == client)
@@ -143,11 +151,11 @@ void CRoomManager::Broadcast(const LinkPtr & shared_clientInfo, const string & m
 	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
 	if (mRooms.end() != myRoomIter)
 	{
-		(*myRoomIter).get()->Broadcast(message, flags);
+		(*myRoomIter).get()->Broadcast(packet, flags);
 	}
 }
 
-void CRoomManager::Talk(const LinkPtr & shared_clientInfo, const string & message, int flags)
+void CRoomManager::Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr == client)
@@ -155,7 +163,7 @@ void CRoomManager::Talk(const LinkPtr & shared_clientInfo, const string & messag
 	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
 	if (mRooms.end() != myRoomIter)
 	{
-		(*myRoomIter).get()->Talk(shared_clientInfo, message, flags);
+		(*myRoomIter).get()->Talk(shared_clientInfo, packet, flags);
 	}
 }
 

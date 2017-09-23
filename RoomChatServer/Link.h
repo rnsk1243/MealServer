@@ -9,7 +9,6 @@ using namespace std;
 #include"Goods.h"
 
 typedef shared_ptr<CLink> LinkPtr;
-
 class CLink
 {
 private:
@@ -63,6 +62,6 @@ public:
 	bool InitBetting();
 	void LostWillMoney(const int& fine); // °ð ¾ø¾îÁúµ· Ãß°¡
 	////////////////////
-	void SendnMine(const string& message, int flags = 0);
+	void SendnMine(const Packet & packet, int flags = 0);
 };
 

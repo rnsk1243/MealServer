@@ -1,6 +1,6 @@
 #include "Room.h"
 #include"ErrorHandler.h"
-
+#include"ConstEnumInfo.h"
 
 CRoom::CRoom(int roomNum, int channelNum, const string& roomName, const int& battingMoney) :
 	mRoomNum(roomNum),
@@ -24,7 +24,11 @@ void CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 	ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
 	mClientInfos.push_back(shared_client);
 	shared_client.get()->SetMyRoomNum(enterRoomNumber);
-	Broadcast(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
+	EnterBroadcast(shared_client);
+	/*string message(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
+	Packet p(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
+	Broadcast(p);*/
+	//Broadcast(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
 	IncreasePeople();
 }
 
@@ -135,6 +139,13 @@ bool CRoom::AllCalculateMoney()
 	return isSaveResult;
 }
 
+void CRoom::EnterBroadcast(const LinkPtr& shared_client)
+{
+	string message(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
+	Packet p(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
+	Broadcast(p);
+}
+
 bool CRoom::AllInitBetting()
 {
 	LinkListIt linkBegin = mClientInfos.begin();
@@ -151,29 +162,29 @@ bool CRoom::IsGame()
 	return mPlayingGame;
 }
 
-void CRoom::Broadcast(const string& message, int flags)
+void CRoom::Broadcast(const Packet& packet, int flags)
 {
 	LinkListIt clientIterBegin = mClientInfos.begin();
 	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
 	{
-		(*clientIterBegin).get()->SendnMine(message, flags);
+		(*clientIterBegin).get()->SendnMine(packet, flags);
 	}
 }
 
-void CRoom::Talk(const LinkPtr& myClient, const string & message, int flags)
+void CRoom::Talk(const LinkPtr& myClient, const Packet & packet, int flags)
 {
 	LinkListIt clientIterBegin = mClientInfos.begin();
 	LinkListIt myIter = find(mClientInfos.begin(), mClientInfos.end(), myClient);
 	if (mClientInfos.end() == myIter)
 	{
-		Broadcast(message, flags);
+		Broadcast(packet, flags);
 		return;
 	}
 	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
 	{
 		if (clientIterBegin != myIter)
 		{
-			(*clientIterBegin).get()->SendnMine(message, flags);
+			(*clientIterBegin).get()->SendnMine(packet, flags);
 		}
 	}
 }
@@ -197,22 +208,22 @@ void CRoom::SetGameOver()
 {
 	mPlayingGame = false;
 }
-
-void CRoom::SendBattingResult(const LinkPtr& winner, int flags)
-{
-	LinkListIt clientIterBegin = mClientInfos.begin();
-	LinkListIt winnerIter = find(mClientInfos.begin(), mClientInfos.end(), winner);
-	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
-	{
-		if (clientIterBegin != winnerIter)
-		{
-			(*clientIterBegin).get()->SendnMine("당신은 졌습니다.", flags);
-		}
-		else
-		{
-			(*clientIterBegin).get()->SendnMine("당신은 이겼습니다.", flags);
-		}
-	}
-}
-
-
+//
+//void CRoom::SendBattingResult(const LinkPtr& winner, int flags)
+//{
+//	LinkListIt clientIterBegin = mClientInfos.begin();
+//	LinkListIt winnerIter = find(mClientInfos.begin(), mClientInfos.end(), winner);
+//	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
+//	{
+//		if (clientIterBegin != winnerIter)
+//		{
+//			(*clientIterBegin).get()->SendnMine("당신은 졌습니다.", flags);
+//		}
+//		else
+//		{
+//			(*clientIterBegin).get()->SendnMine("당신은 이겼습니다.", flags);
+//		}
+//	}
+//}
+//
+//

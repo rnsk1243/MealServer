@@ -2,6 +2,7 @@
 #include<random>
 #include<iostream>
 #include"ErrorHandler.h"
+#include"RecvRepository.h"
 using namespace std;
 
 //static bool IntToAlphabet(const int num, char* chResult)
@@ -134,29 +135,36 @@ static const int RandNumber(int max = 100)
 }
 
 // ANSI 문자열을 UTF-8로 변환
-static char* ANSIToUTF8(const char * pszCode)
+static void ANSIToUTF8(BSTR& bstrWide, int& nLength, char* destination)
 {
-	BSTR    bstrWide;
-	char*   pszAnsi;
-	int     nLength;
+	//nLength = MultiByteToWideChar(CP_UTF8, 0, ansi, lstrlen(ansi) + 1, NULL, NULL);
+	//bstrWide = SysAllocStringLen(NULL, nLength);
 
-	nLength = MultiByteToWideChar(CP_UTF8, 0, pszCode, lstrlen(pszCode) + 1, NULL, NULL);
+	//MultiByteToWideChar(CP_UTF8, 0, ansi, lstrlen(ansi) + 1, bstrWide, nLength);
+
+	//nLength = WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, NULL, 0, NULL, NULL);
+	//pszAnsi = new char[nLength];
+
+	WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, destination, nLength, NULL, NULL);
+	SysFreeString(bstrWide);
+}
+
+static void ReadyANSIToUTF8(char* ansi, BSTR& bstrWide, int& nLength)
+{
+	//BSTR bstrWide;
+	//int nLength;
+	nLength = MultiByteToWideChar(CP_UTF8, 0, ansi, lstrlen(ansi) + 1, NULL, NULL);
 	bstrWide = SysAllocStringLen(NULL, nLength);
 
-	MultiByteToWideChar(CP_UTF8, 0, pszCode, lstrlen(pszCode) + 1, bstrWide, nLength);
-
+	MultiByteToWideChar(CP_UTF8, 0, ansi, lstrlen(ansi) + 1, bstrWide, nLength);
 	nLength = WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, NULL, 0, NULL, NULL);
-	pszAnsi = new char[nLength];
-
-	WideCharToMultiByte(CP_ACP, 0, bstrWide, -1, pszAnsi, nLength, NULL, NULL);
-	SysFreeString(bstrWide);
-
-	return pszAnsi;
 }
 
 // UTF8에서 ANSI로
 static char* UTF8ToANSI(const char * pszCode)
 {
+	if (nullptr == pszCode)
+		return nullptr;
 	int     nLength, nLength2;
 	BSTR    bstrCode;
 	char*   pszUTFCode = NULL;

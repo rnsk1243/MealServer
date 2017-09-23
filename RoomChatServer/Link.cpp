@@ -101,12 +101,12 @@ void CLink::SetReadyGame(const int& battingMoney)
 	if (battingMoney > GetMyMoney())
 	{
 		mIsGameOK = false;
-		SendnMine("베팅 머니가 부족하여 준비 되지 못 했습니다.");
+		//SendnMine("베팅 머니가 부족하여 준비 되지 못 했습니다.");
 	}
 	else
 	{
 		mIsGameOK = true;
-		SendnMine("당신은 준비 되셨습니다.");
+		//SendnMine("당신은 준비 되셨습니다.");
 	}
 }
 void CLink::SetNoReadyGame()
@@ -223,36 +223,56 @@ void CLink::LostWillMoney(const int& fine)
 	mDebtMoney += fine;
 }
 
-
-
-void CLink::SendnMine(const string & message, int flags)
+void CLink::SendnMine(const Packet & packet, int flags)
 {
 	int isSuccess = 0;
+	char sendTemp[BufSizeSend];
+	//cout << "보내려는 메세지 = " << packet.Value << endl;
+	memcpy_s(&sendTemp, sizeof(sendTemp), (void*)&packet, PacketSize);
 
-	/// UTF8 인코딩
-	
-	//wstring strUni = CA2W(message.c_str());
-	//string strUTF8(CW2A(strUni.c_str(), CP_UTF8));
-	///
-
-	const char* chMessage = UTF8ToANSI(message.c_str());
-	size_t size = strlen(chMessage);
-	isSuccess = send(*mClientSocket, (char*)&size, IntSize, flags); // 사이즈 보내기
-	if (isSuccess == SOCKET_ERROR)
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_SEND, LinkPtr(this));
-		return;
-	}
 	int temp = 0;
 	while (true)
 	{
-		temp += send(*mClientSocket, chMessage, (int)size, flags);
+		temp += send(*mClientSocket, sendTemp, PacketSize, flags);
 		if (temp == SOCKET_ERROR)
 		{
 			ErrorHandStatic->ErrorHandler(ERROR_SEND, LinkPtr(this));
 			return;
 		}
-		if (temp >= (int)size)
+		if (temp >= PacketSize)
 			break;
 	}
 }
+
+
+//void CLink::SendnMine(const string & message, int flags)
+//{
+//	int isSuccess = 0;
+//
+//	/// UTF8 인코딩
+//	
+//	//wstring strUni = CA2W(message.c_str());
+//	//string strUTF8(CW2A(strUni.c_str(), CP_UTF8));
+//	///
+//
+//	const char* chMessage = UTF8ToANSI(message.c_str());
+//	size_t size = strlen(chMessage);
+//	isSuccess = send(*mClientSocket, (char*)&size, IntSize, flags); // 사이즈 보내기
+//	if (isSuccess == SOCKET_ERROR)
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_SEND, LinkPtr(this));
+//		return;
+//	}
+//	int temp = 0;
+//	while (true)
+//	{
+//		temp += send(*mClientSocket, chMessage, (int)size, flags);
+//		if (temp == SOCKET_ERROR)
+//		{
+//			ErrorHandStatic->ErrorHandler(ERROR_SEND, LinkPtr(this));
+//			return;
+//		}
+//		if (temp >= (int)size)
+//			break;
+//	}
+//}

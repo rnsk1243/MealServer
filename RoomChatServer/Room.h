@@ -24,8 +24,9 @@ class CRoom
 	void DecreasePeople();
 	void SetGame();
 	void SetGameOver();
-	void SendBattingResult(const LinkPtr& winner, int flags = 0);
+	//void SendBattingResult(const LinkPtr& winner, int flags = 0);
 	bool AllCalculateMoney(); // 방에 있는 사람 모두 정산(.txt 저장)
+	void EnterBroadcast(const LinkPtr& shared_client);
 public:
 	CRoom(const CRoom&) = delete;
 	CRoom& operator=(const CRoom&) = delete;
@@ -43,8 +44,8 @@ public:
 	void GameResult();	// 게임 결과
 	bool IsGame();
 	bool AllInitBetting();
-	void Broadcast(const string& message, int flags = 0);
-	void Talk(const LinkPtr& myClient, const string& message, int flags = 0);
+	void Broadcast(const Packet& packet, int flags = 0);
+	void Talk(const LinkPtr& myClient, const Packet& packet, int flags = 0);
 
 };
 

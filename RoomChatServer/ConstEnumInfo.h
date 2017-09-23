@@ -2,8 +2,9 @@
 #include<string>
 #include<iostream>
 #include<vector>
+#include"RecvRepository.h"
 using namespace std;
-
+struct Packet;
 
 enum WhatGoodsCursorSize
 {
@@ -15,6 +16,46 @@ enum ErrorLevel
 	Serious, Normal, Low, Succes
 };
 
+enum ProtocolInfo       // 대분류
+{
+	None,               // 초기화 값
+	ServerCommend,      // 서버에게 명령
+	ChattingMessage,    // 채팅 메세지
+	PlayerInfo          // 플레이어 정보( 캐릭터, 이름 )
+};
+
+enum ProtocolDetail     // 소분류
+{
+	NoneDetail,               // 초기화 값
+	Message,            // 메세지
+	Image,              // 이미지
+	Name,               // 이름
+	EnterRoom,
+	EnterChanel,
+	MakeRoom,
+	OutRoom,
+	ReadyGame           // 게임준비
+};
+
+enum ProtocolCharacter
+{
+	Tofu, Mandu, Tangsuyuk
+};
+
+enum ProtocolCharacterTagIndex   // CharacterImageTag 배열과 CharacterNameTag 배열의 인덱스
+{
+	Red01, Red02, Red03, Blue01, Blue02, Blue03
+};
+
+enum ProtocolMessageTag
+{
+	Text // MessageTag배열의 "TextView"라는 테그(유니티에서 채팅창에 해당함)
+};
+
+const string CharacterImageName[3] = { "Tofu", "Mandu", "Tangsuyuk" };
+const string CharacterImageTag[6] = { "RedImage01", "RedImage02", "RedImage03", "BlueImage01", "BlueImage02", "BlueImage03" };
+const string CharacterNameTag[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
+const string MessageTag[1] = { "TextView" };
 const string CommandEnter = "e"; // 방 입장
 const string CommandChannal = "c"; // 채널 변경
 const string CommandMakeRoom = "m"; // 방 만들기
@@ -37,7 +78,10 @@ const int CharacterNameCols = 1;
 const int CharacterLVCols = 2;
 
 const int Port = 9000;
-const int BufSize = 1024;
+const int BufSizeRecv = 1024; // recv하는데 사용하는 버퍼
+const int BufSizeSend = 1024; // send하는데 사용하는 버퍼
+const int BufSizeTag = 64;	// 오브젝트 Tag값
+const int BufSizeValue = 128; // 채팅 메세지, 혹은 값
 const int ExcelBufSize = 4096;
 const int NameSize = 64;
 const int TimeSize = 10;
@@ -62,3 +106,54 @@ const int IndexGoodsInfoTxtPK = 0;
 const int IndexGoodsInfoTxtMoney = 1;
 const int MoneyInfoSize = MaxMoneyCipher + 1; // +1 한 이유는 '|' 때문
 const int GoodsTemplateSize = MoneyInfoSize + 3 ;
+static const int PacketSize = 140;//sizeof(Packet);
+
+struct Packet
+{
+	// Packet수정시 PacketSize 변경할 것.
+	int InfoProtocol;
+	int InfoProtocolDetail;
+	int InfoTagNumber;
+	char InfoValue[BufSizeValue];
+
+	Packet() {}
+
+	Packet(int infoProtocol, int infoProtocolDetail, int infoTagNumber, const char* infoValue) :
+		InfoProtocol(infoProtocol),
+		InfoProtocolDetail(infoProtocolDetail),
+		InfoTagNumber(infoTagNumber)
+	{
+		cout << "Packet 생성자" << endl;
+		if (nullptr != infoValue)
+		{
+			strcpy_s(InfoValue, BufSizeValue, infoValue);
+			cout << "초기화된 값 Value == " << InfoValue << endl;
+		}
+		else
+		{
+			infoValue = nullptr;
+		}
+	}
+};
+
+//struct OrderStructSocket
+//{
+//	const SOCKET* clientSocket;
+//	PacketPtr packet;
+//	OrderStructSocket(const SOCKET* clientSock, const PacketPtr& pack)
+//	{
+//		clientSocket = clientSock;
+//		packet = pack;
+//	}
+//};
+//
+//struct OrderStructLink
+//{
+//	LinkPtr linkPtr;
+//	PacketPtr packet;
+//	OrderStructLink(const LinkPtr& link, const PacketPtr& pack)
+//	{
+//		linkPtr = link;
+//		packet = pack;
+//	}
+//};
