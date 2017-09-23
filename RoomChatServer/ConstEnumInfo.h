@@ -36,8 +36,9 @@ enum ProtocolDetail     // 소분류
 	MakeRoom,
 	OutRoom,
 	ReadyGame,           // 게임준비
-	Login,
-	MatchingSuccess // 매칭 성공 방 UI 표시
+	FrontMenu,				// 메뉴(로그인, 회원가입, 게스트 로그인 )
+	MatchingSuccess, // 매칭 성공 방 UI 표시
+	LoginSuccess         // 로그인 성공 채널 입장
 };
 
 enum ProtocolCharacterImage
@@ -62,7 +63,13 @@ enum ProtocolFrontManuTag
 
 enum ProtocolSceneName
 {
-	FrontScene, RoomScene
+	FrontScene, ChannelScene, RoomScene
+};
+
+enum State	// 클라이언트 상태
+{
+	ClientNone, ClientFrontMenu, ClientJoin, ClientChannelMenu, ClientMatching,
+	ClientMakeRoom, ClientOption, ClientRoomIn
 };
 
 const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
@@ -70,7 +77,7 @@ const string ProtocolCharacterImageName[3] = { "Tofu", "Mandu", "Tangsuyuk" };
 const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "RedImage02", "RedImage03", "BlueImage01", "BlueImage02", "BlueImage03" };
 const string ProtocolCharacterTagIndexName[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
 const string MessageTag[1] = { "TextView" };
-const string ProtocolSceneName[2] = { "FrontScene", "RoomScene" };
+const string ProtocolSceneName[3] = { "FrontScene", "ChannelScene", "RoomScene" };
 const string CommandEnter = "e"; // 방 입장
 const string CommandChannal = "c"; // 채널 변경
 const string CommandMakeRoom = "m"; // 방 만들기
@@ -109,7 +116,7 @@ const int MakeThreadNum = 3;
 const int timeKind = 6; // 시간 종류 갯수 (년, 월, 일, 시, 분, 초) 6개
 const int StartEnterChannelNum = 1; // 처음 접속 채널
 const int StartRoomNum = 1; // 처음 만들어지는 룸 번호
-const int EnterRoomPeopleLimit = 4; // 방에 입장 가능한 최대 인원
+const int EnterRoomPeopleLimit = 6; // 방에 입장 가능한 최대 인원
 const int FineGamePlayingOutMoney = 20; // 게임도중 도주 벌금
 const int MaxChannelNum = 5;
 const int ChannelAmount = 5;

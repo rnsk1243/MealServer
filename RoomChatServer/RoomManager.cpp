@@ -109,7 +109,8 @@ bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNu
 	{
 		if (EnterRoomPeopleLimit <= (*targetRoomIter).get()->GetAmountPeople())
 		{
-			shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, DialogEnterRoomPeopleLimit.c_str()));
+			//shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, DialogEnterRoomPeopleLimit.c_str()));
+			cout << "방 꽉 차서 못 들어감" << endl;
 			return false;
 		}
 		(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);

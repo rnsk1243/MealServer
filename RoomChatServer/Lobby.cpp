@@ -131,7 +131,7 @@ int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUser
 	Packet packet;
 	ListenerStatic->Recvn(guest->GetClientSocket(), packet); //(guest->GetClientSocket(), strMessage);
 
-	if (ProtocolDetail::Login == packet.InfoProtocolDetail)
+	if (ProtocolDetail::FrontMenu == packet.InfoProtocolDetail)
 	{
 		switch (packet.InfoTagIndex)
 		{
@@ -139,8 +139,8 @@ int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUser
 			resultLoginFunc = Login(guest, tempUserInfo, packet.InfoValue);
 			if (SUCCES_LOGIN == resultLoginFunc)
 			{
-				guest->Sendn(Packet(ProtocolInfo::ClientCommend, ProtocolDetail::MatchingSuccess, ProtocolMessageTag::Text, "Room"));
-				guest->Sendn(Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, ProtocolCharacterTagIndex::Red01, ProtocolCharacterImageName[ProtocolCharacterImage::Mandu].c_str()));
+				guest->Sendn(Packet(ProtocolInfo::ClientCommend, ProtocolDetail::LoginSuccess, ProtocolMessageTag::Text, nullptr));
+				//guest->Sendn(Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, ProtocolCharacterTagIndex::Red01, ProtocolCharacterImageName[ProtocolCharacterImage::Mandu].c_str()));
 				return SUCCES_LOGIN;
 			}
 			else if (CANCLE == resultLoginFunc)
