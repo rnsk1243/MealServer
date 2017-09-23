@@ -21,23 +21,26 @@ enum ProtocolInfo       // 대분류
 	None,               // 초기화 값
 	ServerCommend,      // 서버에게 명령
 	ChattingMessage,    // 채팅 메세지
-	PlayerInfo          // 플레이어 정보( 캐릭터, 이름 )
+	ClientCommend
+	//PlayerInfo          // 플레이어 정보( 캐릭터, 이름 )
 };
 
 enum ProtocolDetail     // 소분류
 {
 	NoneDetail,               // 초기화 값
 	Message,            // 메세지
-	Image,              // 이미지
-	Name,               // 이름
+	ImageChange,              // 이미지
+	NameChange,               // 이름
 	EnterRoom,
 	EnterChanel,
 	MakeRoom,
 	OutRoom,
-	ReadyGame           // 게임준비
+	ReadyGame,           // 게임준비
+	Login,
+	MatchingSuccess // 매칭 성공 방 UI 표시
 };
 
-enum ProtocolCharacter
+enum ProtocolCharacterImage
 {
 	Tofu, Mandu, Tangsuyuk
 };
@@ -52,10 +55,22 @@ enum ProtocolMessageTag
 	Text // MessageTag배열의 "TextView"라는 테그(유니티에서 채팅창에 해당함)
 };
 
-const string CharacterImageName[3] = { "Tofu", "Mandu", "Tangsuyuk" };
-const string CharacterImageTag[6] = { "RedImage01", "RedImage02", "RedImage03", "BlueImage01", "BlueImage02", "BlueImage03" };
-const string CharacterNameTag[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
+enum ProtocolFrontManuTag
+{
+	LoginManu, JoinManu, GuestManu, CancleManu // 클라이언트 요청 상세
+};
+
+enum ProtocolSceneName
+{
+	FrontScene, RoomScene
+};
+
+const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
+const string ProtocolCharacterImageName[3] = { "Tofu", "Mandu", "Tangsuyuk" };
+const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "RedImage02", "RedImage03", "BlueImage01", "BlueImage02", "BlueImage03" };
+const string ProtocolCharacterTagIndexName[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
 const string MessageTag[1] = { "TextView" };
+const string ProtocolSceneName[2] = { "FrontScene", "RoomScene" };
 const string CommandEnter = "e"; // 방 입장
 const string CommandChannal = "c"; // 채널 변경
 const string CommandMakeRoom = "m"; // 방 만들기
@@ -113,15 +128,15 @@ struct Packet
 	// Packet수정시 PacketSize 변경할 것.
 	int InfoProtocol;
 	int InfoProtocolDetail;
-	int InfoTagNumber;
+	int InfoTagIndex;
 	char InfoValue[BufSizeValue];
 
 	Packet() {}
 
-	Packet(int infoProtocol, int infoProtocolDetail, int infoTagNumber, const char* infoValue) :
+	Packet(int infoProtocol, int infoProtocolDetail, int infoTagIndex, const char* infoValue) :
 		InfoProtocol(infoProtocol),
 		InfoProtocolDetail(infoProtocolDetail),
-		InfoTagNumber(infoTagNumber)
+		InfoTagIndex(infoTagIndex)
 	{
 		cout << "Packet 생성자" << endl;
 		if (nullptr != infoValue)

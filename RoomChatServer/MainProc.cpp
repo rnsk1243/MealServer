@@ -72,6 +72,8 @@ int thSendRecv(void* v_clientSocket)
 	}
 	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str()));
 
+
+
 	// EnterChannelNum 채널에 입장
 	vector<string> commandChannel;
 	CommandControllerStatic->SetEnterChannel(shared_clientInfo, StartEnterChannelNum);
@@ -79,7 +81,8 @@ int thSendRecv(void* v_clientSocket)
 		return 0;
 
 	//cout << "보유 재화 = " << shared_clientInfo->GetMyMoney() << endl;
-	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "로그인 성공"));
+	string welcomeMessage = "환영합니다. " + shared_clientInfo.get()->GetMyName() + " 님";
+	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, welcomeMessage.c_str()));
 	//shared_clientInfo.get()->SendnMine("로그인 성공");
 	ErrorHandStatic->ErrorHandler(SUCCES_LOGIN, shared_clientInfo);
 	while (true)

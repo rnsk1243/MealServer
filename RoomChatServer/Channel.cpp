@@ -35,8 +35,8 @@ bool CChannel::PushClient(const LinkPtr& shared_client, const int& channelNumber
 	mPeopleAmount++;
 	shared_client.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "채널에 들어왔습니다."));
 
-	Packet p1(ProtocolInfo::PlayerInfo, ProtocolDetail::Image, ProtocolCharacterTagIndex::Red01, CharacterImageName[0].c_str());
-	shared_client.get()->SendnMine((p1));
+	//Packet p1(ProtocolInfo::PlayerInfo, ProtocolDetail::Image, ProtocolCharacterTagIndex::Red01, CharacterImageName[0].c_str());
+	//shared_client.get()->SendnMine((p1));
 
 	return true;
 }
