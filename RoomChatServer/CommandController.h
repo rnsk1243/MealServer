@@ -10,9 +10,9 @@ class CCommandController
 	CChannelManager mChannelManager;
 	CRoomManager mRoomManager;
 	CCommandController();
-	void EnterRoom(const LinkPtr& shared_clientInfo, const int& roomNumber);
+	void EnterRoom(const LinkPtr& shared_clientInfo);
 	void ChangeChannel(const LinkPtr& shared_clientInfo, const int & moveChannelNumber);
-	void MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName);
+	int MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName);
 	void OutRoom(const LinkPtr& shared_clientInfo);
 	void SendAllReadyGameNotice(const LinkPtr & shared_clientInfo);
 	// 명령 처리 함수(방 만들기 등)

@@ -41,6 +41,19 @@ void CRoomManager::PushRoom(const RoomPtr & shared_newRoom)
 	++newRoomNumber;
 }
 
+int CRoomManager::SearchRoom()
+{
+	RoomListIt roomBegin = mRooms.begin();
+	for (; roomBegin != mRooms.end(); ++roomBegin)
+	{
+		if (EnterRoomPeopleLimit > (*roomBegin).get()->GetAmountPeople())
+		{
+			return (*roomBegin).get()->GetRoomNum();
+		}
+	}
+	return NoneRoom;
+}
+
 RoomListIt CRoomManager::EraseRoom(RoomListIt deleteTargetRoomIter)
 {
 	ScopeLock<MUTEX> MU(mRAII_RoomManagerMUTEX);
@@ -61,12 +74,12 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo)
 		(*myRoomIter).get()->Talk(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, outClientName.c_str()));
 		client->SetMyRoomNum(NoneRoom);
 		client->InitBetting(); // 베팅 초기화 시킴
-		if (true == (*myRoomIter)->IsGame())					// 게임중에 나갔나?
-		{
-			client->LostWillMoney((*myRoomIter)->GetBattingMoney());	// 벌금 부과
-			client->SaveCalculateMoney(); // 갈땐 가더라도 정산은..해야지
-			(*myRoomIter)->AllInitBetting();					// 룸에 들어있는 사람 준비 초기화
-		}
+		//if (true == (*myRoomIter)->IsGame())					// 게임중에 나갔나?
+		//{
+		//	client->LostWillMoney((*myRoomIter)->GetBattingMoney());	// 벌금 부과
+		//	client->SaveCalculateMoney(); // 갈땐 가더라도 정산은..해야지
+		//	(*myRoomIter)->AllInitBetting();					// 룸에 들어있는 사람 준비 초기화
+		//}
 		(*myRoomIter).get()->EraseClient(shared_clientInfo);
 		return myRoomIter;
 	}
@@ -138,7 +151,7 @@ bool CRoomManager::IsAllReadyGame(const LinkPtr & shared_clientInfo)
 	RoomListIt targetRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
 	if (mRooms.end() != targetRoomIter)
 	{
-		client->SetReadyGame((*targetRoomIter).get()->GetBattingMoney());
+		//client->SetReadyGame((*targetRoomIter).get()->GetBattingMoney());
 		return ((*targetRoomIter)->IsAllReady());
 	}
 	return false;

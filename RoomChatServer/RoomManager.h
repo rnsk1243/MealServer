@@ -44,5 +44,7 @@ public:
 	void Broadcast(const LinkPtr& shared_clientInfo, const Packet& packet, int flags = 0);
 	// 해당 링크가 들어있는 수다
 	void Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags = 0);
+	// 빈방 찾기
+	int SearchRoom();
 };
  

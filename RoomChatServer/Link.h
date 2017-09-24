@@ -52,7 +52,7 @@ public:
 	const int GetMyMoney();
 	const int GetMyPKNumber()const;
 	void SetInitGoods();
-	void SetReadyGame(const int& battingMoney);
+	//void SetReadyGame(const int& battingMoney);
 	void SetNoReadyGame();
 	bool GetReadyGame();
 	bool GetPrizeBattingMoney(const int& bettingMoney); // 베팅머니 받기

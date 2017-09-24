@@ -18,15 +18,16 @@ class CRoom
 	int mAmountPeople;
 	MUTEX mRAII_RoomMUTEX;
 	//CRITICALSECTION CT;
-	int mBettingMoney;
-	bool mPlayingGame; // 게임중?
+	//int mBettingMoney;
+	//bool mPlayingGame; // 게임중?
+	bool mIsNewRoom; // 새로운 방인가?
 	void IncreasePeople();
 	void DecreasePeople();
-	void SetGame();
-	void SetGameOver();
+	//void SetGame();
+	//void SetGameOver();
 	//void SendBattingResult(const LinkPtr& winner, int flags = 0);
 	bool AllCalculateMoney(); // 방에 있는 사람 모두 정산(.txt 저장)
-	void EnterBroadcast(const LinkPtr& shared_client);
+	void EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex);
 public:
 	CRoom(const CRoom&) = delete;
 	CRoom& operator=(const CRoom&) = delete;
@@ -39,11 +40,11 @@ public:
 	const string GetRoomName();
 	int GetAmountPeople();
 	bool IsRoomEmpty();
-	int GetBattingMoney();
+	//int GetBattingMoney();
 	bool IsAllReady();
-	void GameResult();	// 게임 결과
-	bool IsGame();
-	bool AllInitBetting();
+	//void GameResult();	// 게임 결과
+	//bool IsGame();
+	//bool AllInitBetting();
 	void Broadcast(const Packet& packet, int flags = 0);
 	void Talk(const LinkPtr& myClient, const Packet& packet, int flags = 0);
 

@@ -96,19 +96,19 @@ void CLink::SetInitGoods()
 	mIsInitGoods = true;
 }
 
-void CLink::SetReadyGame(const int& battingMoney)
-{
-	if (battingMoney > GetMyMoney())
-	{
-		mIsGameOK = false;
-		//SendnMine("베팅 머니가 부족하여 준비 되지 못 했습니다.");
-	}
-	else
-	{
-		mIsGameOK = true;
-		//SendnMine("당신은 준비 되셨습니다.");
-	}
-}
+//void CLink::SetReadyGame(const int& battingMoney)
+//{
+//	if (battingMoney > GetMyMoney())
+//	{
+//		mIsGameOK = false;
+//		//SendnMine("베팅 머니가 부족하여 준비 되지 못 했습니다.");
+//	}
+//	else
+//	{
+//		mIsGameOK = true;
+//		//SendnMine("당신은 준비 되셨습니다.");
+//	}
+//}
 void CLink::SetNoReadyGame()
 {
 	mIsGameOK = false;

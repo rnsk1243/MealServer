@@ -26,11 +26,23 @@ void CCommandController::SetEnterChannel(const LinkPtr & shared_clientInfo, cons
 	}
 }
 
-void CCommandController::EnterRoom(const LinkPtr & shared_clientInfo, const int& roomNumber)
+void CCommandController::EnterRoom(const LinkPtr & shared_clientInfo)
 {
-	if (mRoomManager.EnterRoom(shared_clientInfo, roomNumber))
+	int enterRoomNumber = mRoomManager.SearchRoom();
+	// 빈방이 없는 경우 만듬
+	if (NoneRoom == enterRoomNumber)
 	{
-		mChannelManager.ExitChannel(shared_clientInfo);
+		cout << "room 새로 만듬" << endl;
+		enterRoomNumber = MakeRoom(shared_clientInfo, "room");
+	}
+
+	if (NoneRoom != enterRoomNumber)
+	{
+		cout << enterRoomNumber << " 번 방으로 들어가기" << endl;
+		if (mRoomManager.EnterRoom(shared_clientInfo, enterRoomNumber))
+		{
+			mChannelManager.ExitChannel(shared_clientInfo);
+		}
 	}
 }
 
@@ -51,7 +63,7 @@ void CCommandController::ChangeChannel(const LinkPtr& shared_clientInfo, const i
 	}
 }
 
-void CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName)
+int CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr != client && (false == client->IsRoomEnterState()))
@@ -60,10 +72,12 @@ void CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const strin
 		int newRoomNumber = mRoomManager.MakeRoom(shared_clientInfo, roomName);
 		if (-1 != newRoomNumber)
 		{
+			return newRoomNumber;
 			// 룸에 들어가고
-			EnterRoom(shared_clientInfo, newRoomNumber);
+			//EnterRoom(shared_clientInfo, newRoomNumber);
 		}
 	}
+	return NoneRoom;
 }
 
 void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
@@ -127,7 +141,8 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 	{
 		if (ProtocolDetail::EnterRoom == packet.InfoProtocolDetail) // 방에 입장
 		{
-			EnterRoom(shared_clientInfo, stoi(packet.InfoValue/*commandString.at(1)*/));
+			cout << "입장 명령 시작" << endl;
+			EnterRoom(shared_clientInfo);
 		}
 		else if (ProtocolDetail::EnterChanel == packet.InfoProtocolDetail)
 		{
@@ -136,7 +151,7 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		else if (ProtocolDetail::MakeRoom == packet.InfoProtocolDetail)
 		{
 			//int battingMoney = stoi(commandString.at(2));
-			MakeRoom(shared_clientInfo, packet.InfoValue);
+			//MakeRoom(shared_clientInfo, packet.InfoValue);
 		}
 		else if (ProtocolDetail::OutRoom == packet.InfoProtocolDetail)
 		{
