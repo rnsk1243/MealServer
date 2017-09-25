@@ -29,7 +29,9 @@ private:
 	bool mIsGameOK;
 	int mDebtMoney;	// 앞으로 없어질 돈.
 	int mPayBackMoney; // 앞으로 받을 돈.
+	ProtocolCharacterTagIndex mMyPosition; // 방에서 나의 위치 또는 팀
 	bool mIsInitGoods; // 재화 초기화 했나?
+	ProtocolCharacterImageNameIndex mSelectCharacter;	// 내가 선택한 캐릭터
 	bool InitMoney(int money);
 	bool AddMoney(const int& addMoney);
 	bool MinusMyMoney(const int& minusMoney);
@@ -52,11 +54,15 @@ public:
 	const int GetMyMoney();
 	const int GetMyPKNumber()const;
 	void SetInitGoods();
+	void SetReadyGame(); //준비완료
 	//void SetReadyGame(const int& battingMoney);
 	void SetNoReadyGame();
 	bool GetReadyGame();
 	bool GetPrizeBattingMoney(const int& bettingMoney); // 베팅머니 받기
 	bool SaveCalculateMoney();
+	ProtocolCharacterTagIndex GetMyPosition();
+	void SetMyPosition(ProtocolCharacterTagIndex newPosition);
+	void SetMyCharacter(ProtocolCharacterImageNameIndex newCharacter); // 캐릭터 변경
 #pragma endregion
 	bool InitGoods(int initMoney);
 	bool InitBetting();

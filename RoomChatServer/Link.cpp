@@ -14,7 +14,9 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 	mMyGoods(stoi(strPKNumber)),
 	mDebtMoney(0),
 	mPayBackMoney(0),
-	mName(name)
+	mName(name),
+	mMyPosition(ProtocolCharacterTagIndex::NoneCharacter),
+	mSelectCharacter(InitCharacter)
 {
 }
 
@@ -96,19 +98,10 @@ void CLink::SetInitGoods()
 	mIsInitGoods = true;
 }
 
-//void CLink::SetReadyGame(const int& battingMoney)
-//{
-//	if (battingMoney > GetMyMoney())
-//	{
-//		mIsGameOK = false;
-//		//SendnMine("베팅 머니가 부족하여 준비 되지 못 했습니다.");
-//	}
-//	else
-//	{
-//		mIsGameOK = true;
-//		//SendnMine("당신은 준비 되셨습니다.");
-//	}
-//}
+void CLink::SetReadyGame()
+{
+	mIsGameOK = true;
+}
 void CLink::SetNoReadyGame()
 {
 	mIsGameOK = false;
@@ -198,6 +191,21 @@ bool CLink::SaveCalculateMoney()
 		}
 	}
 	return false;
+}
+
+ProtocolCharacterTagIndex CLink::GetMyPosition()
+{
+	return mMyPosition;
+}
+
+void CLink::SetMyPosition(ProtocolCharacterTagIndex newPosition)
+{
+	mMyPosition = newPosition;
+}
+
+void CLink::SetMyCharacter(ProtocolCharacterImageNameIndex newCharacter)
+{
+	mSelectCharacter = newCharacter;
 }
 
 bool CLink::InitGoods(int initMoney)

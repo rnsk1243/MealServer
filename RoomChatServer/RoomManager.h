@@ -46,5 +46,7 @@ public:
 	void Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags = 0);
 	// 빈방 찾기
 	int SearchRoom();
+	// 캐릭터 변경
+	void ChangeMyCharacter(const LinkPtr & shared_clientInfo, const Packet & packet);
 };
  

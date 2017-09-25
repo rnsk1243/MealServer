@@ -35,20 +35,22 @@ enum ProtocolDetail     // 소분류
 	EnterChanel,
 	MakeRoom,
 	OutRoom,
-	ReadyGame,           // 게임준비
+	SetReadyGame,           // 게임준비
 	FrontMenu,				// 메뉴(로그인, 회원가입, 게스트 로그인 )
 	MatchingSuccess, // 매칭 성공 방 UI 표시
-	LoginSuccess         // 로그인 성공 채널 입장
+	LoginSuccess,         // 로그인 성공 채널 입장
+	ChangeCharacter,		// 캐릭터 변경
+	NotReadyGame			// 게임 준비 취소
 };
 
-enum ProtocolCharacterImage
+enum ProtocolCharacterImageNameIndex
 {
 	Tofu, Mandu, Tangsuyuk
 };
 
 enum ProtocolCharacterTagIndex   // CharacterImageTag 배열과 CharacterNameTag 배열의 인덱스
 {
-	Red01, Red02, Red03, Blue01, Blue02, Blue03
+	NoneCharacter, Red01, Red02, Red03, Blue01, Blue02, Blue03
 };
 
 enum ProtocolMessageTag
@@ -69,11 +71,12 @@ enum ProtocolSceneName
 enum State	// 클라이언트 상태
 {
 	ClientNone, ClientFrontMenu, ClientJoin, ClientChannelMenu, ClientMatching,
-	ClientMakeRoom, ClientOption, ClientRoomIn
+	ClientMakeRoom, ClientOption, ClientRoomIn, ClientReady, ClientNotReady
 };
 
 const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
 const string ProtocolCharacterImageName[3] = { "Tofu", "Mandu", "Tangsuyuk" };
+const ProtocolCharacterImageNameIndex InitCharacter = ProtocolCharacterImageNameIndex::Tofu;	// 방에 입장시 적용되는 기본 캐릭터
 const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "RedImage02", "RedImage03", "BlueImage01", "BlueImage02", "BlueImage03" };
 const string ProtocolCharacterTagIndexName[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
 const string MessageTag[1] = { "TextView" };
@@ -98,6 +101,8 @@ const string DialogEnterRoomPeopleLimit = "방에 인원수가 초과하여 더 이상 입장하
 const int CharacterNumberCols = 0; // 액셀파일 카드 번호 열번호
 const int CharacterNameCols = 1;
 const int CharacterLVCols = 2;
+const int Used = 1; // 사용중
+const int NotUsed = 0; // 미사용중
 
 const int Port = 9000;
 const int BufSizeRecv = 1024; // recv하는데 사용하는 버퍼

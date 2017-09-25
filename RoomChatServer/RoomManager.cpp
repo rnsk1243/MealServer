@@ -54,6 +54,16 @@ int CRoomManager::SearchRoom()
 	return NoneRoom;
 }
 
+void CRoomManager::ChangeMyCharacter(const LinkPtr & shared_clientInfo, const Packet & packet)
+{
+	CLink* client = shared_clientInfo.get();
+	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
+	if (mRooms.end() != myRoomIter)
+	{
+		(*myRoomIter).get()->ChangetCharacterBroadcast(shared_clientInfo, ProtocolCharacterImageNameIndex(packet.InfoTagIndex));
+	}
+}
+
 RoomListIt CRoomManager::EraseRoom(RoomListIt deleteTargetRoomIter)
 {
 	ScopeLock<MUTEX> MU(mRAII_RoomManagerMUTEX);
@@ -70,8 +80,8 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo)
 	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
 	if (mRooms.end() != myRoomIter)
 	{
-		string outClientName(shared_clientInfo.get()->GetMyName() + " 님이 방에서 나가셨습니다.");
-		(*myRoomIter).get()->Talk(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, outClientName.c_str()));
+		//string outClientName(shared_clientInfo.get()->GetMyName() + " 님이 방에서 나가셨습니다.");
+		//(*myRoomIter).get()->Talk(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, outClientName.c_str()));
 		client->SetMyRoomNum(NoneRoom);
 		client->InitBetting(); // 베팅 초기화 시킴
 		//if (true == (*myRoomIter)->IsGame())					// 게임중에 나갔나?

@@ -117,11 +117,11 @@ void CCommandController::SendAllReadyGameNotice(const LinkPtr & shared_clientInf
 		// 룸메니저를 통해 방 멤버 함수 호출 할 것.
 		mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "모든 플레이어가 준비 되었습니다."));
 	}
-	else
-	{
-		shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage,ProtocolDetail::Message, ProtocolMessageTag::Text, "다른 모든 플레이어가 준비 되어야 합니다."));
-	}
-	
+}
+
+void CCommandController::ChangeCharacter(const LinkPtr & shared_clientInfo, Packet& packet)
+{
+	mRoomManager.ChangeMyCharacter(shared_clientInfo, packet);
 }
 
 CCommandController * CCommandController::GetInstance()
@@ -160,12 +160,29 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 				OutRoom(shared_clientInfo);
 			}
 		}
-		else if (ProtocolDetail::ReadyGame == packet.InfoProtocolDetail)
+		else if (ProtocolDetail::SetReadyGame == packet.InfoProtocolDetail)
 		{
+			shared_clientInfo.get()->SetReadyGame();
 			SendAllReadyGameNotice(shared_clientInfo);
+		}
+		else if (ProtocolDetail::NotReadyGame == packet.InfoProtocolDetail)
+		{
+			shared_clientInfo.get()->SetNoReadyGame();
+		}
+		else if (ProtocolDetail::ChangeCharacter == packet.InfoProtocolDetail)
+		{
+			ChangeCharacter(shared_clientInfo, packet);
 		}
 		else if(ProtocolDetail::Message == packet.InfoProtocolDetail)
 		{
+			//string myName(shared_clientInfo.get()->GetMyName());
+			//string sum = "[" + myName + "] " + packet.InfoValue;
+
+			//for (int i = 0; i < BufSizeValue; ++i)
+			//{
+			//	packet.InfoValue[i] = sum[i];
+			//}
+
 			if (shared_clientInfo.get()->IsRoomEnterState())
 			{
 				mRoomManager.Talk(shared_clientInfo, packet);

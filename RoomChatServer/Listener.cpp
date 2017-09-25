@@ -85,7 +85,7 @@ void CListener::RecvnLink(const LinkPtr& link, Packet& packet, int flags)
 	{
 		packet.InfoValue[i] = temp[i];
 	}
-	//cout << "변환된 값 = " << packet.Value << endl;
+	cout << "변환된 값 = " << packet.InfoValue << endl;
 	//char buf[BufSizeValue];
 	//cout << ANSIToUTF8(packet.Value, buf) << endl;
 	// 나중에 비동기 소켓 사용시 Recv박스에 넣어 처리
