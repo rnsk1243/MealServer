@@ -60,9 +60,11 @@ void printVersionInfo()
 }
 
 
-int thSendRecv(void* v_clientSocket)
+int thSendRecv(void* v_clientSocket, void* v_ip)
 {
 	const SOCKET* clientSocket = ((SOCKET*)v_clientSocket);
+	string ip = *(string*)v_ip;
+	cout << "붙은 클라이언트 ip = " << ip;
 	CGuestLink guest(clientSocket);
 	int isLogin = 0;
 	vector<string> userInfo;
@@ -70,7 +72,7 @@ int thSendRecv(void* v_clientSocket)
 	{
 		isLogin = LobbyStatic->ActionServiceLobby(&guest, userInfo);
 	}
-	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str()));
+	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str(), ip));
 
 
 
@@ -108,9 +110,10 @@ void main()
 	while (true)
 	{
 		SOCKET* clientSocket = new SOCKET();
-		ReadyNetWorkStatic->Accept(clientSocket);
+		string ip;
+		ReadyNetWorkStatic->Accept(clientSocket, ip);
 		
-		thread clientThread(thSendRecv, clientSocket);
+		thread clientThread(thSendRecv, clientSocket, &ip);
 		clientThread.detach();
 	}
 	getchar();

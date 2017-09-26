@@ -64,6 +64,16 @@ void CRoomManager::ChangeMyCharacter(const LinkPtr & shared_clientInfo, const Pa
 	}
 }
 
+void CRoomManager::GetHostIP(const LinkPtr & shared_clientInfo)
+{
+	CLink* client = shared_clientInfo.get();
+	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
+	if (mRooms.end() != myRoomIter)
+	{
+		(*myRoomIter).get()->GetHostIP();
+	}
+}
+
 RoomListIt CRoomManager::EraseRoom(RoomListIt deleteTargetRoomIter)
 {
 	ScopeLock<MUTEX> MU(mRAII_RoomManagerMUTEX);

@@ -4,7 +4,7 @@
 #include"Util.h"
 
 
-CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* name) :
+CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* name, const string& ip) :
 	mClientSocket(clientSocket),
 	mMyChannelNum(0),
 	mMyRoomNum(NoneRoom),
@@ -16,7 +16,8 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 	mPayBackMoney(0),
 	mName(name),
 	mMyPosition(ProtocolCharacterTagIndex::NoneCharacter),
-	mSelectCharacter(InitCharacter)
+	mSelectCharacter(InitCharacter),
+	mIP(ip)
 {
 }
 
@@ -229,6 +230,11 @@ void CLink::LostWillMoney(const int& fine)
 {
 	// 돈 감소 (일단 빚으로) 실제 .txt에 쓰지는 않음 그러나 나중에 이 만큼 차감함.
 	mDebtMoney += fine;
+}
+
+string CLink::GetMyIP()
+{
+	return mIP;
 }
 
 void CLink::SendnMine(const Packet & packet, int flags)

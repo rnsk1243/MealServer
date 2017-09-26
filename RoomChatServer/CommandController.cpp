@@ -115,13 +115,19 @@ void CCommandController::SendAllReadyGameNotice(const LinkPtr & shared_clientInf
 	if (mRoomManager.IsAllReadyGame(shared_clientInfo))
 	{
 		// 룸메니저를 통해 방 멤버 함수 호출 할 것.
-		mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "모든 플레이어가 준비 되었습니다."));
+		//mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "모든 플레이어가 준비 되었습니다."));
+		mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ClientCommend, ProtocolDetail::StartGame, 0, nullptr));
 	}
 }
 
 void CCommandController::ChangeCharacter(const LinkPtr & shared_clientInfo, Packet& packet)
 {
 	mRoomManager.ChangeMyCharacter(shared_clientInfo, packet);
+}
+
+void CCommandController::GetHostIP(const LinkPtr & shared_clientInfo)
+{
+	mRoomManager.GetHostIP(shared_clientInfo);
 }
 
 CCommandController * CCommandController::GetInstance()
@@ -172,6 +178,10 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		else if (ProtocolDetail::ChangeCharacter == packet.InfoProtocolDetail)
 		{
 			ChangeCharacter(shared_clientInfo, packet);
+		}
+		else if (ProtocolDetail::GetHostIP == packet.InfoProtocolDetail)
+		{
+
 		}
 		else if(ProtocolDetail::Message == packet.InfoProtocolDetail)
 		{

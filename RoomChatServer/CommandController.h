@@ -16,6 +16,7 @@ class CCommandController
 	void OutRoom(const LinkPtr& shared_clientInfo);
 	void SendAllReadyGameNotice(const LinkPtr & shared_clientInfo);
 	void ChangeCharacter(const LinkPtr & shared_clientInfo, Packet& packet);
+	void GetHostIP(const LinkPtr & shared_clientInfo);
 	// 명령 처리 함수(방 만들기 등)
 public:
 	static CCommandController* GetInstance();

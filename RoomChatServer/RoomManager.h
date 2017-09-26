@@ -48,5 +48,7 @@ public:
 	int SearchRoom();
 	// 캐릭터 변경
 	void ChangeMyCharacter(const LinkPtr & shared_clientInfo, const Packet & packet);
+	// 호스트 ip 가져오기
+	void GetHostIP(const LinkPtr & shared_clientInfo);
 };
  

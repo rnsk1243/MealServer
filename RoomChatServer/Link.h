@@ -12,6 +12,7 @@ typedef shared_ptr<CLink> LinkPtr;
 class CLink
 {
 private:
+	string mIP;
 	string mName;
 	// 현재 내가 속한 방 번호
 	int mMyRoomNum;
@@ -37,7 +38,7 @@ private:
 	bool MinusMyMoney(const int& minusMoney);
 	bool PayBackMoney(const int& payBack);
 public:
-	CLink(const SOCKET* clientSocket, const string& strPKNumber,const char* name);
+	CLink(const SOCKET* clientSocket, const string& strPKNumber,const char* name, const string& ip);
 	CLink(const CLink&) = delete;
 	CLink& operator=(const CLink&) = delete;
 	~CLink();
@@ -67,6 +68,7 @@ public:
 	bool InitGoods(int initMoney);
 	bool InitBetting();
 	void LostWillMoney(const int& fine); // 곧 없어질돈 추가
+	string GetMyIP();
 	////////////////////
 	void SendnMine(const Packet & packet, int flags = 0);
 };

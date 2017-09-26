@@ -12,6 +12,6 @@ public:
 	CReadyNetWork(const CReadyNetWork&) = delete;
 	CReadyNetWork&  operator=(const CReadyNetWork&) = delete;
 	~CReadyNetWork();
-	void Accept(SOCKET * hClientSock);
+	void Accept(SOCKET * hClientSock, string& ip);
 };
 static CReadyNetWork * ReadyNetWorkStatic = CReadyNetWork::GetInstance();

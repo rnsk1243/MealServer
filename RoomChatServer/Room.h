@@ -51,6 +51,6 @@ public:
 	void Broadcast(const Packet& packet, int flags = 0);
 	void ChangetCharacterBroadcast(const LinkPtr & shared_client, const ProtocolCharacterImageNameIndex& characterImageIndex); // 모두에게 캐릭터 변경 보내기
 	void Talk(const LinkPtr& myClient, const Packet& packet, int flags = 0);
-
+	void GetHostIP();
 };
 

@@ -277,6 +277,19 @@ void CRoom::Talk(const LinkPtr& myClient, const Packet & packet, int flags)
 	}
 }
 
+void CRoom::GetHostIP()
+{
+	LinkListIt linkBegin = mClientInfos.begin();
+	for (; linkBegin != mClientInfos.end(); ++linkBegin)
+	{
+		if ((*linkBegin).get()->GetMyPosition() == ProtocolCharacterTagIndex::Red01)
+		{
+			Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::GetHostIP, 0, (*linkBegin).get()->GetMyIP().c_str());
+			(*linkBegin).get()->SendnMine(packet);
+		}
+	}
+}
+
 void CRoom::IncreasePeople()
 {
 	mAmountPeople++;
