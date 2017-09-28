@@ -52,7 +52,8 @@ enum ProtocolCharacterImageNameIndex
 
 enum ProtocolCharacterTagIndex   // CharacterImageTag 배열과 CharacterNameTag 배열의 인덱스
 {
-	NoneCharacter, Red01, Red02, Red03, Blue01, Blue02, Blue03
+	//NoneCharacter, Red01, Red02, Red03, Blue01, Blue02, Blue03
+	NoneCharacter, Red01, Blue01, Red02, Blue02, Red03, Blue03
 };
 
 enum ProtocolMessageTag
@@ -63,6 +64,11 @@ enum ProtocolMessageTag
 enum ProtocolFrontManuTag
 {
 	LoginManu, JoinManu, GuestManu, CancleManu // 클라이언트 요청 상세
+};
+
+enum ProtocolChannelMenuTag
+{
+	MatchingStart, MatchingCancel
 };
 
 enum ProtocolSceneName
@@ -80,8 +86,10 @@ enum State	// 클라이언트 상태
 const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
 const string ProtocolCharacterImageName[3] = { "Tofu", "Mandu", "Tangsuyuk" };
 const ProtocolCharacterImageNameIndex InitCharacter = ProtocolCharacterImageNameIndex::Tofu;	// 방에 입장시 적용되는 기본 캐릭터
-const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "RedImage02", "RedImage03", "BlueImage01", "BlueImage02", "BlueImage03" };
-const string ProtocolCharacterTagIndexName[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
+//const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "RedImage02", "RedImage03", "BlueImage01", "BlueImage02", "BlueImage03" };
+//const string ProtocolCharacterTagIndexName[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
+const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "BlueImage01", "RedImage02", "BlueImage02", "RedImage03", "BlueImage03" };
+const string ProtocolCharacterTagIndexName[6] = { "RedName01", "BlueName01", "RedName02", "BlueName02", "RedName03", "BlueName03" };
 const string MessageTag[1] = { "TextView" };
 const string ProtocolSceneName[4] = { "FrontScene", "ChannelScene", "RoomScene", "Main" };
 const string CommandEnter = "e"; // 방 입장
@@ -124,7 +132,7 @@ const int MakeThreadNum = 3;
 const int timeKind = 6; // 시간 종류 갯수 (년, 월, 일, 시, 분, 초) 6개
 const int StartEnterChannelNum = 1; // 처음 접속 채널
 const int StartRoomNum = 1; // 처음 만들어지는 룸 번호
-const int EnterRoomPeopleLimit = 6; // 방에 입장 가능한 최대 인원
+const int EnterRoomPeopleLimit = 2; // 방에 입장 가능한 최대 인원
 const int FineGamePlayingOutMoney = 20; // 게임도중 도주 벌금
 const int MaxChannelNum = 5;
 const int ChannelAmount = 5;

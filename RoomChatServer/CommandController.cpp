@@ -181,26 +181,33 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		}
 		else if (ProtocolDetail::GetHostIP == packet.InfoProtocolDetail)
 		{
-
+			GetHostIP(shared_clientInfo);
 		}
-		else if(ProtocolDetail::Message == packet.InfoProtocolDetail)
+	}
+	catch (const std::exception&)
+	{
+		int channelNum = 0;
+		cout << "명령처리 오류" << endl;
+		ErrorHandStatic->ErrorHandler(ERROR_COMMAND, shared_clientInfo);
+	}
+}
+
+void CCommandController::ChattingMessage(const LinkPtr & shared_clientInfo, Packet & packet)
+{
+	if (ProtocolDetail::Message != packet.InfoProtocolDetail || ProtocolMessageTag::Text != packet.InfoTagIndex)
+	{
+		return;
+	}
+
+	try
+	{
+		if (shared_clientInfo.get()->IsRoomEnterState())
 		{
-			//string myName(shared_clientInfo.get()->GetMyName());
-			//string sum = "[" + myName + "] " + packet.InfoValue;
-
-			//for (int i = 0; i < BufSizeValue; ++i)
-			//{
-			//	packet.InfoValue[i] = sum[i];
-			//}
-
-			if (shared_clientInfo.get()->IsRoomEnterState())
-			{
-				mRoomManager.Talk(shared_clientInfo, packet);
-			}
-			else
-			{
-				mChannelManager.Talk(shared_clientInfo, packet);
-			}
+			mRoomManager.Talk(shared_clientInfo, packet);
+		}
+		else
+		{
+			mChannelManager.Talk(shared_clientInfo, packet);
 		}
 	}
 	catch (const std::exception&)

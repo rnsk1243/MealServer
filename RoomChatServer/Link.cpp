@@ -9,13 +9,13 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 	mMyChannelNum(0),
 	mMyRoomNum(NoneRoom),
 	mMyPKNumber(stoi(strPKNumber)),
-	mIsInitGoods(false),
+	//mIsInitGoods(false),
 	mIsGameOK(false),
-	mMyGoods(stoi(strPKNumber)),
-	mDebtMoney(0),
-	mPayBackMoney(0),
+	//mMyGoods(stoi(strPKNumber)),
+	//mDebtMoney(0),
+	//mPayBackMoney(0),
 	mName(name),
-	mMyPosition(ProtocolCharacterTagIndex::NoneCharacter),
+	mMyPosition(ProtocolCharacterTagIndex::NoneCharacter), // 매칭창 내 위치 
 	mSelectCharacter(InitCharacter),
 	mIP(ip)
 {
@@ -25,7 +25,7 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 CLink::~CLink()
 {
 	cout << "~CLink() 소멸자 호출" << endl;
-	SaveCalculateMoney();// 갈땐 가더라도 정산은 하고 가야지?
+	//SaveCalculateMoney();// 갈땐 가더라도 정산은 하고 가야지?
 	cout << mName << "클라이언트 정보가 삭제 됩니다. = " << endl;
 	closesocket(*mClientSocket);
 	delete mClientSocket;
@@ -72,32 +72,11 @@ string CLink::GetMyName()
 	return mName;
 }
 
-bool CLink::IsZeroMoney()
-{
-	return mMyGoods.IsZeroMoney();
-}
-
-void CLink::SetZeroMoney()
-{
-	mMyGoods.SetZeroMoney();
-}
-
-const int CLink::GetMyMoney()
-{
-	return mMyGoods.GetMyMoney();
-}
-
-
-
 const int CLink::GetMyPKNumber() const
 {
 	return mMyPKNumber;
 }
 
-void CLink::SetInitGoods()
-{
-	mIsInitGoods = true;
-}
 
 void CLink::SetReadyGame()
 {
@@ -110,88 +89,6 @@ void CLink::SetNoReadyGame()
 bool CLink::GetReadyGame()
 {
 	return mIsGameOK;
-}
-bool CLink::InitMoney(int money)
-{
-	if (false == mMyGoods.InitMoney(money))
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_INIT_MONEY, LinkPtr(this));
-		return false;
-	}
-	return true;
-}
-
-bool CLink::AddMoney(const int & addMoney)
-{
-	if (0 == addMoney)
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY_ZERO, LinkPtr(this));
-		return false;
-	}
-	if (false == mMyGoods.AddMyMoney(addMoney))
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY, LinkPtr(this));
-		return false;
-	}
-	return true;
-}
-
-bool CLink::MinusMyMoney(const int & minusMoney)
-{
-	if (0 == minusMoney)
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY_ZERO, LinkPtr(this));
-		return false;
-	}
-	mMyGoods.MinusMyMoney(minusMoney);
-	return true;
-}
-
-bool CLink::PayBackMoney(const int & payBack)
-{
-	// 받을 돈 증가 실제 .txt에 쓰지는 않음 그러나 나중에 이 만큼 증가
-	mPayBackMoney += payBack;
-	return true;
-}
-
-bool CLink::GetPrizeBattingMoney(const int& bettingMoney)
-{
-	int prizeMoney = EnterRoomPeopleLimit * bettingMoney; // 총 상금
-	PayBackMoney(prizeMoney);
-	return true;
-}
-bool CLink::SaveCalculateMoney()
-{
-	//정산하고 저장할 돈
-	int calculateMoney = 0;
-	if (mPayBackMoney == mDebtMoney)
-	{
-		mPayBackMoney = 0;
-		mDebtMoney = 0;
-		return true;
-	}
-	if (mPayBackMoney > mDebtMoney)
-	{
-		// 받을 돈 - 나갈 돈
-		calculateMoney = (mPayBackMoney - mDebtMoney);
-		if (true == AddMoney(calculateMoney))
-		{
-			mPayBackMoney = 0;
-			mDebtMoney = 0;
-			return true;
-		}
-	}
-	else
-	{
-		calculateMoney = (mDebtMoney - mPayBackMoney);
-		if (true == MinusMyMoney(calculateMoney))
-		{
-			mPayBackMoney = 0;
-			mDebtMoney = 0;
-			return true;
-		}
-	}
-	return false;
 }
 
 ProtocolCharacterTagIndex CLink::GetMyPosition()
@@ -207,29 +104,6 @@ void CLink::SetMyPosition(ProtocolCharacterTagIndex newPosition)
 void CLink::SetMyCharacter(ProtocolCharacterImageNameIndex newCharacter)
 {
 	mSelectCharacter = newCharacter;
-}
-
-bool CLink::InitGoods(int initMoney)
-{
-	if (true == mIsInitGoods)
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_INIT_GOODS_TRUE, LinkPtr(this));
-		return false;
-	}
-	return InitMoney(initMoney);
-}
-
-bool CLink::InitBetting()
-{
-	mIsGameOK = false;
-	mDebtMoney = 0;
-	return true;
-}
-
-void CLink::LostWillMoney(const int& fine)
-{
-	// 돈 감소 (일단 빚으로) 실제 .txt에 쓰지는 않음 그러나 나중에 이 만큼 차감함.
-	mDebtMoney += fine;
 }
 
 string CLink::GetMyIP()
@@ -258,6 +132,131 @@ void CLink::SendnMine(const Packet & packet, int flags)
 	}
 }
 
+// 돈 관련 함수
+//
+//bool CLink::IsZeroMoney()
+//{
+//	return mMyGoods.IsZeroMoney();
+//}
+//
+//void CLink::SetZeroMoney()
+//{
+//	mMyGoods.SetZeroMoney();
+//}
+//
+//const int CLink::GetMyMoney()
+//{
+//	return mMyGoods.GetMyMoney();
+//}
+//void CLink::SetInitGoods()
+//{
+//	mIsInitGoods = true;
+//}
+//bool CLink::InitMoney(int money)
+//{
+//	if (false == mMyGoods.InitMoney(money))
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_INIT_MONEY, LinkPtr(this));
+//		return false;
+//	}
+//	return true;
+//}
+//
+//bool CLink::AddMoney(const int & addMoney)
+//{
+//	if (0 == addMoney)
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY_ZERO, LinkPtr(this));
+//		return false;
+//	}
+//	if (false == mMyGoods.AddMyMoney(addMoney))
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY, LinkPtr(this));
+//		return false;
+//	}
+//	return true;
+//}
+//
+//bool CLink::MinusMyMoney(const int & minusMoney)
+//{
+//	if (0 == minusMoney)
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY_ZERO, LinkPtr(this));
+//		return false;
+//	}
+//	mMyGoods.MinusMyMoney(minusMoney);
+//	return true;
+//}
+//
+//bool CLink::PayBackMoney(const int & payBack)
+//{
+//	// 받을 돈 증가 실제 .txt에 쓰지는 않음 그러나 나중에 이 만큼 증가
+//	mPayBackMoney += payBack;
+//	return true;
+//}
+//
+//bool CLink::GetPrizeBattingMoney(const int& bettingMoney)
+//{
+//	int prizeMoney = EnterRoomPeopleLimit * bettingMoney; // 총 상금
+//	PayBackMoney(prizeMoney);
+//	return true;
+//}
+//bool CLink::SaveCalculateMoney()
+//{
+//	//정산하고 저장할 돈
+//	int calculateMoney = 0;
+//	if (mPayBackMoney == mDebtMoney)
+//	{
+//		mPayBackMoney = 0;
+//		mDebtMoney = 0;
+//		return true;
+//	}
+//	if (mPayBackMoney > mDebtMoney)
+//	{
+//		// 받을 돈 - 나갈 돈
+//		calculateMoney = (mPayBackMoney - mDebtMoney);
+//		if (true == AddMoney(calculateMoney))
+//		{
+//			mPayBackMoney = 0;
+//			mDebtMoney = 0;
+//			return true;
+//		}
+//	}
+//	else
+//	{
+//		calculateMoney = (mDebtMoney - mPayBackMoney);
+//		if (true == MinusMyMoney(calculateMoney))
+//		{
+//			mPayBackMoney = 0;
+//			mDebtMoney = 0;
+//			return true;
+//		}
+//	}
+//	return false;
+//}
+//
+//bool CLink::InitGoods(int initMoney)
+//{
+//	if (true == mIsInitGoods)
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_INIT_GOODS_TRUE, LinkPtr(this));
+//		return false;
+//	}
+//	return InitMoney(initMoney);
+//}
+//
+////bool CLink::InitBetting()
+////{
+////	mIsGameOK = false;
+////	mDebtMoney = 0;
+////	return true;
+////}
+//
+//void CLink::LostWillMoney(const int& fine)
+//{
+//	// 돈 감소 (일단 빚으로) 실제 .txt에 쓰지는 않음 그러나 나중에 이 만큼 차감함.
+//	mDebtMoney += fine;
+//}
 
 //void CLink::SendnMine(const string & message, int flags)
 //{

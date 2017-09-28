@@ -74,13 +74,11 @@ int thSendRecv(void* v_clientSocket, void* v_ip)
 	}
 	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str(), ip));
 
-
-
 	// EnterChannelNum 채널에 입장
-	vector<string> commandChannel;
+	//vector<string> commandChannel;
 	CommandControllerStatic->SetEnterChannel(shared_clientInfo, StartEnterChannelNum);
-	if (false == ReadHandlerStatic->ReadUserGoods(shared_clientInfo, NameMemberGoodsTxt))
-		return 0;
+	/*if (false == ReadHandlerStatic->ReadUserGoods(shared_clientInfo, NameMemberGoodsTxt))
+		return 0;*/
 
 	//cout << "보유 재화 = " << shared_clientInfo->GetMyMoney() << endl;
 	string welcomeMessage = "환영합니다. " + shared_clientInfo.get()->GetMyName() + " 님";
@@ -91,8 +89,18 @@ int thSendRecv(void* v_clientSocket, void* v_ip)
 	{
 		Packet packet;
 		ListenerStatic->RecvnLink(shared_clientInfo, packet);
-		//vector<string> commandMessage = ReadHandlerStatic->Parse(recvMessage, '/');
-		CommandControllerStatic->CommandHandling(shared_clientInfo, packet);
+
+		switch (packet.InfoProtocol)
+		{
+		case ProtocolInfo::ChattingMessage:
+			CommandControllerStatic->ChattingMessage(shared_clientInfo, packet);
+			break;
+		case ProtocolInfo::ServerCommend:
+			CommandControllerStatic->CommandHandling(shared_clientInfo, packet);
+			break;
+		default:
+			break;
+		}
 	}
 }
 

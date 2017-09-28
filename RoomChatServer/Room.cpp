@@ -115,21 +115,21 @@ bool CRoom::IsAllReady()
 }
 
 
-bool CRoom::AllCalculateMoney()
-{
-	LinkListIt linkBegin = mClientInfos.begin();
-	bool isSaveResult = true; // 모두 .txt에 저장 되었나? 한 명이라도 안되면 false 반환
-	for (; linkBegin != mClientInfos.end(); ++linkBegin)
-	{
-		if (false == (*linkBegin).get()->SaveCalculateMoney())
-		{
-			ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY, (*linkBegin));
-			isSaveResult = false;
-			continue;
-		}
-	}
-	return isSaveResult;
-}
+//bool CRoom::AllCalculateMoney()
+//{
+//	LinkListIt linkBegin = mClientInfos.begin();
+//	bool isSaveResult = true; // 모두 .txt에 저장 되었나? 한 명이라도 안되면 false 반환
+//	for (; linkBegin != mClientInfos.end(); ++linkBegin)
+//	{
+//		if (false == (*linkBegin).get()->SaveCalculateMoney())
+//		{
+//			ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY, (*linkBegin));
+//			isSaveResult = false;
+//			continue;
+//		}
+//	}
+//	return isSaveResult;
+//}
 
 void CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 {

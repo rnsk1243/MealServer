@@ -68,10 +68,10 @@ bool CChannelManager::ExitChannel(const LinkPtr& shared_clientInfo)
 		return false;
 	if (true == nextChannel->EraseClient(shared_clientInfo))
 	{
-		client->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "내 채널에서 나왔습니다."));
-		return false;
+		//client->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "내 채널에서 나왔습니다."));
+		return true;
 	}	
-	return true;
+	return false;
 }
 
 bool CChannelManager::EnterMyChannel(const LinkPtr & shared_clientInfo)

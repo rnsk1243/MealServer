@@ -27,7 +27,7 @@ class CRoom
 	//void SetGame();
 	//void SetGameOver();
 	//void SendBattingResult(const LinkPtr& winner, int flags = 0);
-	bool AllCalculateMoney(); // 방에 있는 사람 모두 정산(.txt 저장)
+	//bool AllCalculateMoney(); // 방에 있는 사람 모두 정산(.txt 저장)
 	// 방에 들어왔음 알려주기
 	void NoticRoomIn(const LinkPtr& shared_client);
 	void EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex); // 방 처음 입장 함수 모두에게 내 표시위치와 이름 보내기

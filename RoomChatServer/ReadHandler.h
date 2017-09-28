@@ -24,7 +24,7 @@ public:
 	// 문자열스트링, 나누는기준문자
 	vector<string> Parse(const string& str, const char& ch);
 	// 유저 재화 읽기
-	bool ReadUserGoods(const LinkPtr& client, const string& textFileName);
+	//bool ReadUserGoods(const LinkPtr& client, const string& textFileName);
 	// 다음 유저 번호 가져오기
 	const string GetNextUserNum(const string& textFileName);
 };

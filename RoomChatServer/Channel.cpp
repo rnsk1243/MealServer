@@ -1,5 +1,6 @@
 #include "Channel.h"
 #include"ErrorHandler.h"
+#include"Util.h"
 
 CChannel::CChannel(int channelNum):
 	mChannelNum(channelNum),
@@ -33,7 +34,8 @@ bool CChannel::PushClient(const LinkPtr& shared_client, const int& channelNumber
 	mClientInfos.push_back(shared_client);
 	shared_client.get()->SetMyChannelNum(channelNumber);
 	mPeopleAmount++;
-	shared_client.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "채널에 들어왔습니다."));
+	//string channelNum(IntToString(mChannelNum));
+	//shared_client.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, (channelNum + "번 채널에 들어왔습니다.").c_str()));
 
 	//Packet p1(ProtocolInfo::PlayerInfo, ProtocolDetail::Image, ProtocolCharacterTagIndex::Red01, CharacterImageName[0].c_str());
 	//shared_client.get()->SendnMine((p1));

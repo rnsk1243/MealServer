@@ -161,45 +161,45 @@ bool CReadHandler::ReadUserObjectLine(const string& textFileName, const int& use
 	inFile.close();
 	return false;
 }
-
-bool CReadHandler::ReadUserGoods(const LinkPtr& client, const string & textFileName)
-{
-	typedef vector<string> goodsInfoVec;
-	typedef goodsInfoVec::iterator goodsInfoVecIter;
-
-	goodsInfoVec userGoodsInfo;
-	if (!ReadUserObjectLine(textFileName, client->GetMyPKNumber(), userGoodsInfo))
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_INIT_USER_GOODS, client);
-		return false;
-	}
-	if (!client->IsZeroMoney())
-	{
-		client->SetZeroMoney();
-	}
-	
-	if (IndexGoodsInfoTxtMoney < userGoodsInfo.size())
-	{
-		int myMoney = stoi(userGoodsInfo[IndexGoodsInfoTxtMoney]);
-		cout << "ÀÐ¾î ¿Â µ· = " << myMoney << endl;
-		if (client->InitGoods(myMoney))
-		{
-			client->SetInitGoods();
-			return true;
-		}
-		else
-		{
-			ErrorHandStatic->ErrorHandler(ERROR_INIT_GOODS, client);
-			return false;
-		}
-	}
-	else
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_READ_GOODS_TXT_INDEX_OUTOFLANGE, client);
-		return false;
-	}
-	return false;
-}
+//
+//bool CReadHandler::ReadUserGoods(const LinkPtr& client, const string & textFileName)
+//{
+//	typedef vector<string> goodsInfoVec;
+//	typedef goodsInfoVec::iterator goodsInfoVecIter;
+//
+//	goodsInfoVec userGoodsInfo;
+//	if (!ReadUserObjectLine(textFileName, client->GetMyPKNumber(), userGoodsInfo))
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_INIT_USER_GOODS, client);
+//		return false;
+//	}
+//	if (!client->IsZeroMoney())
+//	{
+//		client->SetZeroMoney();
+//	}
+//	
+//	if (IndexGoodsInfoTxtMoney < userGoodsInfo.size())
+//	{
+//		int myMoney = stoi(userGoodsInfo[IndexGoodsInfoTxtMoney]);
+//		cout << "ÀÐ¾î ¿Â µ· = " << myMoney << endl;
+//		if (client->InitGoods(myMoney))
+//		{
+//			client->SetInitGoods();
+//			return true;
+//		}
+//		else
+//		{
+//			ErrorHandStatic->ErrorHandler(ERROR_INIT_GOODS, client);
+//			return false;
+//		}
+//	}
+//	else
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_READ_GOODS_TXT_INDEX_OUTOFLANGE, client);
+//		return false;
+//	}
+//	return false;
+//}
 
 const string CReadHandler::GetNextUserNum(const string & textFileName)
 {

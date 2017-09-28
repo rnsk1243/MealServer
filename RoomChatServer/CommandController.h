@@ -25,6 +25,7 @@ public:
 	~CCommandController();
 	void SetEnterChannel(const LinkPtr& shared_clientInfo, const int & moveChannelNumber);
 	void CommandHandling(const LinkPtr& shared_clientInfo, Packet& packet);
+	void ChattingMessage(const LinkPtr& shared_clientInfo, Packet& packet);
 	void DeleteClientSocket(const LinkPtr& shared_clientInfo); // 두번 연속 호출 되면 오류
 };
 static CCommandController* CommandControllerStatic = CCommandController::GetInstance();
