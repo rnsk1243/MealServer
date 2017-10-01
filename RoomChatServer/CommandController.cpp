@@ -82,6 +82,7 @@ int CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string
 
 void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 {
+	cout << "outRoom 호출" << endl;
 	 RoomListIt roomIter = mRoomManager.ExitRoom(shared_clientInfo);	// 룸에서 나가기
 	 if (true == (*roomIter)->IsRoomEmpty())			// 룸에 아무도 없나 확인
 	 {
@@ -90,9 +91,9 @@ void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 }
 void CCommandController::DeleteClientSocket(const LinkPtr & shared_clientInfo)
 {
-
 	int myChannelNum = shared_clientInfo.get()->GetMyChannelNum();
 	int myRoomNum = shared_clientInfo.get()->GetMyRoomNum();
+	cout << "DeleteClientSocket여기 myRoomNum = " << myRoomNum << endl;
 	//방에 있나 채널에 있나 확인
 	if (NoneRoom == myRoomNum)
 	{

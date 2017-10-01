@@ -21,7 +21,8 @@ enum ProtocolInfo       // 대분류
 	None,               // 초기화 값
 	ServerCommend,      // 서버에게 명령
 	ChattingMessage,    // 채팅 메세지
-	ClientCommend
+	ClientCommend,		// 클라이언트 명령
+	RequestResult		// 요청 결과
 	//PlayerInfo          // 플레이어 정보( 캐릭터, 이름 )
 };
 
@@ -42,12 +43,19 @@ enum ProtocolDetail     // 소분류
 	ChangeCharacter,		// 캐릭터 변경
 	NotReadyGame,			// 게임 준비 취소
 	StartGame,
-	GetHostIP
+	GetHostIP,
+	SuccessRequest,       // 요청 성공
+	FailRequest			// 요청 실패
 };
 
 enum ProtocolCharacterImageNameIndex
 {
 	Tofu, Mandu, Tangsuyuk
+};
+
+enum ProtocolTagNull
+{
+	Null = -1
 };
 
 enum ProtocolCharacterTagIndex   // CharacterImageTag 배열과 CharacterNameTag 배열의 인덱스
@@ -78,9 +86,15 @@ enum ProtocolSceneName
 
 enum State	// 클라이언트 상태
 {
-	ClientNone, ClientFrontMenu, ClientJoin, ClientChannelMenu, ClientMatching,
-	ClientMakeRoom, ClientOption, ClientRoomIn, ClientReady, ClientNotReady,
-	ClientGame
+	ClientNone, ClientFrontMenu/*front씬에서의 기본 상태*/, ClientJoin,
+	ClientChannelMenu/*채널씬에서의 기본 상태*/,
+	ClientMakeRoom, ClientOption,
+	ClientGame,/*0926추가됨*/
+	ClientRequestGaemReady, ClientReady,       // 쌍으로 세트임
+	ClientRequestGaemNotReady, ClientNotReady/*룸에서의 기본 상태*/, // 1001추가됨
+	ClientRequestMatching, ClientMatching,
+	ClientRequestCancleMactching, /*채널 기본*/
+	ClientRequestCharacterChange /*룸기본*/
 };
 
 const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
@@ -145,6 +159,7 @@ const int IndexGoodsInfoTxtMoney = 1;
 const int MoneyInfoSize = MaxMoneyCipher + 1; // +1 한 이유는 '|' 때문
 const int GoodsTemplateSize = MoneyInfoSize + 3 ;
 static const int PacketSize = 140;//sizeof(Packet);
+const int PacketAmount = 1;
 
 struct Packet
 {
@@ -173,6 +188,8 @@ struct Packet
 		}
 	}
 };
+
+
 
 //struct OrderStructSocket
 //{

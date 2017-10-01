@@ -27,10 +27,12 @@ CRoom::~CRoom()
 LinkListIt CRoom::EraseClient(const LinkPtr& shared_client)
 {
 	LinkListIt delLinkIter = find(mClientInfos.begin(), mClientInfos.end(), shared_client);
+	if (mClientInfos.end() != delLinkIter)
 	{
 		ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
 		delLinkIter = mClientInfos.erase(delLinkIter);
 		DecreasePeople();
+		shared_client.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientChannelMenu, nullptr));
 	}
 	return delLinkIter;
 }
@@ -138,7 +140,8 @@ void CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 	shared_client.get()->SetMyRoomNum(enterRoomNumber);
 	IncreasePeople();
 	cout << "방에 들어왔음 현재 인원 = " << mAmountPeople << endl;
-	
+	shared_client.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientMatching, nullptr));
+
 	if (mIsNewRoom && mAmountPeople >= EnterRoomPeopleLimit)
 	{
 		ProtocolCharacterTagIndex tagIndex = ProtocolCharacterTagIndex::Red01;
@@ -189,7 +192,7 @@ void CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 
 void CRoom::NoticRoomIn(const LinkPtr & shared_client)
 {
-	Packet matchingSuccessPacket(ProtocolInfo::ClientCommend, ProtocolDetail::MatchingSuccess, State::ClientRoomIn, nullptr);
+	Packet matchingSuccessPacket(ProtocolInfo::ClientCommend, ProtocolDetail::MatchingSuccess, State::ClientNotReady, nullptr);
 	shared_client.get()->SendnMine(matchingSuccessPacket);
 	string message(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
 	Packet welcomePacket(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
@@ -212,7 +215,7 @@ void CRoom::EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagInd
 	Broadcast(packetImage);
 }
 
-void CRoom::ChangetCharacterBroadcast(const LinkPtr & shared_client, const ProtocolCharacterImageNameIndex& characterImageIndex)
+void CRoom::ChangeCharacterBroadcast(const LinkPtr & shared_client, const ProtocolCharacterImageNameIndex& characterImageIndex)
 {
 	CLink* client = shared_client.get();
 	if (client->GetReadyGame())

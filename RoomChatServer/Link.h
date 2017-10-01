@@ -27,7 +27,7 @@ private:
 	bool mIsGameOK;
 	ProtocolCharacterTagIndex mMyPosition; // 방에서 나의 위치 또는 팀
 	ProtocolCharacterImageNameIndex mSelectCharacter;	// 내가 선택한 캐릭터
-	
+	bool mIsSocketErrorState;
 	// 나의 재화
 	//CGoods mMyGoods;
 	//int mDebtMoney;	// 앞으로 없어질 돈.
@@ -62,6 +62,7 @@ public:
 	string GetMyIP();
 	////////////////////
 	void SendnMine(const Packet & packet, int flags = 0);
+	void SetSocketError();
 	//bool IsZeroMoney();
 	//void SetZeroMoney();
 	//const int GetMyMoney();

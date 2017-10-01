@@ -17,7 +17,8 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 	mName(name),
 	mMyPosition(ProtocolCharacterTagIndex::NoneCharacter), // 매칭창 내 위치 
 	mSelectCharacter(InitCharacter),
-	mIP(ip)
+	mIP(ip),
+	mIsSocketErrorState(false)
 {
 }
 
@@ -81,10 +82,12 @@ const int CLink::GetMyPKNumber() const
 void CLink::SetReadyGame()
 {
 	mIsGameOK = true;
+	SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientReady, nullptr));
 }
 void CLink::SetNoReadyGame()
 {
 	mIsGameOK = false;
+	SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientNotReady, nullptr));
 }
 bool CLink::GetReadyGame()
 {
@@ -113,6 +116,8 @@ string CLink::GetMyIP()
 
 void CLink::SendnMine(const Packet & packet, int flags)
 {
+	if (mIsSocketErrorState)	// 소켓 에러 상태이면 그냥 리턴 // 블로킹 상태 방지
+		return;
 	int isSuccess = 0;
 	char sendTemp[BufSizeSend];
 	//cout << "보내려는 메세지 = " << packet.Value << endl;
@@ -130,6 +135,11 @@ void CLink::SendnMine(const Packet & packet, int flags)
 		if (temp >= PacketSize)
 			break;
 	}
+}
+
+void CLink::SetSocketError()
+{
+	mIsSocketErrorState = true;
 }
 
 // 돈 관련 함수

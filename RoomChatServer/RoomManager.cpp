@@ -60,7 +60,7 @@ void CRoomManager::ChangeMyCharacter(const LinkPtr & shared_clientInfo, const Pa
 	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
 	if (mRooms.end() != myRoomIter)
 	{
-		(*myRoomIter).get()->ChangetCharacterBroadcast(shared_clientInfo, ProtocolCharacterImageNameIndex(packet.InfoTagIndex));
+		(*myRoomIter).get()->ChangeCharacterBroadcast(shared_clientInfo, ProtocolCharacterImageNameIndex(packet.InfoTagIndex));
 	}
 }
 
@@ -135,31 +135,24 @@ bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNu
 	if (nullptr == client)
 		return false;
 	if (true == client->IsRoomEnterState()) // 이미 방에 있는지 확인
+	{
+		cout << "이미 방에 있는데" << endl;
 		return false;
+	}
 	RoomListIt targetRoomIter = GetMyRoomIter(client->GetMyChannelNum(), targetRoomNumBer);
 	
 	if (mRooms.end() != targetRoomIter)
 	{
 		if (EnterRoomPeopleLimit <= (*targetRoomIter).get()->GetAmountPeople())
 		{
-			//shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, DialogEnterRoomPeopleLimit.c_str()));
+			shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
 			cout << "방 꽉 차서 못 들어감" << endl;
 			return false;
 		}
 		(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);
 		return true;
-		//int BattingMoney = (*targetRoomIter)->GetBattingMoney();
-		//if (BattingMoney <= client->GetMyMoney())
-		//{
-		//	(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);
-		//	return true;
-		//}
-		//else
-		//{
-		//	shared_clientInfo.get()->SendnMine(EnterRoomMoneyLack);
-		//	ErrorHandStatic->ErrorHandler(ERROR_ROOM_ENTRER_BATTING_MONEY, shared_clientInfo);
-		//}
 	}
+	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
 	return false;
 }
 

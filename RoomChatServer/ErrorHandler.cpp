@@ -17,6 +17,7 @@ EnumErrorCode CErrorHandler::CriticalError(EnumErrorCode code, LinkPtr client)
 	{
 		
 	}*/
+	client.get()->SetSocketError();
 	CCommandController::GetInstance()->DeleteClientSocket(client);
 	_endthreadex(0);
 	return code;
