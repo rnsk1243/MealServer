@@ -37,14 +37,14 @@ CChannel * CChannelManager::GetMyChannel(int ChannelNum)
 		if ((*iterBegin)->GetChannelNum() == ChannelNum)
 			return (*iterBegin).get();
 	}
-	cout << ChannelNum << "번 채널이 없습니다." << endl;
+//	cout << ChannelNum << "번 채널이 없습니다." << endl;
 	ErrorHandStatic->ErrorHandler(ERROR_GET_CHANNEL);
 	return nullptr;
 }
 
 CChannelManager::~CChannelManager()
 {
-	cout << "ChannelManager 소멸자 호출" << endl;
+//	cout << "ChannelManager 소멸자 호출" << endl;
 }
 
 bool CChannelManager::MoveChannel(const LinkPtr& shared_clientInfo, const int & moveChannelNumber)

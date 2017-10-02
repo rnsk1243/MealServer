@@ -27,7 +27,7 @@ bool CWriteHandler::Write(const char * textFileName, int count, ...)
 	ofstream outFile(textFileName, ios::app);
 	if (!outFile)
 	{
-		cout << "파일이 없습니다." << endl;
+	//	cout << "파일이 없습니다." << endl;
 		return false;
 	}
 	va_list Marker;
@@ -48,7 +48,7 @@ bool CWriteHandler::Write(const char * textFileName, const vector<string>& strWr
 	ofstream outFile(textFileName, ios::app);
 	if (!outFile)
 	{
-		cout << "파일이 없습니다." << endl;
+	//	cout << "파일이 없습니다." << endl;
 		return false;
 	}
 	vector<string>::const_iterator iterBeginWrite = strWrite.begin();
@@ -158,7 +158,7 @@ bool CWriteHandler::WriteObj(const string& textName, int offset, int recordedNum
 	output.seekp(offset, ios::beg);
 
 	const char* doWrite = strObj.c_str();
-	cout << "기록 될 문자열 = " << doWrite << endl;
+	//cout << "기록 될 문자열 = " << doWrite << endl;
 	output.write(doWrite, strlen(doWrite));
 	output.close();
 	return true;
@@ -192,7 +192,7 @@ bool CWriteHandler::WriteNextJoinUserNum(const string& textFileName,const int& n
 	ofstream outFile(textFileName, ios::beg);
 	if (!outFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 		return false;
 	}
 

@@ -33,7 +33,7 @@ EnumErrorCode CErrorHandler::TakeNullLinkError(EnumErrorCode code)
 	temp.push_back("client가 없는 에러코드");
 	errorMessageVec.insert(errorMessageVec.end(), temp.begin(), temp.end());
 	WriteHandlerStatic->Write(ErrorLogTxt.c_str(), errorMessageVec);
-	cout << "client가 없는 에러코드 = " << EnumErrorCode(code) << endl;
+	//cout << "client가 없는 에러코드 = " << EnumErrorCode(code) << endl;
 	//_endthreadex(0);
 	return code;
 }
@@ -49,13 +49,13 @@ EnumErrorCode CErrorHandler::TakeSucces(EnumErrorCode code, LinkPtr client)
 		GetErrorMemberInfo(client, errorMessageVec);
 	}
 	WriteHandlerStatic->Write(ErrorLogTxt.c_str(), errorMessageVec);
-	cout << "성공 코드 = " << EnumErrorCode(code) << endl;
+	//cout << "성공 코드 = " << EnumErrorCode(code) << endl;
 	return code;
 }
 
 EnumErrorCode CErrorHandler::TakeError(EnumErrorCode code, LinkPtr client)
 {
-	cout << "에러코드 = " << EnumErrorCode(code) << endl;
+//	cout << "에러코드 = " << EnumErrorCode(code) << endl;
 	//_endthreadex(0);
 	if (nullptr == client)
 	{

@@ -18,16 +18,17 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 	mMyPosition(ProtocolCharacterTagIndex::NoneCharacter), // 매칭창 내 위치 
 	mSelectCharacter(InitCharacter),
 	mIP(ip),
-	mIsSocketErrorState(false)
+	mIsSocketErrorState(false),
+	mCurMySceneState(ProtocolSceneName::FrontScene)
 {
 }
 
 
 CLink::~CLink()
 {
-	cout << "~CLink() 소멸자 호출" << endl;
+	//cout << "~CLink() 소멸자 호출" << endl;
 	//SaveCalculateMoney();// 갈땐 가더라도 정산은 하고 가야지?
-	cout << mName << "클라이언트 정보가 삭제 됩니다. = " << endl;
+	//cout << mName << "클라이언트 정보가 삭제 됩니다. = " << endl;
 	closesocket(*mClientSocket);
 	delete mClientSocket;
 	cout << "클라이언트 삭제 완료" << endl;
@@ -109,6 +110,11 @@ void CLink::SetMyCharacter(ProtocolCharacterImageNameIndex newCharacter)
 	mSelectCharacter = newCharacter;
 }
 
+ProtocolCharacterImageNameIndex CLink::GetMyCharacter()
+{
+	return mSelectCharacter;
+}
+
 string CLink::GetMyIP()
 {
 	return mIP;
@@ -140,6 +146,21 @@ void CLink::SendnMine(const Packet & packet, int flags)
 void CLink::SetSocketError()
 {
 	mIsSocketErrorState = true;
+}
+
+void CLink::SetMySceneState(ProtocolSceneName curMySceneState)
+{
+	if (curMySceneState != mCurMySceneState) // 같지 않으면 바꿔라
+	{
+		cout << curMySceneState << " 으로 씬 변경" << endl;
+		mCurMySceneState = curMySceneState;
+		SendnMine(Packet(ProtocolInfo::SceneChange, ProtocolDetail::NoneDetail, curMySceneState, nullptr));
+	}	
+}
+
+ProtocolSceneName CLink::GetMySceneState()
+{
+	return mCurMySceneState;
 }
 
 // 돈 관련 함수

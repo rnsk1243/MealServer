@@ -27,7 +27,7 @@ int CLobby::Login(const CGuestLink * guest , vector<string>& tempUserInfo, strin
 
 	if (ReadHandlerStatic->Search(NameMemberInfoTxt.c_str(), tempUserInfo, 2, idpwVector[0], idpwVector[1]))
 	{
-		cout << "로그인 성공" << endl;
+		//cout << "로그인 성공" << endl;
 		//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "로그인 성공 하셨습니다. 즐거운 대화 되세요."));
 		return ErrorHandStatic->ErrorHandler(SUCCES_LOGIN);
 	}
@@ -139,8 +139,6 @@ int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUser
 			resultLoginFunc = Login(guest, tempUserInfo, packet.InfoValue);
 			if (SUCCES_LOGIN == resultLoginFunc)
 			{
-				guest->Sendn(Packet(ProtocolInfo::ClientCommend, ProtocolDetail::LoginSuccess, ProtocolMessageTag::Text, nullptr));
-				//guest->Sendn(Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, ProtocolCharacterTagIndex::Red01, ProtocolCharacterImageName[ProtocolCharacterImage::Mandu].c_str()));
 				return SUCCES_LOGIN;
 			}
 			else if (CANCLE == resultLoginFunc)

@@ -8,7 +8,7 @@ CGoods::CGoods(const int& pkNumber):
 	mClientPK(pkNumber), 
 	mGoods(0)
 {
-	cout << "CGOODS 생성자 = " << pkNumber << endl;
+//	cout << "CGOODS 생성자 = " << pkNumber << endl;
 }
 
 
@@ -20,7 +20,7 @@ bool CGoods::GetMoveCurserSizeGoods(WhatGoodsCursorSize whatCardInfoCurser, int&
 {
 	//int tempResult = 0;
 	int moveSize1 = 0;
-	cout << "mClientPK = " << mClientPK << endl;
+	//cout << "mClientPK = " << mClientPK << endl;
 	if (false == AddCipHer(mClientPK, moveSize1))// 회원 번호까지 누적 자릿수 더하기
 	{
 		ErrorHandStatic->ErrorHandler(ERROR_CURSER_SIZE);

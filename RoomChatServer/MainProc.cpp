@@ -73,7 +73,7 @@ int thSendRecv(void* v_clientSocket, void* v_ip)
 		isLogin = LobbyStatic->ActionServiceLobby(&guest, userInfo);
 	}
 	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str(), ip));
-
+	shared_clientInfo.get()->SetMySceneState(ProtocolSceneName::ChannelScene);
 	// EnterChannelNum 채널에 입장
 	//vector<string> commandChannel;
 	CommandControllerStatic->SetEnterChannel(shared_clientInfo, StartEnterChannelNum);
@@ -111,8 +111,8 @@ void main()
 	/////////// 버전 정보 출력 ///////////
 	printVersionInfo();
 	//////////////////////////////////////
-	BasicExcel excel;
-	excel.ReadExcel("CharacterDB.xls");
+	//BasicExcel excel;
+	//excel.ReadExcel("CharacterDB.xls");
 	
 
 	while (true)

@@ -11,7 +11,7 @@ CChannel::CChannel(int channelNum):
 
 CChannel::~CChannel()
 {
-	cout << "채널 삭제" << endl;
+//	cout << "채널 삭제" << endl;
 }
 
 int CChannel::GetChannelNum()

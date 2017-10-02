@@ -9,7 +9,7 @@ CGuestLink::CGuestLink(const SOCKET * clientSocket):mClientSocket(clientSocket)
 
 CGuestLink::~CGuestLink()
 {
-	cout << "CGuestLink ¼Ò¸êÀÚ È£Ãâ" << endl;
+	//cout << "CGuestLink ¼Ò¸êÀÚ È£Ãâ" << endl;
 }
 
 const SOCKET* CGuestLink::GetClientSocket() const

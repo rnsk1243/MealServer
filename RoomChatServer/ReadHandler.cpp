@@ -26,7 +26,7 @@ int CReadHandler::Search(const char * textFileName, vector<string>& tempUserInfo
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 		return 0;
 	}
 	va_list Marker;
@@ -108,7 +108,7 @@ const string CReadHandler::GetLastLine(const string & textFileName)
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 	}
 	inFile.seekg(-2, ios::end);
 	char checkLine = ' ';
@@ -133,7 +133,7 @@ bool CReadHandler::ReadUserObjectLine(const string& textFileName, const int& use
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 		return false;
 	}
 
@@ -206,11 +206,11 @@ const string CReadHandler::GetNextUserNum(const string & textFileName)
 	//string lastLine = GetLastLine(textFileName);
 	//vector<string> parseStr = Parse(lastLine, '|');
 	//return parseStr[0];
-	cout << "=============userNumFile Read!===========" << endl;
+	//cout << "=============userNumFile Read!===========" << endl;
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 	}
 	string nextUserNum;
 	getline(inFile, nextUserNum);

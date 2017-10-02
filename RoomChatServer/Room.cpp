@@ -13,14 +13,14 @@ CRoom::CRoom(int roomNum, int channelNum, const string& roomName, const int& bat
 {
 	//InitializeCriticalSection(&CS_MyInfoList);
 	//cout << "sizeof(ProtocolCharacterTagIndex) = " << sizeof(ProtocolCharacterTagIndex) << endl;
-	mUsePosition.reserve(7);
+	mUsePosition.reserve((EnterRoomPeopleLimit+1));
 	mUsePosition.assign(mUsePosition.capacity(), NotUsed);
 }
 
 
 CRoom::~CRoom()
 {
-	cout << mRoomNum << " 번 방이 삭제 됩니다." << endl;
+//	cout << mRoomNum << " 번 방이 삭제 됩니다." << endl;
 }
 
 
@@ -32,7 +32,16 @@ LinkListIt CRoom::EraseClient(const LinkPtr& shared_client)
 		ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
 		delLinkIter = mClientInfos.erase(delLinkIter);
 		DecreasePeople();
-		shared_client.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientChannelMenu, nullptr));
+		CLink* client = shared_client.get();
+		mUsePosition[client->GetMyPosition()] = NotUsed; // 미사용중 표시
+		client->SetMyRoomNum(NoneRoom);
+		client->SetMyPosition(ProtocolCharacterTagIndex::NoneCharacter);
+		if (ProtocolSceneName::ChannelScene == client->GetMySceneState())
+		{
+		//	cout << "채널 상태였음" << endl;
+			client->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientChannelMenu, nullptr));
+		}
+		client->SetMySceneState(ProtocolSceneName::ChannelScene);
 	}
 	return delLinkIter;
 }
@@ -139,7 +148,7 @@ void CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 	mClientInfos.push_back(shared_client);
 	shared_client.get()->SetMyRoomNum(enterRoomNumber);
 	IncreasePeople();
-	cout << "방에 들어왔음 현재 인원 = " << mAmountPeople << endl;
+	//cout << "방에 들어왔음 현재 인원 = " << mAmountPeople << endl;
 	shared_client.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientMatching, nullptr));
 
 	if (mIsNewRoom && mAmountPeople >= EnterRoomPeopleLimit)
@@ -155,45 +164,27 @@ void CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 			NoticRoomIn(*clientBegin);
 		}
 		mIsNewRoom = false;
-		//cout << "새로 만들어진 방에 모두 들어왔음" << endl;
-		//ProtocolCharacterTagIndex tagIndex = ProtocolCharacterTagIndex::Red01;
-		//LinkListIt clientBegin = mClientInfos.begin();
-		//for (; clientBegin != mClientInfos.end(); ++clientBegin)
-		//{
-		//	Packet matchingSuccessPacket(ProtocolInfo::ClientCommend, ProtocolDetail::MatchingSuccess, State::ClientRoomIn, nullptr);
-		//	(*clientBegin).get()->SendnMine(matchingSuccessPacket);
-		//}
-		//clientBegin = mClientInfos.begin();
-		//cout << "///////////// 보내는 위치 = " << tagIndex << endl;
-		//for (; clientBegin != mClientInfos.end(); ++clientBegin)
-		//{
-		//	EnterBroadcast((*clientBegin), tagIndex);
-		//	tagIndex = (ProtocolCharacterTagIndex)(tagIndex + 1);
-		//}
-		//mIsNewRoom = false;
 	}
 	else if (!mIsNewRoom && mAmountPeople <= EnterRoomPeopleLimit)
 	{
 		vector<int>::iterator useBegin = mUsePosition.begin();
+		int index = 0;
 		for (; useBegin != mUsePosition.end(); ++useBegin)
 		{
 			if (NotUsed == (*useBegin))
 			{
-				EnterBroadcast(shared_client, ProtocolCharacterTagIndex(*useBegin));
+				TeachNewPeople(shared_client);
+				EnterBroadcast(shared_client, ProtocolCharacterTagIndex(index));
 				NoticRoomIn(shared_client);
 			}
+			++index;
 		}
 	}
-	/*string message(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
-	Packet p(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
-	Broadcast(p);*/
-	//Broadcast(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
 }
 
 void CRoom::NoticRoomIn(const LinkPtr & shared_client)
 {
-	Packet matchingSuccessPacket(ProtocolInfo::ClientCommend, ProtocolDetail::MatchingSuccess, State::ClientNotReady, nullptr);
-	shared_client.get()->SendnMine(matchingSuccessPacket);
+	shared_client.get()->SetMySceneState(ProtocolSceneName::RoomScene);
 	string message(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
 	Packet welcomePacket(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
 	Talk(shared_client, welcomePacket);
@@ -215,6 +206,22 @@ void CRoom::EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagInd
 	Broadcast(packetImage);
 }
 
+void CRoom::TeachNewPeople(const LinkPtr & shared_client)
+{
+	LinkListIt peopleBegin = mClientInfos.begin();
+	for (; peopleBegin != mClientInfos.end(); ++peopleBegin)
+	{
+		if (shared_client != (*peopleBegin))
+		{
+			ProtocolCharacterTagIndex tagIndex = (*peopleBegin).get()->GetMyPosition();
+			Packet packetName(ProtocolInfo::ClientCommend, ProtocolDetail::NameChange, tagIndex, (*peopleBegin).get()->GetMyName().c_str());
+			Packet packetImage(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[(*peopleBegin).get()->GetMyCharacter()].c_str());
+			shared_client.get()->SendnMine(packetName);
+			shared_client.get()->SendnMine(packetImage);
+		}
+	}
+}
+
 void CRoom::ChangeCharacterBroadcast(const LinkPtr & shared_client, const ProtocolCharacterImageNameIndex& characterImageIndex)
 {
 	CLink* client = shared_client.get();
@@ -229,6 +236,7 @@ void CRoom::ChangeCharacterBroadcast(const LinkPtr & shared_client, const Protoc
 		Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, client->GetMyPosition(), ProtocolCharacterImageName[characterImageIndex].c_str());
 		Broadcast(packet);
 		client->SetMyCharacter(characterImageIndex);
+		client->SetNoReadyGame();
 	}
 	else
 	{
@@ -290,6 +298,15 @@ void CRoom::GetHostIP()
 			Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::GetHostIP, 0, (*linkBegin).get()->GetMyIP().c_str());
 			(*linkBegin).get()->SendnMine(packet);
 		}
+	}
+}
+
+void CRoom::NotReadyTogether()
+{
+	LinkListIt clientIterBegin = mClientInfos.begin();
+	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
+	{
+		(*clientIterBegin).get()->SetNoReadyGame();
 	}
 }
 

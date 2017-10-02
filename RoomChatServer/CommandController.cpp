@@ -9,7 +9,7 @@ CCommandController::CCommandController()
 
 CCommandController::~CCommandController()
 {
-	cout << "CNetWork 객체 소멸자 호출" << endl;
+	//cout << "CNetWork 객체 소멸자 호출" << endl;
 }
 
 void CCommandController::SetEnterChannel(const LinkPtr & shared_clientInfo, const int & moveChannelNumber)
@@ -32,13 +32,13 @@ void CCommandController::EnterRoom(const LinkPtr & shared_clientInfo)
 	// 빈방이 없는 경우 만듬
 	if (NoneRoom == enterRoomNumber)
 	{
-		cout << "room 새로 만듬" << endl;
+		//cout << "room 새로 만듬" << endl;
 		enterRoomNumber = MakeRoom(shared_clientInfo, "room");
 	}
 
 	if (NoneRoom != enterRoomNumber)
 	{
-		cout << enterRoomNumber << " 번 방으로 들어가기" << endl;
+		//cout << enterRoomNumber << " 번 방으로 들어가기" << endl;
 		if (mRoomManager.EnterRoom(shared_clientInfo, enterRoomNumber))
 		{
 			mChannelManager.ExitChannel(shared_clientInfo);
@@ -82,32 +82,44 @@ int CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string
 
 void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 {
-	cout << "outRoom 호출" << endl;
-	 RoomListIt roomIter = mRoomManager.ExitRoom(shared_clientInfo);	// 룸에서 나가기
-	 if (true == (*roomIter)->IsRoomEmpty())			// 룸에 아무도 없나 확인
-	 {
-		 mRoomManager.EraseRoom(roomIter);			// 아무도 없으면 룸 삭제
-	 }
+	//cout << "outRoom 호출" << endl;
+	ProtocolCharacterTagIndex targetPos = shared_clientInfo.get()->GetMyPosition();
+	ProtocolSceneName oldSceneState = shared_clientInfo.get()->GetMySceneState();
+	RoomListIt roomIter = mRoomManager.ExitRoom(shared_clientInfo);	// 룸에서 나가기
+	if (true == (*roomIter)->IsRoomEmpty())							// 룸에 아무도 없나 확인
+	{
+		mRoomManager.EraseRoom(roomIter);								// 아무도 없으면 룸 삭제
+	}
+	else
+	{
+		if (ProtocolSceneName::RoomScene == oldSceneState)	// RoomScene에서 나갔으면 모두에게 나갔음을 알리고 패널에서 자신을 지우게 시킴
+		{
+			cout << "나간 사실을 모두에게 알림" << endl;
+			Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::RemovePanel, targetPos, nullptr);
+			(*roomIter)->Broadcast(packet);
+			(*roomIter)->NotReadyTogether(); // 누군가 한사람이라도 나가면 Ready 풀림
+		}
+	}
 }
 void CCommandController::DeleteClientSocket(const LinkPtr & shared_clientInfo)
 {
 	int myChannelNum = shared_clientInfo.get()->GetMyChannelNum();
 	int myRoomNum = shared_clientInfo.get()->GetMyRoomNum();
-	cout << "DeleteClientSocket여기 myRoomNum = " << myRoomNum << endl;
+	//cout << "DeleteClientSocket여기 myRoomNum = " << myRoomNum << endl;
 	//방에 있나 채널에 있나 확인
 	if (NoneRoom == myRoomNum)
 	{
 		// 채널일때
 		if (mChannelManager.ExitChannel(shared_clientInfo))
 		{
-			cout << "channel에서 나갔습니다." << endl;
+			//cout << "channel에서 나갔습니다." << endl;
 		}
 	}
 	else
 	{
 		// 방일때
 		OutRoom(shared_clientInfo);
-		cout << "room에서 나갑니다." << endl;
+		//cout << "room에서 나갑니다." << endl;
 	}
 }
 
@@ -115,9 +127,10 @@ void CCommandController::SendAllReadyGameNotice(const LinkPtr & shared_clientInf
 {
 	if (mRoomManager.IsAllReadyGame(shared_clientInfo))
 	{
+		cout << "모두 레디 함" << endl;
 		// 룸메니저를 통해 방 멤버 함수 호출 할 것.
 		//mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "모든 플레이어가 준비 되었습니다."));
-		mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ClientCommend, ProtocolDetail::StartGame, 0, nullptr));
+		//mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::SceneChange, ProtocolDetail::NoneDetail, ProtocolSceneName::MainScene, nullptr));
 	}
 }
 
@@ -148,7 +161,7 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 	{
 		if (ProtocolDetail::EnterRoom == packet.InfoProtocolDetail) // 방에 입장
 		{
-			cout << "입장 명령 시작" << endl;
+			//cout << "입장 명령 시작" << endl;
 			EnterRoom(shared_clientInfo);
 		}
 		else if (ProtocolDetail::EnterChanel == packet.InfoProtocolDetail)
@@ -188,7 +201,7 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 	catch (const std::exception&)
 	{
 		int channelNum = 0;
-		cout << "명령처리 오류" << endl;
+		//cout << "명령처리 오류" << endl;
 		ErrorHandStatic->ErrorHandler(ERROR_COMMAND, shared_clientInfo);
 	}
 }
@@ -214,7 +227,7 @@ void CCommandController::ChattingMessage(const LinkPtr & shared_clientInfo, Pack
 	catch (const std::exception&)
 	{
 		int channelNum = 0;
-		cout << "명령처리 오류" << endl;
+		//cout << "명령처리 오류" << endl;
 		ErrorHandStatic->ErrorHandler(ERROR_COMMAND, shared_clientInfo);
 	}
 }

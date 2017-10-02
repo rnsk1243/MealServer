@@ -22,7 +22,8 @@ enum ProtocolInfo       // 대분류
 	ServerCommend,      // 서버에게 명령
 	ChattingMessage,    // 채팅 메세지
 	ClientCommend,		// 클라이언트 명령
-	RequestResult		// 요청 결과
+	RequestResult,		// 요청 결과
+	SceneChange         // 씬 변경
 	//PlayerInfo          // 플레이어 정보( 캐릭터, 이름 )
 };
 
@@ -38,14 +39,13 @@ enum ProtocolDetail     // 소분류
 	OutRoom,
 	SetReadyGame,           // 게임준비
 	FrontMenu,				// 메뉴(로그인, 회원가입, 게스트 로그인 )
-	MatchingSuccess, // 매칭 성공 방 UI 표시
-	LoginSuccess,         // 로그인 성공 채널 입장
 	ChangeCharacter,		// 캐릭터 변경
 	NotReadyGame,			// 게임 준비 취소
 	StartGame,
 	GetHostIP,
 	SuccessRequest,       // 요청 성공
-	FailRequest			// 요청 실패
+	FailRequest,			// 요청 실패
+	RemovePanel             // 나간 사람 패널 지우기
 };
 
 enum ProtocolCharacterImageNameIndex
@@ -94,7 +94,8 @@ enum State	// 클라이언트 상태
 	ClientRequestGaemNotReady, ClientNotReady/*룸에서의 기본 상태*/, // 1001추가됨
 	ClientRequestMatching, ClientMatching,
 	ClientRequestCancleMactching, /*채널 기본*/
-	ClientRequestCharacterChange /*룸기본*/
+	ClientRequestCharacterChange, /*룸기본*/
+	ClientRequestBackExit /*씬 기본*/
 };
 
 const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
@@ -105,7 +106,7 @@ const ProtocolCharacterImageNameIndex InitCharacter = ProtocolCharacterImageName
 const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "BlueImage01", "RedImage02", "BlueImage02", "RedImage03", "BlueImage03" };
 const string ProtocolCharacterTagIndexName[6] = { "RedName01", "BlueName01", "RedName02", "BlueName02", "RedName03", "BlueName03" };
 const string MessageTag[1] = { "TextView" };
-const string ProtocolSceneName[4] = { "FrontScene", "ChannelScene", "RoomScene", "Main" };
+const string ProtocolSceneNameString[4] = { "FrontScene", "ChannelScene", "RoomScene", "Main" };
 const string CommandEnter = "e"; // 방 입장
 const string CommandChannal = "c"; // 채널 변경
 const string CommandMakeRoom = "m"; // 방 만들기
@@ -176,11 +177,11 @@ struct Packet
 		InfoProtocolDetail(infoProtocolDetail),
 		InfoTagIndex(infoTagIndex)
 	{
-		cout << "Packet 생성자" << endl;
+	//	cout << "Packet 생성자" << endl;
 		if (nullptr != infoValue)
 		{
 			strcpy_s(InfoValue, BufSizeValue, infoValue);
-			cout << "초기화된 값 Value == " << InfoValue << endl;
+		//	cout << "초기화된 값 Value == " << InfoValue << endl;
 		}
 		else
 		{

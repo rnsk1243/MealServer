@@ -30,7 +30,8 @@ class CRoom
 	//bool AllCalculateMoney(); // 방에 있는 사람 모두 정산(.txt 저장)
 	// 방에 들어왔음 알려주기
 	void NoticRoomIn(const LinkPtr& shared_client);
-	void EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex); // 방 처음 입장 함수 모두에게 내 표시위치와 이름 보내기
+	void EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex); // 방 처음 입장 함수 // 모두에게 내 표시위치와 이름 보내기
+	void TeachNewPeople(const LinkPtr& shared_client); // 새로 들어온 사람에게 현재 방얘들 이름이랑 고른 캐릭터 알려주기
 public:
 	CRoom(const CRoom&) = delete;
 	CRoom& operator=(const CRoom&) = delete;
@@ -52,5 +53,6 @@ public:
 	void ChangeCharacterBroadcast(const LinkPtr & shared_client, const ProtocolCharacterImageNameIndex& characterImageIndex); // 모두에게 캐릭터 변경 보내기
 	void Talk(const LinkPtr& myClient, const Packet& packet, int flags = 0);
 	void GetHostIP();
+	void NotReadyTogether();
 };
 

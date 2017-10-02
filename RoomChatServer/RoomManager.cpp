@@ -27,7 +27,7 @@ RoomListIt CRoomManager::GetMyRoomIter(int ChannelNum, int roomNum)
 			}
 		}
 	}
-	cout << roomNum << "번 방이 없습니다." << endl;
+	//cout << roomNum << "번 방이 없습니다." << endl;
 	ErrorHandStatic->ErrorHandler(ERROR_GET_ROOM);
 	//RoomListIt* error = nullptr;
 	return iterBegin; // iterBegin == iterEnd 이면 방이없다.
@@ -92,7 +92,6 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo)
 	{
 		//string outClientName(shared_clientInfo.get()->GetMyName() + " 님이 방에서 나가셨습니다.");
 		//(*myRoomIter).get()->Talk(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, outClientName.c_str()));
-		client->SetMyRoomNum(NoneRoom);
 		//client->InitBetting(); // 베팅 초기화 시킴
 		//if (true == (*myRoomIter)->IsGame())					// 게임중에 나갔나?
 		//{
@@ -136,7 +135,7 @@ bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNu
 		return false;
 	if (true == client->IsRoomEnterState()) // 이미 방에 있는지 확인
 	{
-		cout << "이미 방에 있는데" << endl;
+		//cout << "이미 방에 있는데" << endl;
 		return false;
 	}
 	RoomListIt targetRoomIter = GetMyRoomIter(client->GetMyChannelNum(), targetRoomNumBer);
@@ -146,7 +145,7 @@ bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNu
 		if (EnterRoomPeopleLimit <= (*targetRoomIter).get()->GetAmountPeople())
 		{
 			shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
-			cout << "방 꽉 차서 못 들어감" << endl;
+			//cout << "방 꽉 차서 못 들어감" << endl;
 			return false;
 		}
 		(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);

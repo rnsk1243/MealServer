@@ -28,6 +28,7 @@ private:
 	ProtocolCharacterTagIndex mMyPosition; // 방에서 나의 위치 또는 팀
 	ProtocolCharacterImageNameIndex mSelectCharacter;	// 내가 선택한 캐릭터
 	bool mIsSocketErrorState;
+	ProtocolSceneName mCurMySceneState;		// 현재 나의 씬 상태
 	// 나의 재화
 	//CGoods mMyGoods;
 	//int mDebtMoney;	// 앞으로 없어질 돈.
@@ -58,11 +59,14 @@ public:
 	ProtocolCharacterTagIndex GetMyPosition();
 	void SetMyPosition(ProtocolCharacterTagIndex newPosition);
 	void SetMyCharacter(ProtocolCharacterImageNameIndex newCharacter); // 캐릭터 변경
+	ProtocolCharacterImageNameIndex GetMyCharacter();
 #pragma endregion
 	string GetMyIP();
 	////////////////////
 	void SendnMine(const Packet & packet, int flags = 0);
 	void SetSocketError();
+	void SetMySceneState(ProtocolSceneName curMySceneState);
+	ProtocolSceneName GetMySceneState();
 	//bool IsZeroMoney();
 	//void SetZeroMoney();
 	//const int GetMyMoney();
