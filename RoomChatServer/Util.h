@@ -2,7 +2,6 @@
 #include<random>
 #include<iostream>
 #include"ErrorHandler.h"
-#include"RecvRepository.h"
 using namespace std;
 
 //static bool IntToAlphabet(const int num, char* chResult)
@@ -149,7 +148,7 @@ static void ANSIToUTF8(BSTR& bstrWide, int& nLength, char* destination)
 	SysFreeString(bstrWide);
 }
 
-static void ReadyANSIToUTF8(char* ansi, BSTR& bstrWide, int& nLength)
+static void ReadyANSIToUTF8(const char* ansi, BSTR& bstrWide, int& nLength)
 {
 	//BSTR bstrWide;
 	//int nLength;
@@ -180,3 +179,4 @@ static char* UTF8ToANSI(const char * pszCode)
 	return pszUTFCode;
 
 }
+

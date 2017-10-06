@@ -31,7 +31,7 @@ public:
 
 	////////////
 	// room에서 나가기 (나가고자하는 소켓)
-	RoomListIt ExitRoom(const LinkPtr & shared_clientInfo);
+	RoomListIt ExitRoom(const LinkPtr & shared_clientInfo, bool & isSucces);
 	// 현재 자신이 속한 방이 없을때 방 만들기(들어갈 소켓, 만드는 방 번호) 
 	int MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName);
 	// 현재 자신이 속한 방이 없을때 방 입장 하기

@@ -5,6 +5,7 @@
 class CListener
 {
 	CListener();
+	void Translate(char * infoValue);
 public:
 	static CListener* GetInstance();
 	CListener(const CListener&) = delete;

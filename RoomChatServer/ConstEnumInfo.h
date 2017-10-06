@@ -2,7 +2,6 @@
 #include<string>
 #include<iostream>
 #include<vector>
-#include"RecvRepository.h"
 using namespace std;
 struct Packet;
 
@@ -86,7 +85,8 @@ enum ProtocolSceneName
 
 enum State	// 클라이언트 상태
 {
-	ClientNone, ClientFrontMenu/*front씬에서의 기본 상태*/, ClientJoin,
+	ClientNone, ClientFrontMenu/*front씬에서의 기본 상태*/,
+	ClientLogin/*login을 선택한 상태*/, ClientJoin/*회원가입을 선택한 상태*/, ClientGuest/*guest 로그인 상태*/,
 	ClientChannelMenu/*채널씬에서의 기본 상태*/,
 	ClientMakeRoom, ClientOption,
 	ClientGame,/*0926추가됨*/
@@ -118,6 +118,8 @@ const string NameMemberInfoTxt = "MemberInfo.txt";
 const string MakeNextJoinNumberTxt = "MakeNextJoinNumber.txt";
 const string NameMemberGoodsTxt = "MemberGoods.txt";
 const string ErrorLogTxt = "ErrorLog.txt";
+const string GuestName = "Guest";
+const string GuestPKNumber = "0";
 
 // 보낼 메세지
 const string EnterRoomMoneyLack = "돈이 부족하여 방에 입장 하실 수 없습니다.";
@@ -162,6 +164,7 @@ const int GoodsTemplateSize = MoneyInfoSize + 3 ;
 static const int PacketSize = 140;//sizeof(Packet);
 const int PacketAmount = 1;
 
+
 struct Packet
 {
 	// Packet수정시 PacketSize 변경할 것.
@@ -170,26 +173,27 @@ struct Packet
 	int InfoTagIndex;
 	char InfoValue[BufSizeValue];
 
-	Packet() {}
+	Packet();
 
 	Packet(int infoProtocol, int infoProtocolDetail, int infoTagIndex, const char* infoValue) :
 		InfoProtocol(infoProtocol),
 		InfoProtocolDetail(infoProtocolDetail),
 		InfoTagIndex(infoTagIndex)
 	{
-	//	cout << "Packet 생성자" << endl;
+		//	cout << "Packet 생성자" << endl;
 		if (nullptr != infoValue)
 		{
 			strcpy_s(InfoValue, BufSizeValue, infoValue);
-		//	cout << "초기화된 값 Value == " << InfoValue << endl;
+			//	cout << "초기화된 값 Value == " << InfoValue << endl;
 		}
 		else
 		{
 			infoValue = nullptr;
 		}
 	}
-};
 
+	void AddName(string name);
+};
 
 
 //struct OrderStructSocket

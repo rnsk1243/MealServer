@@ -30,6 +30,7 @@ int CReadHandler::Search(const char * textFileName, vector<string>& tempUserInfo
 		return 0;
 	}
 	va_list Marker;
+	tempUserInfo.reserve(count);
 	va_start(Marker, count);
 
 	vector<string> searchTarget;
@@ -65,7 +66,8 @@ int CReadHandler::Search(const char * textFileName, vector<string>& tempUserInfo
 		}
 		if (sameAmount == count)
 		{
-			tempUserInfo = userInfoVec;
+//			tempUserInfo = userInfoVec;
+			tempUserInfo.assign(userInfoVec.begin(), userInfoVec.end());
 			break;
 		}
 	}

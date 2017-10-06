@@ -85,7 +85,10 @@ void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 	//cout << "outRoom 호출" << endl;
 	ProtocolCharacterTagIndex targetPos = shared_clientInfo.get()->GetMyPosition();
 	ProtocolSceneName oldSceneState = shared_clientInfo.get()->GetMySceneState();
-	RoomListIt roomIter = mRoomManager.ExitRoom(shared_clientInfo);	// 룸에서 나가기
+	bool isSucces = false;
+	RoomListIt roomIter = mRoomManager.ExitRoom(shared_clientInfo, isSucces);	// 룸에서 나가기
+	if (!isSucces)
+		return;
 	if (true == (*roomIter)->IsRoomEmpty())							// 룸에 아무도 없나 확인
 	{
 		mRoomManager.EraseRoom(roomIter);								// 아무도 없으면 룸 삭제
@@ -215,13 +218,14 @@ void CCommandController::ChattingMessage(const LinkPtr & shared_clientInfo, Pack
 
 	try
 	{
+		packet.AddName(shared_clientInfo.get()->GetMyName());
 		if (shared_clientInfo.get()->IsRoomEnterState())
 		{
 			mRoomManager.Talk(shared_clientInfo, packet);
 		}
 		else
 		{
-			mChannelManager.Talk(shared_clientInfo, packet);
+			//mChannelManager.Talk(shared_clientInfo, packet);
 		}
 	}
 	catch (const std::exception&)

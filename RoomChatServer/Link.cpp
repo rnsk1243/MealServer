@@ -4,7 +4,7 @@
 #include"Util.h"
 
 
-CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* name, const string& ip) :
+CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* name, const string& ip, const bool & isGuest) :
 	mClientSocket(clientSocket),
 	mMyChannelNum(0),
 	mMyRoomNum(NoneRoom),
@@ -19,7 +19,8 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 	mSelectCharacter(InitCharacter),
 	mIP(ip),
 	mIsSocketErrorState(false),
-	mCurMySceneState(ProtocolSceneName::FrontScene)
+	mCurMySceneState(ProtocolSceneName::FrontScene),
+	mIsGuest(isGuest)
 {
 }
 
@@ -113,6 +114,11 @@ void CLink::SetMyCharacter(ProtocolCharacterImageNameIndex newCharacter)
 ProtocolCharacterImageNameIndex CLink::GetMyCharacter()
 {
 	return mSelectCharacter;
+}
+
+bool CLink::GetIsGuest()
+{
+	return mIsGuest;
 }
 
 string CLink::GetMyIP()

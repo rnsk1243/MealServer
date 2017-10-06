@@ -29,6 +29,7 @@ private:
 	ProtocolCharacterImageNameIndex mSelectCharacter;	// 내가 선택한 캐릭터
 	bool mIsSocketErrorState;
 	ProtocolSceneName mCurMySceneState;		// 현재 나의 씬 상태
+	bool mIsGuest;						// 손님 로그인 인가?
 	// 나의 재화
 	//CGoods mMyGoods;
 	//int mDebtMoney;	// 앞으로 없어질 돈.
@@ -39,7 +40,7 @@ private:
 	//bool MinusMyMoney(const int& minusMoney);
 	//bool PayBackMoney(const int& payBack);
 public:
-	CLink(const SOCKET* clientSocket, const string& strPKNumber,const char* name, const string& ip);
+	CLink(const SOCKET* clientSocket, const string& strPKNumber,const char* name, const string& ip, const bool& isGuest);
 	CLink(const CLink&) = delete;
 	CLink& operator=(const CLink&) = delete;
 	~CLink();
@@ -60,6 +61,7 @@ public:
 	void SetMyPosition(ProtocolCharacterTagIndex newPosition);
 	void SetMyCharacter(ProtocolCharacterImageNameIndex newCharacter); // 캐릭터 변경
 	ProtocolCharacterImageNameIndex GetMyCharacter();
+	bool GetIsGuest();
 #pragma endregion
 	string GetMyIP();
 	////////////////////

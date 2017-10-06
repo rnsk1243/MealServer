@@ -123,7 +123,7 @@ CLobby * CLobby::GetInstance(const int& NextUserNum)
 }
 
 
-int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo)
+int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo, bool& isGuest)
 {
 	int resultLoginFunc = 0;
 	//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "환영합니다. 1번입력 : 로그인 / 2번입력 : 회원가입 / 9번입력 : 취소"));
@@ -139,6 +139,7 @@ int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUser
 			resultLoginFunc = Login(guest, tempUserInfo, packet.InfoValue);
 			if (SUCCES_LOGIN == resultLoginFunc)
 			{
+				isGuest = false;
 				return SUCCES_LOGIN;
 			}
 			else if (CANCLE == resultLoginFunc)
@@ -153,7 +154,11 @@ int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUser
 		case ProtocolFrontManuTag::JoinManu:
 			//return JoinMember(guest, tempUserInfo);
 		case ProtocolFrontManuTag::GuestManu:
-			break;
+			tempUserInfo.reserve(2);
+			tempUserInfo.push_back(GuestPKNumber);// guest pk number
+			tempUserInfo.push_back(packet.InfoValue);// guest name(ID)e);
+			isGuest = true;
+			return SUCCES_LOGIN;
 		case ProtocolFrontManuTag::CancleManu:
 			return CANCLE;
 		default:

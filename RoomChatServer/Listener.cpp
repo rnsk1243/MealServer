@@ -46,16 +46,9 @@ void CListener::Recvn(const SOCKET* socket, Packet& packet, int flags)
 	//PacketPtr packetPtr(new Packet());
 
 	memcpy_s(&packet, PacketSize, recvPacket, PacketSize);
-	// 나중에 비동기 소켓 사용시 Recv박스에 넣어 처리
-	//OrderStructSocketPtr order(new OrderStructSocket(socket, packetPtr));
-	//RecvRepositoryStatic->PushPacket(order);
+	Translate(packet.InfoValue);
+	
 
-	//string messageStr = ANSIToUTF8(recvedMessage); // ANSI 문자열을 UTF-8로 변환
-
-	//cout << "받은 idPw메시지 = " << MS.message << endl;
-	//strMessage = messageStr;
-	//strMessage.assign(messageStr.begin(), messageStr.end());
-	//cout << "받은 메세지 = " << strMessage.c_str() << endl;
 }
 
 void CListener::RecvnLink(const LinkPtr& link, Packet& packet, int flags)
@@ -75,7 +68,9 @@ void CListener::RecvnLink(const LinkPtr& link, Packet& packet, int flags)
 	//PacketPtr packetPtr(new Packet());
 	memcpy_s(&packet, PacketSize, recvPacket, PacketSize);
 
-	char temp[BufSizeRecv];
+	Translate(packet.InfoValue);
+
+	/*char temp[BufSizeRecv];
 	BSTR bstrWide;
 	int length = 0;
 	ReadyANSIToUTF8(packet.InfoValue, bstrWide, length);
@@ -84,12 +79,26 @@ void CListener::RecvnLink(const LinkPtr& link, Packet& packet, int flags)
 	for (int i = 0; i < length; ++i)
 	{
 		packet.InfoValue[i] = temp[i];
-	}
+	}*/
 //	cout << "변환된 값 = " << packet.InfoValue << endl;
 	//char buf[BufSizeValue];
 	//cout << ANSIToUTF8(packet.Value, buf) << endl;
 	// 나중에 비동기 소켓 사용시 Recv박스에 넣어 처리
 	//OrderStructLinkPtr order(new OrderStructLink(link, packetPtr));
 	//RecvRepositoryStatic->PushPacket(order);
+}
+
+void CListener::Translate(char * infoValue)
+{
+	char temp[BufSizeRecv];
+	BSTR bstrWide;
+	int length = 0;
+	ReadyANSIToUTF8(infoValue, bstrWide, length);
+	ANSIToUTF8(bstrWide, length, temp);
+
+	for (int i = 0; i < length; ++i)
+	{
+		infoValue[i] = temp[i];
+	}
 }
 

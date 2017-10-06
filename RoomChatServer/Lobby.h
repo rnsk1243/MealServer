@@ -18,7 +18,7 @@ public:
 	CLobby(const CLobby&) = delete;
 	CLobby& operator=(const CLobby&) = delete;
 	~CLobby(){}
-	int ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo);
+	int ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo, bool& isGuest);
 	//void PushGuest(const GuestLinkPtr & newGuest);
 	//void EraseGuest(const GuestLinkPtr & targetGuest);
 };

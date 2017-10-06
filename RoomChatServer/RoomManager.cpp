@@ -82,7 +82,7 @@ RoomListIt CRoomManager::EraseRoom(RoomListIt deleteTargetRoomIter)
 }
 
 
-RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo)
+RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo, bool & isSucces)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr == client)
@@ -100,8 +100,10 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo)
 		//	(*myRoomIter)->AllInitBetting();					// 룸에 들어있는 사람 준비 초기화
 		//}
 		(*myRoomIter).get()->EraseClient(shared_clientInfo);
+		isSucces = true;
 		return myRoomIter;
 	}
+	isSucces = false;
 	return mRooms.end();
 }
 

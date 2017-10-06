@@ -64,15 +64,16 @@ int thSendRecv(void* v_clientSocket, void* v_ip)
 {
 	const SOCKET* clientSocket = ((SOCKET*)v_clientSocket);
 	string ip = *(string*)v_ip;
-	cout << "붙은 클라이언트 ip = " << ip;
+	cout << "붙은 클라이언트 ip = [" << ip << "]" << endl;;
 	CGuestLink guest(clientSocket);
 	int isLogin = 0;
 	vector<string> userInfo;
+	bool isGuest = false;
 	while (SUCCES_LOGIN != isLogin)
 	{
-		isLogin = LobbyStatic->ActionServiceLobby(&guest, userInfo);
+		isLogin = LobbyStatic->ActionServiceLobby(&guest, userInfo, isGuest);
 	}
-	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str(), ip));
+	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str(), ip, isGuest));
 	shared_clientInfo.get()->SetMySceneState(ProtocolSceneName::ChannelScene);
 	// EnterChannelNum 채널에 입장
 	//vector<string> commandChannel;

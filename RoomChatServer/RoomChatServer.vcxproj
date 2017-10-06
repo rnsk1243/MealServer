@@ -179,6 +179,7 @@
     <ClCompile Include="BasicExcel.cpp" />
     <ClCompile Include="Channel.cpp" />
     <ClCompile Include="ChannelManager.cpp" />
+    <ClCompile Include="ConstEnumInfo.cpp" />
     <ClCompile Include="ErrorHandler.cpp" />
     <ClCompile Include="Goods.cpp" />
     <ClCompile Include="GuestLink.cpp" />

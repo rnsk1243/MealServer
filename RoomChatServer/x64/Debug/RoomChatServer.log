@@ -1,4 +1,5 @@
-﻿  WriteHandler.cpp
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppClean.targets(76,5): warning : 'c:\homework\mealserver\roomchatserver\x64\debug\vc140.pdb' 파일은 다른 프로세스에서 사용 중이므로 프로세스에서 액세스할 수 없습니다.
+  WriteHandler.cpp
   Listener.cpp
   Room.cpp
   CommandController.cpp
@@ -14,6 +15,7 @@ c:\program files (x86)\windows kits\8.1\include\um\dbghelp.h(3190): warning C409
   GuestLink.cpp
   Goods.cpp
   ErrorHandler.cpp
+  ConstEnumInfo.cpp
   ChannelManager.cpp
   Channel.cpp
   BasicExcel.cpp
