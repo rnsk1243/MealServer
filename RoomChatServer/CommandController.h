@@ -11,12 +11,15 @@ class CCommandController
 	CRoomManager mRoomManager;
 	CCommandController();
 	void EnterRoom(const LinkPtr& shared_clientInfo);
+	void EnterSpecialRoomFunc(const LinkPtr& shared_clientInfo, const int & roomNumber, const string & pw = RoomPWNone);
 	void ChangeChannel(const LinkPtr& shared_clientInfo, const int & moveChannelNumber);
-	int MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName);
+	int MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName, const ProtocolTeamAmount& teamAmount, const bool & isSpecialRoom, const string & roomPW = RoomPWNone);
 	void OutRoom(const LinkPtr& shared_clientInfo);
 	void SendAllReadyGameNotice(const LinkPtr & shared_clientInfo);
 	void ChangeCharacter(const LinkPtr & shared_clientInfo, Packet& packet);
 	void GetHostIP(const LinkPtr & shared_clientInfo);
+	int AutoMakeORSearchRoom(const LinkPtr & shared_clientInfo, bool & isSpecialRoom);
+	MUTEX mRAII_CommandMUTEX;
 	// 명령 처리 함수(방 만들기 등)
 public:
 	static CCommandController* GetInstance();

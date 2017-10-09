@@ -15,7 +15,7 @@ CLink::CLink(const SOCKET* clientSocket, const string& strPKNumber, const char* 
 	//mDebtMoney(0),
 	//mPayBackMoney(0),
 	mName(name),
-	mMyPosition(ProtocolCharacterTagIndex::NoneCharacter), // 매칭창 내 위치 
+	mMyPosition(ProtocolCharacterTagIndex(NonePosition)), // 매칭창 내 위치 
 	mSelectCharacter(InitCharacter),
 	mIP(ip),
 	mIsSocketErrorState(false),

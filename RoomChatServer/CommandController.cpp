@@ -1,5 +1,6 @@
 #include "CommandController.h"
 #include"ErrorHandler.h"
+#include"ReadHandler.h"
 class CErrorHandler;
 
 CCommandController::CCommandController()
@@ -28,18 +29,31 @@ void CCommandController::SetEnterChannel(const LinkPtr & shared_clientInfo, cons
 
 void CCommandController::EnterRoom(const LinkPtr & shared_clientInfo)
 {
-	int enterRoomNumber = mRoomManager.SearchRoom();
-	// 빈방이 없는 경우 만듬
-	if (NoneRoom == enterRoomNumber)
-	{
-		//cout << "room 새로 만듬" << endl;
-		enterRoomNumber = MakeRoom(shared_clientInfo, "room");
-	}
+	bool isSpecialRoom = false;
+	int roomNumber = AutoMakeORSearchRoom(shared_clientInfo, isSpecialRoom);
 
-	if (NoneRoom != enterRoomNumber)
+	if (isSpecialRoom)
+	{
+		EnterSpecialRoomFunc(shared_clientInfo, roomNumber);
+	}
+	else
 	{
 		//cout << enterRoomNumber << " 번 방으로 들어가기" << endl;
-		if (mRoomManager.EnterRoom(shared_clientInfo, enterRoomNumber))
+		if (mRoomManager.EnterRoom(shared_clientInfo, roomNumber))
+		{
+			mChannelManager.ExitChannel(shared_clientInfo);
+			return;
+		}
+	}
+
+}
+
+void CCommandController::EnterSpecialRoomFunc(const LinkPtr& shared_clientInfo, const int & roomNumber, const string & pw)
+{
+	if (NoneRoom != roomNumber)
+	{
+		//cout << enterRoomNumber << " 번 방으로 들어가기" << endl
+		if (mRoomManager.EnterRoomSpecial(shared_clientInfo, roomNumber, pw))
 		{
 			mChannelManager.ExitChannel(shared_clientInfo);
 		}
@@ -63,20 +77,19 @@ void CCommandController::ChangeChannel(const LinkPtr& shared_clientInfo, const i
 	}
 }
 
-int CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName)
+int CCommandController::MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName, const ProtocolTeamAmount& teamAmount, const bool & isSpecialRoom, const string & roomPW)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr != client && (false == client->IsRoomEnterState()))
 	{
 		// 룸을 만들고
-		int newRoomNumber = mRoomManager.MakeRoom(shared_clientInfo, roomName);
-		if (-1 != newRoomNumber)
+		int newRoomNumber = mRoomManager.MakeRoom(shared_clientInfo, roomName, teamAmount, isSpecialRoom, roomPW);
+		if (NoneRoom != newRoomNumber)
 		{
 			return newRoomNumber;
-			// 룸에 들어가고
-			//EnterRoom(shared_clientInfo, newRoomNumber);
 		}
 	}
+	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientMakeRoom, nullptr)); // makeRoom 기본 상태로 돌아가라
 	return NoneRoom;
 }
 
@@ -85,23 +98,35 @@ void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 	//cout << "outRoom 호출" << endl;
 	ProtocolCharacterTagIndex targetPos = shared_clientInfo.get()->GetMyPosition();
 	ProtocolSceneName oldSceneState = shared_clientInfo.get()->GetMySceneState();
+	RoomListIt roomIter;
 	bool isSucces = false;
-	RoomListIt roomIter = mRoomManager.ExitRoom(shared_clientInfo, isSucces);	// 룸에서 나가기
+	{
+		// 프로그램을 한번에 죽이면 스레드가 꼬이는지.. 반복자를 잘못 가져오게되어 프로그램 죽음 .. 어쩔 수 없이 락걸어버림.
+		ScopeLock<MUTEX> MU(mRAII_CommandMUTEX);
+		roomIter = mRoomManager.ExitRoom(shared_clientInfo, isSucces);	// 룸에서 나가기
+	}
 	if (!isSucces)
 		return;
-	if (true == (*roomIter)->IsRoomEmpty())							// 룸에 아무도 없나 확인
+	try
 	{
-		mRoomManager.EraseRoom(roomIter);								// 아무도 없으면 룸 삭제
-	}
-	else
-	{
-		if (ProtocolSceneName::RoomScene == oldSceneState)	// RoomScene에서 나갔으면 모두에게 나갔음을 알리고 패널에서 자신을 지우게 시킴
+		if (true == (*roomIter).get()->IsRoomEmpty())							// 룸에 아무도 없나 확인
 		{
-			cout << "나간 사실을 모두에게 알림" << endl;
-			Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::RemovePanel, targetPos, nullptr);
-			(*roomIter)->Broadcast(packet);
-			(*roomIter)->NotReadyTogether(); // 누군가 한사람이라도 나가면 Ready 풀림
+			mRoomManager.EraseRoom(roomIter);								// 아무도 없으면 룸 삭제
 		}
+		else
+		{
+			if (ProtocolSceneName::RoomScene == oldSceneState)	// RoomScene에서 나갔으면 모두에게 나갔음을 알리고 패널에서 자신을 지우게 시킴
+			{
+				cout << "나간 사실을 모두에게 알림" << endl;
+				Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::RemovePanel, targetPos, nullptr);
+				(*roomIter)->Broadcast(packet);
+				(*roomIter)->NotReadyTogether(); // 누군가 한사람이라도 나가면 Ready 풀림
+			}
+		}
+	}
+	catch (const std::exception&)
+	{
+		return;
 	}
 }
 void CCommandController::DeleteClientSocket(const LinkPtr & shared_clientInfo)
@@ -147,6 +172,19 @@ void CCommandController::GetHostIP(const LinkPtr & shared_clientInfo)
 	mRoomManager.GetHostIP(shared_clientInfo);
 }
 
+int CCommandController::AutoMakeORSearchRoom(const LinkPtr & shared_clientInfo, bool & isSpecialRoom)
+{
+	int enterRoomNumber = mRoomManager.SearchRoom(isSpecialRoom);
+	// 빈방이 없는 경우 만듬
+	if (NoneRoom == enterRoomNumber)
+	{
+		//cout << "room 새로 만듬" << endl;
+		enterRoomNumber = MakeRoom(shared_clientInfo, RoomInitName, EnterAutoMatchingRoomPeopleLimit, false); 
+		isSpecialRoom = false;
+	}
+	return enterRoomNumber;
+}
+
 CCommandController * CCommandController::GetInstance()
 {
 	if (nullptr == CommandControllerStatic)
@@ -165,7 +203,12 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		if (ProtocolDetail::EnterRoom == packet.InfoProtocolDetail) // 방에 입장
 		{
 			//cout << "입장 명령 시작" << endl;
-			EnterRoom(shared_clientInfo);
+			EnterRoom(shared_clientInfo); // 자동매칭 입장
+		}
+		else if (ProtocolDetail::EnterSpecialRoom == packet.InfoProtocolDetail)
+		{
+			vector<string> roomNumberPWVector = ReadHandlerStatic->Parse(packet.InfoValue, '/');
+			EnterSpecialRoomFunc(shared_clientInfo, stoi(roomNumberPWVector.at(0)), roomNumberPWVector.at(1));
 		}
 		else if (ProtocolDetail::EnterChanel == packet.InfoProtocolDetail)
 		{
@@ -173,6 +216,8 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		}
 		else if (ProtocolDetail::MakeRoom == packet.InfoProtocolDetail)
 		{
+			int roomNumber = MakeRoom(shared_clientInfo, RoomInitName, (ProtocolTeamAmount)packet.InfoTagIndex, true, packet.InfoValue/*pw*/);
+			EnterSpecialRoomFunc(shared_clientInfo, roomNumber, packet.InfoValue);
 			//int battingMoney = stoi(commandString.at(2));
 			//MakeRoom(shared_clientInfo, packet.InfoValue);
 		}

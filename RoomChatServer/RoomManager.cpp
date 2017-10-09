@@ -41,13 +41,16 @@ void CRoomManager::PushRoom(const RoomPtr & shared_newRoom)
 	++newRoomNumber;
 }
 
-int CRoomManager::SearchRoom()
+int CRoomManager::SearchRoom(bool& isSpecialRoom)
 {
 	RoomListIt roomBegin = mRooms.begin();
 	for (; roomBegin != mRooms.end(); ++roomBegin)
 	{
-		if (EnterRoomPeopleLimit > (*roomBegin).get()->GetAmountPeople())
+		if (false == (*roomBegin).get()->IsPublicroom())
+			continue;
+		if ((*roomBegin).get()->GetLimitEnterRoomPeople() > (*roomBegin).get()->GetAmountPeople())
 		{
+			isSpecialRoom = (*roomBegin).get()->IsSpecialRoom();
 			return (*roomBegin).get()->GetRoomNum();
 		}
 	}
@@ -99,6 +102,7 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo, bool & isSu
 		//	client->SaveCalculateMoney(); // 갈땐 가더라도 정산은..해야지
 		//	(*myRoomIter)->AllInitBetting();					// 룸에 들어있는 사람 준비 초기화
 		//}
+
 		(*myRoomIter).get()->EraseClient(shared_clientInfo);
 		isSucces = true;
 		return myRoomIter;
@@ -107,10 +111,10 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo, bool & isSu
 	return mRooms.end();
 }
 
-int CRoomManager::MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName)
+int CRoomManager::MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const ProtocolTeamAmount& teamAmount, const bool& isSpecialRoom, const string & roomPW)
 {
 	CLink* client = shared_clientInfo.get();
-	RoomPtr newRoom(new CRoom(newRoomNumber, client->GetMyChannelNum(), roomName, 0));
+	RoomPtr newRoom(new CRoom(newRoomNumber, client->GetMyChannelNum(), roomName, teamAmount,isSpecialRoom, roomPW));
 	int makedRoomNumber = newRoomNumber; // PushRoom을 호출하면 newRoomNumber가 1 증가하기때문에
 	PushRoom(newRoom);
 	return makedRoomNumber;
@@ -130,7 +134,7 @@ int CRoomManager::MakeRoom(const LinkPtr & shared_clientInfo, const string& room
 	//}
 }
 
-bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNumBer)
+bool CRoomManager::EnterRoom(const LinkPtr& shared_clientInfo, int targetRoomNumBer)
 {
 	CLink* client = shared_clientInfo.get(); 
 	if (nullptr == client)
@@ -144,7 +148,7 @@ bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNu
 	
 	if (mRooms.end() != targetRoomIter)
 	{
-		if (EnterRoomPeopleLimit <= (*targetRoomIter).get()->GetAmountPeople())
+		if ((*targetRoomIter).get()->GetLimitEnterRoomPeople() <= (*targetRoomIter).get()->GetAmountPeople())
 		{
 			shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
 			//cout << "방 꽉 차서 못 들어감" << endl;
@@ -154,6 +158,42 @@ bool CRoomManager::EnterRoom(const LinkPtr & shared_clientInfo, int targetRoomNu
 		return true;
 	}
 	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
+	// 없는 방이라 못 들어감
+	return false;
+}
+
+bool CRoomManager::EnterRoomSpecial(const LinkPtr & shared_clientInfo, int targetRoomNumBer, const string & pw)
+{
+	CLink* client = shared_clientInfo.get();
+	if (nullptr == client)
+		return false;
+	if (true == client->IsRoomEnterState()) // 이미 방에 있는지 확인
+	{
+		//cout << "이미 방에 있는데" << endl;
+		return false;
+	}
+	RoomListIt targetRoomIter = GetMyRoomIter(client->GetMyChannelNum(), targetRoomNumBer);
+
+	if (mRooms.end() != targetRoomIter)
+	{
+		if ((*targetRoomIter).get()->GetLimitEnterRoomPeople() <= (*targetRoomIter).get()->GetAmountPeople())
+		{
+			//shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
+			shared_clientInfo.get()->SetMySceneState(ProtocolSceneName::ChannelScene);
+			//cout << "방 꽉 차서 못 들어감" << endl;
+			return false;
+		}
+		if ((*targetRoomIter)->PushClientSpecialRoom(shared_clientInfo, targetRoomNumBer, pw))
+		{
+			return true;
+		}
+		//shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
+		shared_clientInfo.get()->SetMySceneState(ProtocolSceneName::ChannelScene);
+		return false; // 비번이 틀림
+	}
+	//shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
+	shared_clientInfo.get()->SetMySceneState(ProtocolSceneName::ChannelScene);
+	// 없는 방이라 못 들어감
 	return false;
 }
 

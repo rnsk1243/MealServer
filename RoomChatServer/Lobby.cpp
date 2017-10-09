@@ -24,15 +24,23 @@ int CLobby::Login(const CGuestLink * guest , vector<string>& tempUserInfo, strin
 {
 	
 	vector<string> idpwVector = ReadHandlerStatic->Parse(idpw, '/');
-
-	if (ReadHandlerStatic->Search(NameMemberInfoTxt.c_str(), tempUserInfo, 2, idpwVector[0], idpwVector[1]))
+	try
 	{
-		//cout << "로그인 성공" << endl;
-		//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "로그인 성공 하셨습니다. 즐거운 대화 되세요."));
-		return ErrorHandStatic->ErrorHandler(SUCCES_LOGIN);
+		if (ReadHandlerStatic->Search(NameMemberInfoTxt.c_str(), tempUserInfo, 2, idpwVector.at(0), idpwVector.at(1)))
+		{
+			//cout << "로그인 성공" << endl;
+			//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "로그인 성공 하셨습니다. 즐거운 대화 되세요."));
+			return ErrorHandStatic->ErrorHandler(SUCCES_LOGIN);
+		}
+		//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "아이디 혹은 비밀번호가 틀립니다."));
+		return ErrorHandStatic->ErrorHandler(ERROR_LOGIN);
 	}
-	//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "아이디 혹은 비밀번호가 틀립니다."));
-	return ErrorHandStatic->ErrorHandler(ERROR_LOGIN);
+	catch (const std::exception&)
+	{
+		cout << "CLobby::Login Error" << endl;
+		return ErrorHandStatic->ErrorHandler(ERROR_LOGIN);
+	}
+
 }
 //
 //int CLobby::JoinMember(const CGuestLink * guest, vector<string>& tempUserInfo)

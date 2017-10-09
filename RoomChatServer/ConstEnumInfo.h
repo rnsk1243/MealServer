@@ -33,17 +33,19 @@ enum ProtocolDetail     // 소분류
 	ImageChange,              // 이미지
 	NameChange,               // 이름
 	EnterRoom,
+	EnterSpecialRoom,
 	EnterChanel,
 	MakeRoom,
 	OutRoom,
+	OutMakeRoom,
 	SetReadyGame,           // 게임준비
-	FrontMenu,				// 메뉴(로그인, 회원가입, 게스트 로그인 )
-	ChangeCharacter,		// 캐릭터 변경
-	NotReadyGame,			// 게임 준비 취소
+	FrontMenu,              // 메뉴(로그인, 회원가입, 게스트 로그인 )
+	ChangeCharacter,        // 캐릭터 변경
+	NotReadyGame,           // 게임 준비 취소
 	StartGame,
 	GetHostIP,
 	SuccessRequest,       // 요청 성공
-	FailRequest,			// 요청 실패
+	FailRequest,            // 요청 실패
 	RemovePanel             // 나간 사람 패널 지우기
 };
 
@@ -60,7 +62,7 @@ enum ProtocolTagNull
 enum ProtocolCharacterTagIndex   // CharacterImageTag 배열과 CharacterNameTag 배열의 인덱스
 {
 	//NoneCharacter, Red01, Red02, Red03, Blue01, Blue02, Blue03
-	NoneCharacter, Red01, Blue01, Red02, Blue02, Red03, Blue03
+	Red01, Blue01, Red02, Blue02, Red03, Blue03
 };
 
 enum ProtocolMessageTag
@@ -83,6 +85,11 @@ enum ProtocolSceneName
 	FrontScene, ChannelScene, RoomScene, MainScene
 };
 
+enum ProtocolTeamAmount
+{
+	OneTeam, TwoTeam, ThreeTeam
+};
+
 enum State	// 클라이언트 상태
 {
 	ClientNone, ClientFrontMenu/*front씬에서의 기본 상태*/,
@@ -95,7 +102,8 @@ enum State	// 클라이언트 상태
 	ClientRequestMatching, ClientMatching,
 	ClientRequestCancleMactching, /*채널 기본*/
 	ClientRequestCharacterChange, /*룸기본*/
-	ClientRequestBackExit /*씬 기본*/
+	ClientRequestBackExit, /*씬 기본*/
+	ClientRequestMakeRoom /*room만들기 신청 완료*/
 };
 
 const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
@@ -120,7 +128,8 @@ const string NameMemberGoodsTxt = "MemberGoods.txt";
 const string ErrorLogTxt = "ErrorLog.txt";
 const string GuestName = "Guest";
 const string GuestPKNumber = "0";
-
+const string RoomInitName = "Room";
+const string RoomPWNone = "None";
 // 보낼 메세지
 const string EnterRoomMoneyLack = "돈이 부족하여 방에 입장 하실 수 없습니다.";
 const string DialogEnterRoomPeopleLimit = "방에 인원수가 초과하여 더 이상 입장하실 수 없습니다.";
@@ -149,11 +158,12 @@ const int MakeThreadNum = 3;
 const int timeKind = 6; // 시간 종류 갯수 (년, 월, 일, 시, 분, 초) 6개
 const int StartEnterChannelNum = 1; // 처음 접속 채널
 const int StartRoomNum = 1; // 처음 만들어지는 룸 번호
-const int EnterRoomPeopleLimit = 2; // 방에 입장 가능한 최대 인원
+const ProtocolTeamAmount EnterAutoMatchingRoomPeopleLimit = ProtocolTeamAmount::OneTeam; // 방에 입장 가능한 최대 인원
 const int FineGamePlayingOutMoney = 20; // 게임도중 도주 벌금
 const int MaxChannelNum = 5;
 const int ChannelAmount = 5;
 const int NoneRoom = -1; // 방에 들어와 있지 않음 혹은 빈방이 없음
+const int NonePosition = -1; // 방에 들어와 있지 않아서 자리가 정해지지 않아있음
 const int IndexUserPK = 0; // .txt파일에서 맨 왼쪽을 0 | 나타날때마나 1씩 증가
 const int IndexUserID = 1; 
 const int IndexUserPW = 2;
