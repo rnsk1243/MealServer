@@ -33,17 +33,19 @@ enum ProtocolDetail     // 소분류
 	ImageChange,              // 이미지
 	NameChange,               // 이름
 	EnterRoom,
+	EnterSpecialRoom,
 	EnterChanel,
 	MakeRoom,
 	OutRoom,
+	OutMakeRoom,
 	SetReadyGame,           // 게임준비
-	FrontMenu,				// 메뉴(로그인, 회원가입, 게스트 로그인 )
-	ChangeCharacter,		// 캐릭터 변경
-	NotReadyGame,			// 게임 준비 취소
+	FrontMenu,              // 메뉴(로그인, 회원가입, 게스트 로그인 )
+	ChangeCharacter,        // 캐릭터 변경
+	NotReadyGame,           // 게임 준비 취소
 	StartGame,
 	GetHostIP,
 	SuccessRequest,       // 요청 성공
-	FailRequest,			// 요청 실패
+	FailRequest,            // 요청 실패
 	RemovePanel             // 나간 사람 패널 지우기
 };
 
@@ -80,7 +82,12 @@ enum ProtocolChannelMenuTag
 
 enum ProtocolSceneName
 {
-	FrontScene, ChannelScene, RoomScene, MainScene
+	FrontScene, ChannelScene, RoomMakeScene, RoomScene, MainScene
+};
+
+enum ProtocolTeamAmount
+{
+	OneTeam, TwoTeam, ThreeTeam
 };
 
 enum State	// 클라이언트 상태
@@ -95,7 +102,8 @@ enum State	// 클라이언트 상태
 	ClientRequestMatching, ClientMatching,
 	ClientRequestCancleMactching, /*채널 기본*/
 	ClientRequestCharacterChange, /*룸기본*/
-	ClientRequestBackExit /*씬 기본*/
+	ClientRequestBackExit, /*씬 기본*/
+	ClientRequestMakeRoom /*room만들기 신청 완료*/
 };
 
 const string ProtocolFrontManuTag[4] = { "LoginManu", "JoinManu", "GuestManu", "CancleManu" };
@@ -120,7 +128,8 @@ const string NameMemberGoodsTxt = "MemberGoods.txt";
 const string ErrorLogTxt = "ErrorLog.txt";
 const string GuestName = "Guest";
 const string GuestPKNumber = "0";
-
+const string RoomInitName = "Room";
+const string RoomPWNone = "None";
 // 보낼 메세지
 const string EnterRoomMoneyLack = "돈이 부족하여 방에 입장 하실 수 없습니다.";
 const string DialogEnterRoomPeopleLimit = "방에 인원수가 초과하여 더 이상 입장하실 수 없습니다.";
@@ -149,7 +158,7 @@ const int MakeThreadNum = 3;
 const int timeKind = 6; // 시간 종류 갯수 (년, 월, 일, 시, 분, 초) 6개
 const int StartEnterChannelNum = 1; // 처음 접속 채널
 const int StartRoomNum = 1; // 처음 만들어지는 룸 번호
-const int EnterRoomPeopleLimit = 2; // 방에 입장 가능한 최대 인원
+const ProtocolTeamAmount EnterAutoMatchingRoomPeopleLimit = ProtocolTeamAmount::ThreeTeam; // 방에 입장 가능한 최대 인원
 const int FineGamePlayingOutMoney = 20; // 게임도중 도주 벌금
 const int MaxChannelNum = 5;
 const int ChannelAmount = 5;

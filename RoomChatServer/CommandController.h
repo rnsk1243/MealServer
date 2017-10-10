@@ -11,8 +11,9 @@ class CCommandController
 	CRoomManager mRoomManager;
 	CCommandController();
 	void EnterRoom(const LinkPtr& shared_clientInfo);
+	void EnterSpecialRoomFunc(const LinkPtr& shared_clientInfo, const int & roomNumber, const string & pw = nullptr);
 	void ChangeChannel(const LinkPtr& shared_clientInfo, const int & moveChannelNumber);
-	int MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName);
+	int MakeRoom(const LinkPtr & shared_clientInfo, const string & roomName, const ProtocolTeamAmount& teamAmount, const string & roomPW = nullptr);
 	void OutRoom(const LinkPtr& shared_clientInfo);
 	void SendAllReadyGameNotice(const LinkPtr & shared_clientInfo);
 	void ChangeCharacter(const LinkPtr & shared_clientInfo, Packet& packet);

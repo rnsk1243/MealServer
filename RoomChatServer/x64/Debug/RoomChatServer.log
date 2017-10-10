@@ -1,24 +1,4 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppClean.targets(76,5): warning : 'c:\homework\mealserver\roomchatserver\x64\debug\vc140.pdb' 파일은 다른 프로세스에서 사용 중이므로 프로세스에서 액세스할 수 없습니다.
-  WriteHandler.cpp
-  Listener.cpp
-  Room.cpp
-  CommandController.cpp
-  Link.cpp
-  ReadyNetWork.cpp
-  MainProc.cpp
-  RoomManager.cpp
-  ReadHandler.cpp
-  MinidumpHelp.cpp
-c:\program files (x86)\windows kits\8.1\include\um\dbghelp.h(1544): warning C4091: 'typedef ': 변수를 선언하지 않으면 '' 왼쪽은 무시됩니다.
-c:\program files (x86)\windows kits\8.1\include\um\dbghelp.h(3190): warning C4091: 'typedef ': 변수를 선언하지 않으면 '' 왼쪽은 무시됩니다.
-  Lobby.cpp
-  GuestLink.cpp
-  Goods.cpp
-  ErrorHandler.cpp
-  ConstEnumInfo.cpp
-  ChannelManager.cpp
-  Channel.cpp
-  BasicExcel.cpp
+﻿  BasicExcel.cpp
 c:\homework\mealserver\roomchatserver\basicexcel.cpp(313): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 c:\homework\mealserver\roomchatserver\basicexcel.cpp(340): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 c:\homework\mealserver\roomchatserver\basicexcel.cpp(858): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
@@ -192,6 +172,24 @@ c:\homework\mealserver\roomchatserver\basicexcel.hpp(142): warning C4267: '인�
           [
               Type=char
           ]
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  WriteHandler.cpp
+  RoomManager.cpp
+  Room.cpp
+  ReadyNetWork.cpp
+  ReadHandler.cpp
+  MainProc.cpp
+  Lobby.cpp
+  Listener.cpp
+  Link.cpp
+  GuestLink.cpp
+  Goods.cpp
+  ErrorHandler.cpp
+  ConstEnumInfo.cpp
+  CommandController.cpp
+  ChannelManager.cpp
+  Channel.cpp
   코드를 생성하고 있습니다...
   RoomChatServer.vcxproj -> C:\Homework\MealServer\x64\Debug\RoomChatServer.exe
   RoomChatServer.vcxproj -> C:\Homework\MealServer\x64\Debug\RoomChatServer.pdb (Full PDB)

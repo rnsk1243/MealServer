@@ -33,9 +33,10 @@ public:
 	// room에서 나가기 (나가고자하는 소켓)
 	RoomListIt ExitRoom(const LinkPtr & shared_clientInfo, bool & isSucces);
 	// 현재 자신이 속한 방이 없을때 방 만들기(들어갈 소켓, 만드는 방 번호) 
-	int MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName);
+	int MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const ProtocolTeamAmount& teamAmount, const string & roomPW = nullptr);
 	// 현재 자신이 속한 방이 없을때 방 입장 하기
 	bool EnterRoom(const LinkPtr& shared_clientInfo, int targetRoomNumBer);
+	bool EnterRoomSpecial(const LinkPtr& shared_clientInfo, int targetRoomNumBer, const string & pw);
 	// 방에 있는 사람 전부 배팅 준비 됐나?
 	bool IsAllReadyGame(const LinkPtr& shared_clientInfo);
 	// 게임 결과 판별

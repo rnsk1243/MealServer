@@ -99,6 +99,9 @@ int thSendRecv(void* v_clientSocket, void* v_ip)
 		case ProtocolInfo::ServerCommend:
 			CommandControllerStatic->CommandHandling(shared_clientInfo, packet);
 			break;
+		case ProtocolInfo::SceneChange:
+			shared_clientInfo.get()->SetMySceneState((ProtocolSceneName)packet.InfoTagIndex);
+			break;
 		default:
 			break;
 		}

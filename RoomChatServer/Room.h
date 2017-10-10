@@ -12,10 +12,12 @@ class CRoom
 {
 	LinkList mClientInfos;
 	string mRoomName;
+	string mRoomPW; // room 입장 비번
 	const int mChannelNum;
 	const int mRoomNum;
 	// 현재 들어있는 방 인원
 	int mAmountPeople;
+	const ProtocolTeamAmount mEnterRoomPeopleLimit;
 	MUTEX mRAII_RoomMUTEX;
 	//CRITICALSECTION CT;
 	//int mBettingMoney;
@@ -32,12 +34,14 @@ class CRoom
 	void NoticRoomIn(const LinkPtr& shared_client);
 	void EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex); // 방 처음 입장 함수 // 모두에게 내 표시위치와 이름 보내기
 	void TeachNewPeople(const LinkPtr& shared_client); // 새로 들어온 사람에게 현재 방얘들 이름이랑 고른 캐릭터 알려주기
+	void NoticSoloEnterRoomIn(const LinkPtr & shared_client);
 public:
 	CRoom(const CRoom&) = delete;
 	CRoom& operator=(const CRoom&) = delete;
-	CRoom(int roomNum,int channelNum, const string& roomName,const int& battingMoney);
+	CRoom(int roomNum,int channelNum, const string& roomName, const ProtocolTeamAmount& teamAmount, const string & roomPW = RoomPWNone);
 	~CRoom();
 	void PushClient(const LinkPtr& shared_client, const int& enterRoomNumber);
+	bool PushClientSpecialRoom(const LinkPtr& shared_client, const int& enterRoomNumber, const string & pw);
 	LinkListIt EraseClient(const LinkPtr& shared_client);
 	int GetRoomNum();
 	int GetChannelNum();
@@ -54,5 +58,6 @@ public:
 	void Talk(const LinkPtr& myClient, const Packet& packet, int flags = 0);
 	void GetHostIP();
 	void NotReadyTogether();
+	int GetLimitEnterRoomPeople();
 };
 
