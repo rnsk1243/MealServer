@@ -4918,8 +4918,8 @@ bool BasicExcel::ReadExcel(char * excelName)
 			}
 			if (nullptr != name)
 			{
-				cout << "액셀 읽기 성공" << endl;
-				cout << "읽은 이름 : " << name << endl;
+//				cout << "액셀 읽기 성공" << endl;
+//				cout << "읽은 이름 : " << name << endl;
 				//여기서 읽은것을 가지고 객체를 만들 것.
 				//Card* card = new Card(characterNumber, name, prob, stat, giveExp);
 				//shared_ptr<Card> shardCard(card);
@@ -4928,8 +4928,8 @@ bool BasicExcel::ReadExcel(char * excelName)
 			else { cout << "excel 읽기 실패" << endl; return false; }
 		}
 	}
-	cout << "====================================================" << endl;
-	cout << "Excel 파일 읽기 완료" << endl;
+//	cout << "====================================================" << endl;
+//	cout << "Excel 파일 읽기 완료" << endl;
 	return true;
 }
 

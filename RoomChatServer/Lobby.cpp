@@ -8,107 +8,112 @@
 
 CLobby::CLobby(int NextUserNum_) :mNextUserNum(NextUserNum_) {}
 
-void CLobby::AskedID(const CGuestLink * guest, string & id)
-{
-	guest->Sendn("ID : ");
-	ListenerStatic->Recvn((guest->GetClientSocket()), id);
-}
+//void CLobby::AskedID(const CGuestLink * guest, Packet & packetID)
+//{
+//	guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "ID : "));
+//	ListenerStatic->Recvn((guest->GetClientSocket()), packetID);
+//}
+//
+//void CLobby::AskedPW(const CGuestLink * guest, Packet & packetPW)
+//{
+//	guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "PW : "));
+//	ListenerStatic->Recvn(guest->GetClientSocket(), packetPW);
+//}
 
-void CLobby::AskedPW(const CGuestLink * guest, string & pw)
+int CLobby::Login(const CGuestLink * guest , vector<string>& tempUserInfo, string idpw)
 {
-	guest->Sendn("PW : ");
-	ListenerStatic->Recvn(guest->GetClientSocket(), pw);
-}
-
-int CLobby::Login(const CGuestLink * guest , vector<string>& tempUserInfo)
-{
-	string id, pw;
-	// ID 묻기
-	AskedID(guest, id);
-	if (0 == id.compare("9"))
-		return ErrorHandStatic->ErrorHandler(CANCLE);
-
-	// PW 묻기
-	AskedPW(guest, pw);
-	if (0 == pw.compare("9"))
-		return ErrorHandStatic->ErrorHandler(CANCLE);
-	if (ReadHandlerStatic->Search(NameMemberInfoTxt.c_str(), tempUserInfo, 2, id, pw))
+	
+	vector<string> idpwVector = ReadHandlerStatic->Parse(idpw, '/');
+	try
 	{
-		cout << "로그인 성공" << endl;
-		guest->Sendn("로그인 성공 하셨습니다. 즐거운 대화 되세요.");
-		return ErrorHandStatic->ErrorHandler(SUCCES_LOGIN);
-	}
-	guest->Sendn("아이디 혹은 비밀번호가 틀립니다.");
-	return ErrorHandStatic->ErrorHandler(ERROR_LOGIN);
-}
-
-int CLobby::JoinMember(const CGuestLink * guest, vector<string>& tempUserInfo)
-{
-	SetNextUserPKNumber();
-	string id, pw, nextUserNum;
-	nextUserNum = IntToString(mNextUserNum);
-	// ID 묻기
-	AskedID(guest, id);
-
-	if (0 == id.compare("9"))
-		return ErrorHandStatic->ErrorHandler(CANCLE);
-
-	AskedPW(guest, pw);
-
-	if (0 == pw.compare("9"))
-		return ErrorHandStatic->ErrorHandler(CANCLE);
-
-	if (ReadHandlerStatic->Search(NameMemberInfoTxt.c_str(), tempUserInfo, 1, id))
-	{
-		cout << "id 중복 입니다." << endl;
-		guest->Sendn("id 중복 입니다.");
-		return ErrorHandStatic->ErrorHandler(OVERLAPID);
-	}
-
-	if (WriteHandlerStatic->Write(NameMemberInfoTxt.c_str(), 3, nextUserNum, id, pw) /*&& WriteHandlerStatic->write(NameMemberCardInfoTxt.c_str(), 2, nextUserNum, StartCardInventory)*/)
-	{
-		if (mNextUserNum > JoinMemberTxtCapacity)
+		if (ReadHandlerStatic->Search(NameMemberInfoTxt.c_str(), tempUserInfo, 2, idpwVector.at(0), idpwVector.at(1)))
 		{
-			WriteHandlerStatic->Write(NameMemberGoodsTxt.c_str(), 2, nextUserNum, StartGoodsInventory);
+			//cout << "로그인 성공" << endl;
+			//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "로그인 성공 하셨습니다. 즐거운 대화 되세요."));
+			return ErrorHandStatic->ErrorHandler(SUCCES_LOGIN);
 		}
-		cout << "회원가입 성공" << endl;
-		WriteHandlerStatic->WriteNextJoinUserNum(MakeNextJoinNumberTxt, mNextUserNum);
-		++mNextUserNum;
-		guest->Sendn("회원가입 성공 했습니다. 로그인 해주세요.");
-		return SUCCES_JOIN;
+		//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "아이디 혹은 비밀번호가 틀립니다."));
+		return ErrorHandStatic->ErrorHandler(ERROR_LOGIN);
 	}
-	else
+	catch (const std::exception&)
 	{
-		cout << "회원가입 실패" << endl;
-		guest->Sendn("회원가입 실패 입니다.");
-		return ErrorHandStatic->ErrorHandler(ERROR_JOIN);
+		cout << "CLobby::Login Error" << endl;
+<<<<<<< HEAD
+=======
+		return ErrorHandStatic->ErrorHandler(ERROR_LOGIN);
+>>>>>>> origin/WOOHEE
 	}
-	return ErrorHandStatic->ErrorHandler(ERROR_EXCEPTION);
+
 }
+//
+//int CLobby::JoinMember(const CGuestLink * guest, vector<string>& tempUserInfo)
+//{
+//	//Packet packetID, packetPW;
+//	SetNextUserPKNumber();
+//	string nextUserNum;
+//	nextUserNum = IntToString(mNextUserNum);
+//	// ID 묻기
+//	AskedID(guest, packetID);
+//	string id(packetID.InfoValue);
+//	if (0 == id.compare("9"))
+//		return ErrorHandStatic->ErrorHandler(CANCLE);
+//
+//	AskedPW(guest, packetPW);
+//	string pw(packetPW.InfoValue);
+//	if (0 == pw.compare("9"))
+//		return ErrorHandStatic->ErrorHandler(CANCLE);
+//
+//	if (ReadHandlerStatic->Search(NameMemberInfoTxt.c_str(), tempUserInfo, 1, id))
+//	{
+//		cout << "id 중복 입니다." << endl;
+//		guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "id 중복 입니다."));
+//		return ErrorHandStatic->ErrorHandler(OVERLAPID);
+//	}
+//
+//	if (WriteHandlerStatic->Write(NameMemberInfoTxt.c_str(), 3, nextUserNum, id, pw) /*&& WriteHandlerStatic->write(NameMemberCardInfoTxt.c_str(), 2, nextUserNum, StartCardInventory)*/)
+//	{
+//		if (mNextUserNum > JoinMemberTxtCapacity)
+//		{
+//			WriteHandlerStatic->Write(NameMemberGoodsTxt.c_str(), 2, nextUserNum, StartGoodsInventory);
+//		}
+//		cout << "회원가입 성공" << endl;
+//		WriteHandlerStatic->WriteNextJoinUserNum(MakeNextJoinNumberTxt, mNextUserNum);
+//		++mNextUserNum;
+//		guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "회원가입 성공 했습니다. 로그인 해주세요."));
+//		return SUCCES_JOIN;
+//	}
+//	else
+//	{
+//		cout << "회원가입 실패" << endl;
+//		guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "회원가입 실패 입니다."));
+//		return ErrorHandStatic->ErrorHandler(ERROR_JOIN);
+//	}
+//	return ErrorHandStatic->ErrorHandler(ERROR_EXCEPTION);
+//}
 
 
-int CLobby::ChooseMenu(const char * message, const CGuestLink* guest)
-{
-	switch (message[0])
-	{
-	case '1':
-		cout << "로그인" << endl;
-		guest->Sendn("로그인 화면 입니다. 9번입력 : 취소"); //AskClient(clientSocket, MS, "ID : ");
-		return 1;
-	case '2':
-		cout << "회원가입" << endl;
-		guest->Sendn("회원가입 화면 입니다. 9번입력 : 취소");
-		return 2;
-	case '9':
-		cout << "이전 메뉴로 돌아가기" << endl;
-		guest->Sendn("환영합니다. 1번입력 : 로그인 / 2번입력 : 회원가입 / 9번입력 : 취소");
-		return 9;
-	default:
-		cout << "잘 못 입력" << endl;
-		break;
-	}
-	return ErrorHandStatic->ErrorHandler(ERROR_MENUOUT);
-}
+//int CLobby::ChooseMenu(const char * message, const CGuestLink* guest)
+//{
+//	switch (message[0])
+//	{
+//	case '1':
+//		cout << "로그인" << endl;
+//		guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "로그인 화면 입니다. 9번입력 : 취소"));
+//		return 1;
+//	case '2':
+//		cout << "회원가입" << endl;
+//		guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "회원가입 화면 입니다. 9번입력 : 취소"));
+//		return 2;
+//	case '9':
+//		cout << "이전 메뉴로 돌아가기" << endl;
+//		guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "환영합니다. 1번입력 : 로그인 / 2번입력 : 회원가입 / 9번입력 : 취소"));
+//		return 9;
+//	default:
+//		cout << "잘 못 입력" << endl;
+//		break;
+//	}
+//	return ErrorHandStatic->ErrorHandler(ERROR_MENUOUT);
+//}
 
 void CLobby::SetNextUserPKNumber()
 {
@@ -129,40 +134,75 @@ CLobby * CLobby::GetInstance(const int& NextUserNum)
 }
 
 
-int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo)
+int CLobby::ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo, bool& isGuest)
 {
 	int resultLoginFunc = 0;
-	guest->Sendn("환영합니다. 1번입력 : 로그인 / 2번입력 : 회원가입 / 9번입력 : 취소");
+	//guest->Sendn(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "환영합니다. 1번입력 : 로그인 / 2번입력 : 회원가입 / 9번입력 : 취소"));
+	
+	Packet packet;
+	ListenerStatic->Recvn(guest->GetClientSocket(), packet); //(guest->GetClientSocket(), strMessage);
 
-	string strMessage;
-	ListenerStatic->Recvn(guest->GetClientSocket(), strMessage);
-
-	int choose = ChooseMenu(strMessage.c_str(), guest);
-	switch (choose)
+	if (ProtocolDetail::FrontMenu == packet.InfoProtocolDetail)
 	{
-	case 1:
-		resultLoginFunc = Login(guest, tempUserInfo);
-		if (SUCCES_LOGIN == resultLoginFunc)
+		switch (packet.InfoTagIndex)
 		{
+		case ProtocolFrontManuTag::LoginManu:
+			resultLoginFunc = Login(guest, tempUserInfo, packet.InfoValue);
+			if (SUCCES_LOGIN == resultLoginFunc)
+			{
+				isGuest = false;
+				return SUCCES_LOGIN;
+			}
+			else if (CANCLE == resultLoginFunc)
+			{
+				return CANCLE;
+			}
+			else if (ERROR_LOGIN == resultLoginFunc)
+			{
+				return ERROR_LOGIN;
+			}
+			return ERROR_NULL_LINK_RECV;
+		case ProtocolFrontManuTag::JoinManu:
+			//return JoinMember(guest, tempUserInfo);
+		case ProtocolFrontManuTag::GuestManu:
+			tempUserInfo.reserve(2);
+			tempUserInfo.push_back(GuestPKNumber);// guest pk number
+			tempUserInfo.push_back(packet.InfoValue);// guest name(ID)e);
+			isGuest = true;
 			return SUCCES_LOGIN;
-		}
-		else if (CANCLE == resultLoginFunc)
-		{
+		case ProtocolFrontManuTag::CancleManu:
 			return CANCLE;
+		default:
+			return ERROR_WRONG_INPUT;
 		}
-		else if (ERROR_LOGIN == resultLoginFunc)
-		{
-			return ERROR_LOGIN;
-		}
-		return ERROR_NULL_LINK_RECV;
-	case 2:
-		return JoinMember(guest, tempUserInfo);
-	case 9:
-		return CANCLE;
-	default:
-		return ERROR_WRONG_INPUT;
 	}
-	return ERROR_NULL_LINK_SEND;
+	return ERROR_WRONG_INPUT;
+	//int choose = ChooseMenu(packet.InfoValue, guest);
+	//switch (packet.InfoProtocolDetail)
+	//{
+	//case 1:
+	//	resultLoginFunc = Login(guest, tempUserInfo);
+	//	if (SUCCES_LOGIN == resultLoginFunc)
+	//	{
+	//		return SUCCES_LOGIN;
+	//	}
+	//	else if (CANCLE == resultLoginFunc)
+	//	{
+	//		return CANCLE;
+	//	}
+	//	else if (ERROR_LOGIN == resultLoginFunc)
+	//	{
+	//		return ERROR_LOGIN;
+	//	}
+	//	return ERROR_NULL_LINK_RECV;
+	//case 2:
+	//	return JoinMember(guest, tempUserInfo);
+	//case 9:
+	//	return CANCLE;
+	//default:
+	//	return ERROR_WRONG_INPUT;
+	//}
+	//return ERROR_NULL_LINK_SEND;
 }
 
 //void CLobby::PushGuest(const GuestLinkPtr & newGuest)

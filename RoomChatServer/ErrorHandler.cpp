@@ -7,14 +7,19 @@
 EnumErrorCode CErrorHandler::CriticalError(EnumErrorCode code, LinkPtr client)
 {
 	//cout << "[심각한 에러 발생] 에러코드 = [ " << EnumErrorCode(code) << " ]" << endl;
-	vector<string> errorMessageVec;
-	GetErrorCurTime(errorMessageVec);
-	GetErrorLevel(ErrorLevel::Serious, errorMessageVec);
-	GetErrorCode(code, errorMessageVec);
-	GetErrorMemberInfo(client, errorMessageVec);
-    
-	WriteHandlerStatic->Write(ErrorLogTxt.c_str(), errorMessageVec);
-	//_endthreadex(0);
+	//vector<string> errorMessageVec;
+	//GetErrorCurTime(errorMessageVec);
+	//GetErrorLevel(ErrorLevel::Serious, errorMessageVec);
+	//GetErrorCode(code, errorMessageVec);
+	//GetErrorMemberInfo(client, errorMessageVec);
+	//WriteHandlerStatic->Write(ErrorLogTxt.c_str(), errorMessageVec);
+	/*if (nullptr != client)
+	{
+		
+	}*/
+	client.get()->SetSocketError();
+	CCommandController::GetInstance()->DeleteClientSocket(client);
+	_endthreadex(0);
 	return code;
 }
 
@@ -28,7 +33,7 @@ EnumErrorCode CErrorHandler::TakeNullLinkError(EnumErrorCode code)
 	temp.push_back("client가 없는 에러코드");
 	errorMessageVec.insert(errorMessageVec.end(), temp.begin(), temp.end());
 	WriteHandlerStatic->Write(ErrorLogTxt.c_str(), errorMessageVec);
-	cout << "client가 없는 에러코드 = " << EnumErrorCode(code) << endl;
+	//cout << "client가 없는 에러코드 = " << EnumErrorCode(code) << endl;
 	//_endthreadex(0);
 	return code;
 }
@@ -44,13 +49,13 @@ EnumErrorCode CErrorHandler::TakeSucces(EnumErrorCode code, LinkPtr client)
 		GetErrorMemberInfo(client, errorMessageVec);
 	}
 	WriteHandlerStatic->Write(ErrorLogTxt.c_str(), errorMessageVec);
-	cout << "성공 코드 = " << EnumErrorCode(code) << endl;
+	//cout << "성공 코드 = " << EnumErrorCode(code) << endl;
 	return code;
 }
 
 EnumErrorCode CErrorHandler::TakeError(EnumErrorCode code, LinkPtr client)
 {
-	cout << "에러코드 = " << EnumErrorCode(code) << endl;
+//	cout << "에러코드 = " << EnumErrorCode(code) << endl;
 	//_endthreadex(0);
 	if (nullptr == client)
 	{
@@ -157,25 +162,25 @@ CErrorHandler * CErrorHandler::GetInstance()
 
 EnumErrorCode CErrorHandler::ErrorHandler(EnumErrorCode code, LinkPtr client)
 {
-	cout << "에러 코드 = " << code << endl;
 	if (0 == code % 2)
 	{
-		return TakeSucces(code, client);
+		return code; //TakeSucces(code, client);
 	}
+	cout << "에러 코드 = " << code << endl;
 
 	if (nullptr == client)
 	{
-		return TakeNullLinkError(code);
+		return code;
+		//return TakeNullLinkError(code);
 	}
 
 	switch (code)
 	{
-	case ERROR_INIT_MONEY:
+	//case ERROR_INIT_MONEY:
 	case ERROR_RECV:
 	case ERROR_SEND:
-	case ERROR_NULL_LINK_SEND:
 		return CriticalError(code, client);
 	default:
-		return TakeError(code, client);
+		return code; //TakeError(code, client);
 	}
 }

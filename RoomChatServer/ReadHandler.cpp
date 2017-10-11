@@ -26,10 +26,11 @@ int CReadHandler::Search(const char * textFileName, vector<string>& tempUserInfo
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 		return 0;
 	}
 	va_list Marker;
+	tempUserInfo.reserve(count);
 	va_start(Marker, count);
 
 	vector<string> searchTarget;
@@ -65,7 +66,8 @@ int CReadHandler::Search(const char * textFileName, vector<string>& tempUserInfo
 		}
 		if (sameAmount == count)
 		{
-			tempUserInfo = userInfoVec;
+//			tempUserInfo = userInfoVec;
+			tempUserInfo.assign(userInfoVec.begin(), userInfoVec.end());
 			break;
 		}
 	}
@@ -108,7 +110,7 @@ const string CReadHandler::GetLastLine(const string & textFileName)
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 	}
 	inFile.seekg(-2, ios::end);
 	char checkLine = ' ';
@@ -133,7 +135,7 @@ bool CReadHandler::ReadUserObjectLine(const string& textFileName, const int& use
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 		return false;
 	}
 
@@ -161,56 +163,56 @@ bool CReadHandler::ReadUserObjectLine(const string& textFileName, const int& use
 	inFile.close();
 	return false;
 }
-
-bool CReadHandler::ReadUserGoods(const LinkPtr& client, const string & textFileName)
-{
-	typedef vector<string> goodsInfoVec;
-	typedef goodsInfoVec::iterator goodsInfoVecIter;
-
-	goodsInfoVec userGoodsInfo;
-	if (!ReadUserObjectLine(textFileName, client->GetMyPKNumber(), userGoodsInfo))
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_INIT_USER_GOODS, client);
-		return false;
-	}
-	if (!client->IsZeroMoney())
-	{
-		client->SetZeroMoney();
-	}
-	
-	if (IndexGoodsInfoTxtMoney < userGoodsInfo.size())
-	{
-		int myMoney = stoi(userGoodsInfo[IndexGoodsInfoTxtMoney]);
-		cout << "읽어 온 돈 = " << myMoney << endl;
-		if (client->InitGoods(myMoney))
-		{
-			client->SetInitGoods();
-			return true;
-		}
-		else
-		{
-			ErrorHandStatic->ErrorHandler(ERROR_INIT_GOODS, client);
-			return false;
-		}
-	}
-	else
-	{
-		ErrorHandStatic->ErrorHandler(ERROR_READ_GOODS_TXT_INDEX_OUTOFLANGE, client);
-		return false;
-	}
-	return false;
-}
+//
+//bool CReadHandler::ReadUserGoods(const LinkPtr& client, const string & textFileName)
+//{
+//	typedef vector<string> goodsInfoVec;
+//	typedef goodsInfoVec::iterator goodsInfoVecIter;
+//
+//	goodsInfoVec userGoodsInfo;
+//	if (!ReadUserObjectLine(textFileName, client->GetMyPKNumber(), userGoodsInfo))
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_INIT_USER_GOODS, client);
+//		return false;
+//	}
+//	if (!client->IsZeroMoney())
+//	{
+//		client->SetZeroMoney();
+//	}
+//	
+//	if (IndexGoodsInfoTxtMoney < userGoodsInfo.size())
+//	{
+//		int myMoney = stoi(userGoodsInfo[IndexGoodsInfoTxtMoney]);
+//		cout << "읽어 온 돈 = " << myMoney << endl;
+//		if (client->InitGoods(myMoney))
+//		{
+//			client->SetInitGoods();
+//			return true;
+//		}
+//		else
+//		{
+//			ErrorHandStatic->ErrorHandler(ERROR_INIT_GOODS, client);
+//			return false;
+//		}
+//	}
+//	else
+//	{
+//		ErrorHandStatic->ErrorHandler(ERROR_READ_GOODS_TXT_INDEX_OUTOFLANGE, client);
+//		return false;
+//	}
+//	return false;
+//}
 
 const string CReadHandler::GetNextUserNum(const string & textFileName)
 {
 	//string lastLine = GetLastLine(textFileName);
 	//vector<string> parseStr = Parse(lastLine, '|');
 	//return parseStr[0];
-	cout << "=============userNumFile Read!===========" << endl;
+	//cout << "=============userNumFile Read!===========" << endl;
 	ifstream inFile(textFileName);
 	if (!inFile)
 	{
-		cout << "파일이 없습니다." << endl;
+		//cout << "파일이 없습니다." << endl;
 	}
 	string nextUserNum;
 	getline(inFile, nextUserNum);

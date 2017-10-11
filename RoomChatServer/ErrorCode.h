@@ -83,6 +83,7 @@ enum EnumErrorCode
 	ERROR_MULTI_SEND_EMPTY = 195, // 멀티 샌드 보낼 사람 없음
 	ERROR_BATTING_RESULT_ALONE = 197, // 배팅 결과 혼자임.
 	ERROR_SAVE_MONEY_ZERO = 199, //  .txt저장 하는데 0원을 더하거나 빼려고함.
+	ERROR_ROOM_CHANGET_CHARACTER = 201, // 잘못된 캐릭터 변경 요청
 	//////////////////////////////////////////////
 	// 예외처리가 안된 오류
 	ERROR_EXCEPTION = 9876

@@ -60,50 +60,50 @@ void printVersionInfo()
 }
 
 
-int thSendRecv(void* v_clientSocket)
+int thSendRecv(void* v_clientSocket, void* v_ip)
 {
 	const SOCKET* clientSocket = ((SOCKET*)v_clientSocket);
+	string ip = *(string*)v_ip;
+	cout << "붙은 클라이언트 ip = [" << ip << "]" << endl;;
 	CGuestLink guest(clientSocket);
 	int isLogin = 0;
 	vector<string> userInfo;
+	bool isGuest = false;
 	while (SUCCES_LOGIN != isLogin)
 	{
-		isLogin = LobbyStatic->ActionServiceLobby(&guest, userInfo);
-		if (ERROR_NULL_LINK_RECV == isLogin || ERROR_NULL_LINK_SEND == isLogin)
-		{
-			cout << "종료" << endl;
-			closesocket(*clientSocket);
-			delete clientSocket;
-			return ErrorHandStatic->ErrorHandler(EnumErrorCode(isLogin));
-			//_endthreadex(0);
-		}
-		ErrorHandStatic->ErrorHandler(EnumErrorCode(isLogin));
+		isLogin = LobbyStatic->ActionServiceLobby(&guest, userInfo, isGuest);
 	}
-	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str()));
-
+	LinkPtr shared_clientInfo(new CLink(clientSocket, userInfo[IndexUserPK], userInfo[IndexUserID].c_str(), ip, isGuest));
+	shared_clientInfo.get()->SetMySceneState(ProtocolSceneName::ChannelScene);
 	// EnterChannelNum 채널에 입장
-	vector<string> commandChannel;
+	//vector<string> commandChannel;
 	CommandControllerStatic->SetEnterChannel(shared_clientInfo, StartEnterChannelNum);
-	if (false == ReadHandlerStatic->ReadUserGoods(shared_clientInfo, NameMemberGoodsTxt))
-		return 0;
+	/*if (false == ReadHandlerStatic->ReadUserGoods(shared_clientInfo, NameMemberGoodsTxt))
+		return 0;*/
 
-	cout << "보유 재화 = " << shared_clientInfo->GetMyMoney() << endl;
-	shared_clientInfo.get()->SendnMine("로그인 성공");
+	//cout << "보유 재화 = " << shared_clientInfo->GetMyMoney() << endl;
+	string welcomeMessage = "환영합니다. " + shared_clientInfo.get()->GetMyName() + " 님";
+	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, welcomeMessage.c_str()));
+	//shared_clientInfo.get()->SendnMine("로그인 성공");
 	ErrorHandStatic->ErrorHandler(SUCCES_LOGIN, shared_clientInfo);
 	while (true)
 	{
-		string recvMessage;
-		int isRecvSuccesResultValue = ListenerStatic->Recvn(shared_clientInfo.get()->GetClientSocket(), recvMessage);
-		if (SUCCES_RECV == isRecvSuccesResultValue)// 메시지 받기 성공 일때 각 클라이언트에게 메시지 보냄
+		Packet packet;
+		ListenerStatic->RecvnLink(shared_clientInfo, packet);
+
+		switch (packet.InfoProtocol)
 		{
-			vector<string> commandMessage = ReadHandlerStatic->Parse(recvMessage, '/');
-			CommandControllerStatic->CommandHandling(shared_clientInfo, commandMessage);
-		}
-		else if (ERROR_RECV == isRecvSuccesResultValue || ERROR_NULL_LINK_RECV == isRecvSuccesResultValue) // 메시지 받기 실패 소켓 해제
-		{
-			cout << "소켓 오류로 인하여 서버에서 나갔습니다." << endl;
-			CommandControllerStatic->DeleteClientSocket(shared_clientInfo);
-			return 0;
+		case ProtocolInfo::ChattingMessage:
+			CommandControllerStatic->ChattingMessage(shared_clientInfo, packet);
+			break;
+		case ProtocolInfo::ServerCommend:
+			CommandControllerStatic->CommandHandling(shared_clientInfo, packet);
+			break;
+		case ProtocolInfo::SceneChange:
+			shared_clientInfo.get()->SetMySceneState((ProtocolSceneName)packet.InfoTagIndex);
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -115,16 +115,17 @@ void main()
 	/////////// 버전 정보 출력 ///////////
 	printVersionInfo();
 	//////////////////////////////////////
-	BasicExcel excel;
-	excel.ReadExcel("CharacterDB.xls");
+	//BasicExcel excel;
+	//excel.ReadExcel("CharacterDB.xls");
 	
 
 	while (true)
 	{
 		SOCKET* clientSocket = new SOCKET();
-		ReadyNetWorkStatic->Accept(clientSocket);
+		string ip;
+		ReadyNetWorkStatic->Accept(clientSocket, ip);
 		
-		thread clientThread(thSendRecv, clientSocket);
+		thread clientThread(thSendRecv, clientSocket, &ip);
 		clientThread.detach();
 	}
 	getchar();

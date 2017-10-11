@@ -37,14 +37,14 @@ CChannel * CChannelManager::GetMyChannel(int ChannelNum)
 		if ((*iterBegin)->GetChannelNum() == ChannelNum)
 			return (*iterBegin).get();
 	}
-	cout << ChannelNum << "번 채널이 없습니다." << endl;
+//	cout << ChannelNum << "번 채널이 없습니다." << endl;
 	ErrorHandStatic->ErrorHandler(ERROR_GET_CHANNEL);
 	return nullptr;
 }
 
 CChannelManager::~CChannelManager()
 {
-	cout << "ChannelManager 소멸자 호출" << endl;
+//	cout << "ChannelManager 소멸자 호출" << endl;
 }
 
 bool CChannelManager::MoveChannel(const LinkPtr& shared_clientInfo, const int & moveChannelNumber)
@@ -66,9 +66,12 @@ bool CChannelManager::ExitChannel(const LinkPtr& shared_clientInfo)
 	CChannel* nextChannel = GetMyChannel(curChannelNumber);
 	if (nullptr == nextChannel)
 		return false;
-	nextChannel->EraseClient(shared_clientInfo);
-	client->SendnMine("내 채널에서 나왔습니다.");
-	return true;
+	if (true == nextChannel->EraseClient(shared_clientInfo))
+	{
+		//client->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "내 채널에서 나왔습니다."));
+		return true;
+	}	
+	return false;
 }
 
 bool CChannelManager::EnterMyChannel(const LinkPtr & shared_clientInfo)
@@ -82,7 +85,7 @@ bool CChannelManager::EnterMyChannel(const LinkPtr & shared_clientInfo)
 	return nextChannel->PushClient(shared_clientInfo, myChannelNumber);
 }
 
-void CChannelManager::Talk(const LinkPtr & shared_clientInfo, const string & message, int flags)
+void CChannelManager::Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags)
 {
 	CLink* client = shared_clientInfo.get();
 	if (nullptr == client)
@@ -90,7 +93,7 @@ void CChannelManager::Talk(const LinkPtr & shared_clientInfo, const string & mes
 	CChannel* myChannel = GetMyChannel(client->GetMyChannelNum());
 	if (nullptr != myChannel)
 	{
-		myChannel->Talk(shared_clientInfo, message, flags);
+		myChannel->Talk(shared_clientInfo, packet, flags);
 	}
 }
 

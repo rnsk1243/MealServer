@@ -25,8 +25,8 @@ public:
 	CChannel& operator=(const CChannel&) = delete;
 	int GetChannelNum();
 	bool PushClient(const LinkPtr& shared_client, const int& channelNumber);
-	LinkListIt EraseClient(const LinkPtr& shared_clientInfo);
-	void Broadcast(const string& message, int flags = 0);
-	void Talk(const LinkPtr& myClient, const string& message, int flags = 0);
+	bool EraseClient(const LinkPtr& shared_clientInfo);
+	void Broadcast(const Packet& packet, int flags = 0);
+	void Talk(const LinkPtr& myClient, const Packet& packet, int flags = 0);
 };
 

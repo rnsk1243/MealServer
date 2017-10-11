@@ -12,21 +12,21 @@ private:
 public:
 	MUTEX()
 	{
-		cout << "mutex 생성자 호출" << endl;
+	//	cout << "mutex 생성자 호출" << endl;
 	}
 	~MUTEX()
 	{
-		cout << "mutex 소멸자 호출" << endl;
+	//	cout << "mutex 소멸자 호출" << endl;
 	}
 	void lock()
 	{
 		mMutex.lock();
-		cout << "mutex lock 완료" << endl;
+	//	cout << "mutex lock 완료" << endl;
 	}
 	void unlock()
 	{
 		mMutex.unlock();
-		cout << "mutex nulock 완료" << endl;
+	//	cout << "mutex nulock 완료" << endl;
 	}
 
 };
@@ -43,17 +43,17 @@ public:
 	~CRITICALSECTION()
 	{
 		DeleteCriticalSection(&mCS);
-		cout << "critical 객체 해제" << endl;
+	//	cout << "critical 객체 해제" << endl;
 	}
 	void lock()
 	{
 		EnterCriticalSection(&mCS);
-		cout << "critical lock 완료" << endl;
+	//	cout << "critical lock 완료" << endl;
 	}
 	void unlock()
 	{
 		LeaveCriticalSection(&mCS);
-		cout << "critical unlock 완료" << endl;
+	//	cout << "critical unlock 완료" << endl;
 	}
 };
 

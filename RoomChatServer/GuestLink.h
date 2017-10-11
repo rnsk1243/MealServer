@@ -11,5 +11,5 @@ public:
 	CGuestLink(const SOCKET * clientSocket);
 	~CGuestLink();
 	const SOCKET* GetClientSocket() const;
-	void Sendn(const string& message, int flags = 0) const;
+	void Sendn(const Packet & packet, int flags = 0) const;
 };

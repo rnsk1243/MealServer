@@ -61,6 +61,18 @@
     <Filter Include="ExcelReder">
       <UniqueIdentifier>{dde51d17-a90c-41b5-a578-f75ab548cfc8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PacketRepository">
+      <UniqueIdentifier>{7446dccb-53ba-4b6a-8877-56e873c03726}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketRepository\Send">
+      <UniqueIdentifier>{9cc983c4-1f9f-46f9-8137-e61b09983b5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketRepository\Recv">
+      <UniqueIdentifier>{a43beea0-ff12-4f29-a64e-8cb70c36ffe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThreadFunc">
+      <UniqueIdentifier>{e2880e0d-0cce-4d89-8d6b-f88a67bb9f1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Room.cpp">
@@ -113,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="BasicExcel.cpp">
       <Filter>ExcelReder</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstEnumInfo.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

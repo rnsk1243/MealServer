@@ -7,7 +7,6 @@ using namespace std;
 #include"ErrorCode.h"
 #include"Link.h"
 class CLink;
-class CCommandController;
 
 class CErrorHandler
 {

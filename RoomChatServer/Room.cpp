@@ -1,40 +1,68 @@
 #include "Room.h"
 #include"ErrorHandler.h"
+#include"ConstEnumInfo.h"
+#include"Util.h"
 
-
-CRoom::CRoom(int roomNum, int channelNum, const string& roomName, const int& battingMoney) :
+<<<<<<< HEAD
+CRoom::CRoom(int roomNum, int channelNum, const string& roomName, const ProtocolTeamAmount& teamAmount, const string & roomPW) :
+=======
+CRoom::CRoom(int roomNum, int channelNum, const string& roomName, const ProtocolTeamAmount& teamAmount, const bool& isSpecialRoom, const string & roomPW) :
+>>>>>>> origin/WOOHEE
 	mRoomNum(roomNum),
 	mChannelNum(channelNum),
 	mRoomName(roomName),
 	mAmountPeople(0),
-	mBettingMoney(battingMoney),
-	mPlayingGame(false)
+	//mBettingMoney(battingMoney),
+	//mPlayingGame(false),
+	mIsNewRoom(true),
+	mEnterRoomPeopleLimit(teamAmount),
+<<<<<<< HEAD
+	mRoomPW(roomPW)
+=======
+	mRoomPW(roomPW),
+	mIsSpecialRoom(isSpecialRoom)
+>>>>>>> origin/WOOHEE
 {
+	mIsPublicRoom = (0 == mRoomPW.compare(roomPW));
 	//InitializeCriticalSection(&CS_MyInfoList);
+	//cout << "sizeof(ProtocolCharacterTagIndex) = " << sizeof(ProtocolCharacterTagIndex) << endl;
+	mUsePosition.reserve(GetLimitEnterRoomPeople());
+	mUsePosition.assign(mUsePosition.capacity(), NotUsed);
 }
 
 
 CRoom::~CRoom()
 {
-	cout << mRoomNum << " 번 방이 삭제 됩니다." << endl;
+//	cout << mRoomNum << " 번 방이 삭제 됩니다." << endl;
 }
 
-void CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
-{
-	ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
-	mClientInfos.push_back(shared_client);
-	shared_client.get()->SetMyRoomNum(enterRoomNumber);
-	Broadcast(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
-	IncreasePeople();
-}
 
 LinkListIt CRoom::EraseClient(const LinkPtr& shared_client)
 {
 	LinkListIt delLinkIter = find(mClientInfos.begin(), mClientInfos.end(), shared_client);
+	if (mClientInfos.end() != delLinkIter)
 	{
-		ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
-		delLinkIter = mClientInfos.erase(delLinkIter);
+		{
+			ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
+			delLinkIter = mClientInfos.erase(delLinkIter);
+		}
 		DecreasePeople();
+		CLink* client = shared_client.get();
+
+
+		client->SetMyRoomNum(NoneRoom);		
+		if (ProtocolSceneName::ChannelScene == client->GetMySceneState())
+		{
+			client->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientChannelMenu, nullptr));
+		}
+		else if (ProtocolSceneName::RoomScene == client->GetMySceneState())
+		{
+			if (NonePosition == client->GetMyPosition())
+				return mClientInfos.end();
+			mUsePosition[client->GetMyPosition()] = NotUsed; // 미사용중 표시
+		}
+
+		client->SetMySceneState(ProtocolSceneName::ChannelScene);
 	}
 	return delLinkIter;
 }
@@ -72,10 +100,10 @@ bool CRoom::IsRoomEmpty()
 	return false;
 }
 
-int CRoom::GetBattingMoney()
-{
-	return mBettingMoney;
-}
+//int CRoom::GetBattingMoney()
+//{
+//	return mBettingMoney;
+//}
 
 //bool CRoom::MergeRoom(CRoom * targetRoom)
 //{
@@ -101,7 +129,7 @@ int CRoom::GetBattingMoney()
 bool CRoom::IsAllReady()
 {
 	// 인원수가 모자르면 무조건 false;
-	if (EnterRoomPeopleLimit > mAmountPeople)
+	if (GetLimitEnterRoomPeople() > mAmountPeople)
 	{
 		return false;
 	}
@@ -114,70 +142,302 @@ bool CRoom::IsAllReady()
 			return false;
 		}
 	}
-	SetGame();
+	//SetGame();
 	return true;
 }
 
 
-bool CRoom::AllCalculateMoney()
+//bool CRoom::AllCalculateMoney()
+//{
+//	LinkListIt linkBegin = mClientInfos.begin();
+//	bool isSaveResult = true; // 모두 .txt에 저장 되었나? 한 명이라도 안되면 false 반환
+//	for (; linkBegin != mClientInfos.end(); ++linkBegin)
+//	{
+//		if (false == (*linkBegin).get()->SaveCalculateMoney())
+//		{
+//			ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY, (*linkBegin));
+//			isSaveResult = false;
+//			continue;
+//		}
+//	}
+//	return isSaveResult;
+//}
+
+bool CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 {
-	LinkListIt linkBegin = mClientInfos.begin();
-	bool isSaveResult = true; // 모두 .txt에 저장 되었나? 한 명이라도 안되면 false 반환
-	for (; linkBegin != mClientInfos.end(); ++linkBegin)
 	{
-		if (false == (*linkBegin).get()->SaveCalculateMoney())
+		ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
+		mClientInfos.push_back(shared_client);
+	}
+	shared_client.get()->SetMyRoomNum(enterRoomNumber);
+	IncreasePeople();
+	//cout << "방에 들어왔음 현재 인원 = " << mAmountPeople << endl;
+	shared_client.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientMatching, nullptr));
+
+	if (mIsNewRoom && mAmountPeople >= GetLimitEnterRoomPeople())
+	{
+		ProtocolCharacterTagIndex tagIndex = ProtocolCharacterTagIndex::Red01;
+		for (LinkListIt clientBegin = mClientInfos.begin(); clientBegin != mClientInfos.end(); ++clientBegin)
 		{
-			ErrorHandStatic->ErrorHandler(ERROR_SAVE_MONEY, (*linkBegin));
-			isSaveResult = false;
-			continue;
+			EnterBroadcast(*clientBegin, tagIndex);
+			tagIndex = (ProtocolCharacterTagIndex)(tagIndex + 1);
+		}
+		for (LinkListIt clientBegin = mClientInfos.begin(); clientBegin != mClientInfos.end(); ++clientBegin)
+		{
+			NoticRoomIn(*clientBegin);
+		}
+		mIsNewRoom = false;
+		return true;
+	}
+	else if (!mIsNewRoom && mAmountPeople <= GetLimitEnterRoomPeople())
+	{
+		NoticSoloEnterRoomIn(shared_client);
+<<<<<<< HEAD
+=======
+		return true;
+	}
+	return false;
+}
+
+bool CRoom::PushClientSpecialRoom(const LinkPtr & shared_client, const int & enterRoomNumber, const string & pw)
+{
+	if (0 != mRoomPW.compare(pw))
+	{
+		cout << "입장 비번 틀림" << endl;
+		return false;
+	}
+	{
+		ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
+		mClientInfos.push_back(shared_client);
+>>>>>>> origin/WOOHEE
+	}
+	shared_client.get()->SetMyRoomNum(enterRoomNumber);
+	IncreasePeople();
+	//cout << "방에 들어왔음 현재 인원 = " << mAmountPeople << endl;
+	NoticSoloEnterRoomIn(shared_client);
+	string message("[" + IntToString(mRoomNum) + "]번 방에 입장 하셨습니다.");
+	Packet roomNumberPacket(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
+	shared_client.get()->SendnMine(roomNumberPacket);
+	return true;
+}
+
+bool CRoom::PushClientSpecialRoom(const LinkPtr & shared_client, const int & enterRoomNumber, const string & pw)
+{
+	if (0 != mRoomPW.compare(pw))
+	{
+		cout << "입장 비번 틀림" << endl;
+		return false;
+	}
+	{
+		ScopeLock<MUTEX> MU(mRAII_RoomMUTEX);
+		mClientInfos.push_back(shared_client);
+	}
+	shared_client.get()->SetMyRoomNum(enterRoomNumber);
+	IncreasePeople();
+	//cout << "방에 들어왔음 현재 인원 = " << mAmountPeople << endl;
+	NoticSoloEnterRoomIn(shared_client);
+	string message("[" + IntToString(mRoomNum) + "]번 방에 입장 하셨습니다.");
+	Packet roomNumberPacket(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
+	shared_client.get()->SendnMine(roomNumberPacket);
+	return true;
+}
+
+void CRoom::NoticRoomIn(const LinkPtr & shared_client)
+{
+	shared_client.get()->SetMySceneState(ProtocolSceneName::RoomScene);
+	string message(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
+	Packet welcomePacket(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
+	Talk(shared_client, welcomePacket);
+}
+
+// 대상, 위치
+void CRoom::EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex)
+{
+	if (Used == mUsePosition[tagIndex])
+	{
+		ErrorHandStatic->ErrorHandler(ERROR_ENTER_ROOM, shared_client);
+		return;
+	}
+	mUsePosition[tagIndex] = Used; // 사용중 표시
+	Packet packetName(ProtocolInfo::ClientCommend, ProtocolDetail::NameChange, tagIndex, shared_client.get()->GetMyName().c_str());
+	Packet packetImage(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[InitCharacter].c_str());
+	shared_client.get()->SetMyPosition(tagIndex);
+	Broadcast(packetName);
+	Broadcast(packetImage);
+}
+
+void CRoom::TeachNewPeople(const LinkPtr & shared_client)
+{
+	LinkListIt peopleBegin = mClientInfos.begin();
+	for (; peopleBegin != mClientInfos.end(); ++peopleBegin)
+	{
+		if (shared_client != (*peopleBegin))
+		{
+			ProtocolCharacterTagIndex tagIndex = (*peopleBegin).get()->GetMyPosition();
+			Packet packetName(ProtocolInfo::ClientCommend, ProtocolDetail::NameChange, tagIndex, (*peopleBegin).get()->GetMyName().c_str());
+			Packet packetImage(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[(*peopleBegin).get()->GetMyCharacter()].c_str());
+			shared_client.get()->SendnMine(packetName);
+			shared_client.get()->SendnMine(packetImage);
 		}
 	}
-	return isSaveResult;
 }
 
-bool CRoom::AllInitBetting()
+void CRoom::NoticSoloEnterRoomIn(const LinkPtr & shared_client)
 {
-	LinkListIt linkBegin = mClientInfos.begin();
-	for (; linkBegin != mClientInfos.end(); ++linkBegin)
+<<<<<<< HEAD
+	vector<int>::iterator useBegin = mUsePosition.begin();
+	int index = 0;
+	for (; useBegin != mUsePosition.end(); ++useBegin)
 	{
-		(*linkBegin).get()->InitBetting();
+		if (NotUsed == (*useBegin))
+		{
+			TeachNewPeople(shared_client);
+			EnterBroadcast(shared_client, ProtocolCharacterTagIndex(index));
+			NoticRoomIn(shared_client);
+=======
+	TeachNewPeople(shared_client); // 방에 있던 사람들이 신입에게 알려줌
+	int index = ProtocolCharacterTagIndex::Red01;
+	vector<int>::iterator useBegin = mUsePosition.begin();
+	for (; useBegin != mUsePosition.end(); ++useBegin)
+	{
+		if (Used != (*useBegin)) // 사용중이 아니면
+		{
+			EnterBroadcast(shared_client, ProtocolCharacterTagIndex(index)); // 신입이 방에 있던 나(client)포함 모든 사람들에게 알려줌
+			NoticRoomIn(shared_client);
+			return;
+>>>>>>> origin/WOOHEE
+		}
+		++index;
 	}
-	SetGameOver();
-	return true;
 }
 
-bool CRoom::IsGame()
+void CRoom::ChangeCharacterBroadcast(const LinkPtr & shared_client, const ProtocolCharacterImageNameIndex& characterImageIndex)
 {
-	return mPlayingGame;
+	CLink* client = shared_client.get();
+	if (client->GetReadyGame())
+	{
+		Packet packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "준비 상태이므로 캐릭터를 변경할 수 없습니다.");
+		client->SendnMine(packet);
+		return;
+	}
+	if (NonePosition == client->GetMyPosition())
+		return;
+	if (mUsePosition[client->GetMyPosition()] == Used)
+	{
+		Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, client->GetMyPosition(), ProtocolCharacterImageName[characterImageIndex].c_str());
+		Broadcast(packet);
+		client->SetMyCharacter(characterImageIndex);
+		client->SetNoReadyGame();
+	}
+	else
+	{
+		ErrorHandStatic->ErrorHandler(ERROR_ROOM_CHANGET_CHARACTER, shared_client);
+		return;
+	}
 }
 
-void CRoom::Broadcast(const string& message, int flags)
+//bool CRoom::AllInitBetting()
+//{
+//	LinkListIt linkBegin = mClientInfos.begin();
+//	for (; linkBegin != mClientInfos.end(); ++linkBegin)
+//	{
+//		(*linkBegin).get()->InitBetting();
+//	}
+//	SetGameOver();
+//	return true;
+//}
+
+//bool CRoom::IsGame()
+//{
+//	return mPlayingGame;
+//}
+
+void CRoom::Broadcast(const Packet& packet, int flags)
 {
 	LinkListIt clientIterBegin = mClientInfos.begin();
 	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
 	{
-		(*clientIterBegin).get()->SendnMine(message, flags);
+		(*clientIterBegin).get()->SendnMine(packet, flags);
 	}
 }
 
-void CRoom::Talk(const LinkPtr& myClient, const string & message, int flags)
+void CRoom::Talk(const LinkPtr& myClient, const Packet & packet, int flags)
 {
 	LinkListIt clientIterBegin = mClientInfos.begin();
 	LinkListIt myIter = find(mClientInfos.begin(), mClientInfos.end(), myClient);
 	if (mClientInfos.end() == myIter)
 	{
-		Broadcast(message, flags);
+		Broadcast(packet, flags);
 		return;
 	}
 	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
 	{
 		if (clientIterBegin != myIter)
 		{
-			(*clientIterBegin).get()->SendnMine(message, flags);
+			(*clientIterBegin).get()->SendnMine(packet, flags);
 		}
 	}
 }
 
+void CRoom::GetHostIP()
+{
+	LinkListIt linkBegin = mClientInfos.begin();
+	for (; linkBegin != mClientInfos.end(); ++linkBegin)
+	{
+		if ((*linkBegin).get()->GetMyPosition() == ProtocolCharacterTagIndex::Red01)
+		{
+			Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::GetHostIP, 0, (*linkBegin).get()->GetMyIP().c_str());
+			(*linkBegin).get()->SendnMine(packet);
+		}
+	}
+}
+
+void CRoom::NotReadyTogether()
+{
+	LinkListIt clientIterBegin = mClientInfos.begin();
+	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
+	{
+		(*clientIterBegin).get()->SetNoReadyGame();
+	}
+}
+
+int CRoom::GetLimitEnterRoomPeople()
+{
+	switch (mEnterRoomPeopleLimit)
+	{
+	case ProtocolTeamAmount::OneTeam:
+<<<<<<< HEAD
+		return 3; // 2 + 1(NoneCharacter 포함)
+	case ProtocolTeamAmount::TwoTeam:
+		return 5;
+	case ProtocolTeamAmount::ThreeTeam:
+		return 7;
+=======
+		return 2; // 2
+	case ProtocolTeamAmount::TwoTeam:
+		return 4;
+	case ProtocolTeamAmount::ThreeTeam:
+		return 6;
+>>>>>>> origin/WOOHEE
+	default:
+		break;
+	}
+	return 0;
+}
+
+<<<<<<< HEAD
+=======
+bool CRoom::IsSpecialRoom()
+{
+	return mIsSpecialRoom;
+}
+
+bool CRoom::IsPublicroom()
+{
+	return mIsPublicRoom;
+}
+
+>>>>>>> origin/WOOHEE
 void CRoom::IncreasePeople()
 {
 	mAmountPeople++;
@@ -188,31 +448,31 @@ void CRoom::DecreasePeople()
 	if (mAmountPeople > 0) mAmountPeople--;
 }
 
-void CRoom::SetGame()
-{
-	mPlayingGame = true;
-}
-
-void CRoom::SetGameOver()
-{
-	mPlayingGame = false;
-}
-
-void CRoom::SendBattingResult(const LinkPtr& winner, int flags)
-{
-	LinkListIt clientIterBegin = mClientInfos.begin();
-	LinkListIt winnerIter = find(mClientInfos.begin(), mClientInfos.end(), winner);
-	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
-	{
-		if (clientIterBegin != winnerIter)
-		{
-			(*clientIterBegin).get()->SendnMine("당신은 졌습니다.", flags);
-		}
-		else
-		{
-			(*clientIterBegin).get()->SendnMine("당신은 이겼습니다.", flags);
-		}
-	}
-}
-
-
+//void CRoom::SetGame()
+//{
+//	mPlayingGame = true;
+//}
+//
+//void CRoom::SetGameOver()
+//{
+//	mPlayingGame = false;
+//}
+//
+//void CRoom::SendBattingResult(const LinkPtr& winner, int flags)
+//{
+//	LinkListIt clientIterBegin = mClientInfos.begin();
+//	LinkListIt winnerIter = find(mClientInfos.begin(), mClientInfos.end(), winner);
+//	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
+//	{
+//		if (clientIterBegin != winnerIter)
+//		{
+//			(*clientIterBegin).get()->SendnMine("당신은 졌습니다.", flags);
+//		}
+//		else
+//		{
+//			(*clientIterBegin).get()->SendnMine("당신은 이겼습니다.", flags);
+//		}
+//	}
+//}
+//
+//

@@ -32,6 +32,6 @@ public:
 	// 원래 있던 채널로 돌아가기
 	bool EnterMyChannel(const LinkPtr& shared_clientInfo);
 	// 해당 링크가 들어있는 수다
-	void Talk(const LinkPtr& shared_clientInfo, const string& message, int flags = 0);
+	void Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags = 0);
 };
 

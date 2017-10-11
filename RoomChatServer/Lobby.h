@@ -5,11 +5,11 @@
 
 class CLobby
 {
-	void AskedID(const CGuestLink * guest, string & id);
-	void AskedPW(const CGuestLink * guest, string & pw);
-	int Login(const CGuestLink * guest, vector<string>& tempUserInfo);
-	int JoinMember(const CGuestLink* guest, vector<string>& tempUserInfo);
-	int ChooseMenu(const char * message, const CGuestLink* guest);
+	//void AskedID(const CGuestLink * guest, Packet & packetID);
+	//void AskedPW(const CGuestLink * guest, Packet & packetPW);
+	int Login(const CGuestLink * guest, vector<string>& tempUserInfo, string idpw);
+	//int JoinMember(const CGuestLink* guest, vector<string>& tempUserInfo);
+	//int ChooseMenu(const char * message, const CGuestLink* guest);
 	int mNextUserNum;
 	CLobby(int NextUserNum_);
 	void SetNextUserPKNumber();
@@ -18,7 +18,7 @@ public:
 	CLobby(const CLobby&) = delete;
 	CLobby& operator=(const CLobby&) = delete;
 	~CLobby(){}
-	int ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo);
+	int ActionServiceLobby(const CGuestLink* guest, vector<string>& tempUserInfo, bool& isGuest);
 	//void PushGuest(const GuestLinkPtr & newGuest);
 	//void EraseGuest(const GuestLinkPtr & targetGuest);
 };
