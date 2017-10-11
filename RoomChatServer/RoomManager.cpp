@@ -41,13 +41,19 @@ void CRoomManager::PushRoom(const RoomPtr & shared_newRoom)
 	++newRoomNumber;
 }
 
-int CRoomManager::SearchRoom()
+int CRoomManager::SearchRoom(bool& isSpecialRoom)
 {
 	RoomListIt roomBegin = mRooms.begin();
 	for (; roomBegin != mRooms.end(); ++roomBegin)
 	{
+<<<<<<< HEAD
+=======
+		if (false == (*roomBegin).get()->IsPublicroom())
+			continue;
+>>>>>>> origin/WOOHEE
 		if ((*roomBegin).get()->GetLimitEnterRoomPeople() > (*roomBegin).get()->GetAmountPeople())
 		{
+			isSpecialRoom = (*roomBegin).get()->IsSpecialRoom();
 			return (*roomBegin).get()->GetRoomNum();
 		}
 	}
@@ -99,6 +105,7 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo, bool & isSu
 		//	client->SaveCalculateMoney(); // 갈땐 가더라도 정산은..해야지
 		//	(*myRoomIter)->AllInitBetting();					// 룸에 들어있는 사람 준비 초기화
 		//}
+
 		(*myRoomIter).get()->EraseClient(shared_clientInfo);
 		isSucces = true;
 		return myRoomIter;
@@ -107,10 +114,17 @@ RoomListIt CRoomManager::ExitRoom(const LinkPtr & shared_clientInfo, bool & isSu
 	return mRooms.end();
 }
 
+<<<<<<< HEAD
 int CRoomManager::MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const ProtocolTeamAmount& teamAmount, const string & roomPW)
 {
 	CLink* client = shared_clientInfo.get();
 	RoomPtr newRoom(new CRoom(newRoomNumber, client->GetMyChannelNum(), roomName, teamAmount, roomPW));
+=======
+int CRoomManager::MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const ProtocolTeamAmount& teamAmount, const bool& isSpecialRoom, const string & roomPW)
+{
+	CLink* client = shared_clientInfo.get();
+	RoomPtr newRoom(new CRoom(newRoomNumber, client->GetMyChannelNum(), roomName, teamAmount,isSpecialRoom, roomPW));
+>>>>>>> origin/WOOHEE
 	int makedRoomNumber = newRoomNumber; // PushRoom을 호출하면 newRoomNumber가 1 증가하기때문에
 	PushRoom(newRoom);
 	return makedRoomNumber;

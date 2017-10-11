@@ -33,7 +33,11 @@ public:
 	// room에서 나가기 (나가고자하는 소켓)
 	RoomListIt ExitRoom(const LinkPtr & shared_clientInfo, bool & isSucces);
 	// 현재 자신이 속한 방이 없을때 방 만들기(들어갈 소켓, 만드는 방 번호) 
+<<<<<<< HEAD
 	int MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const ProtocolTeamAmount& teamAmount, const string & roomPW = nullptr);
+=======
+	int MakeRoom(const LinkPtr & shared_clientInfo, const string& roomName, const ProtocolTeamAmount& teamAmount, const bool& isSpecialRoom, const string & roomPW = nullptr);
+>>>>>>> origin/WOOHEE
 	// 현재 자신이 속한 방이 없을때 방 입장 하기
 	bool EnterRoom(const LinkPtr& shared_clientInfo, int targetRoomNumBer);
 	bool EnterRoomSpecial(const LinkPtr& shared_clientInfo, int targetRoomNumBer, const string & pw);
@@ -46,7 +50,7 @@ public:
 	// 해당 링크가 들어있는 수다
 	void Talk(const LinkPtr & shared_clientInfo, const Packet & packet, int flags = 0);
 	// 빈방 찾기
-	int SearchRoom();
+	int SearchRoom(bool& isSpecialRoom);
 	// 캐릭터 변경
 	void ChangeMyCharacter(const LinkPtr & shared_clientInfo, const Packet & packet);
 	// 호스트 ip 가져오기

@@ -38,6 +38,10 @@ int CLobby::Login(const CGuestLink * guest , vector<string>& tempUserInfo, strin
 	catch (const std::exception&)
 	{
 		cout << "CLobby::Login Error" << endl;
+<<<<<<< HEAD
+=======
+		return ErrorHandStatic->ErrorHandler(ERROR_LOGIN);
+>>>>>>> origin/WOOHEE
 	}
 
 }

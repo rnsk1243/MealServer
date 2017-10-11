@@ -23,6 +23,8 @@ class CRoom
 	//int mBettingMoney;
 	//bool mPlayingGame; // 게임중?
 	bool mIsNewRoom; // 새로운 방인가?
+	bool mIsSpecialRoom; // 직접 만든 방인가?
+	bool mIsPublicRoom; // 공개방인가?
 	vector<int> mUsePosition; // 캐릭터 창 사용중인 칸과 비어있는 칸 확인용
 	void IncreasePeople();
 	void DecreasePeople();
@@ -38,9 +40,15 @@ class CRoom
 public:
 	CRoom(const CRoom&) = delete;
 	CRoom& operator=(const CRoom&) = delete;
+<<<<<<< HEAD
 	CRoom(int roomNum,int channelNum, const string& roomName, const ProtocolTeamAmount& teamAmount, const string & roomPW = RoomPWNone);
 	~CRoom();
 	void PushClient(const LinkPtr& shared_client, const int& enterRoomNumber);
+=======
+	CRoom(int roomNum,int channelNum, const string& roomName, const ProtocolTeamAmount& teamAmount, const bool& isSpecialRoom, const string & roomPW = RoomPWNone);
+	~CRoom();
+	bool PushClient(const LinkPtr& shared_client, const int& enterRoomNumber);
+>>>>>>> origin/WOOHEE
 	bool PushClientSpecialRoom(const LinkPtr& shared_client, const int& enterRoomNumber, const string & pw);
 	LinkListIt EraseClient(const LinkPtr& shared_client);
 	int GetRoomNum();
@@ -59,5 +67,10 @@ public:
 	void GetHostIP();
 	void NotReadyTogether();
 	int GetLimitEnterRoomPeople();
+<<<<<<< HEAD
+=======
+	bool IsSpecialRoom();
+	bool IsPublicroom();
+>>>>>>> origin/WOOHEE
 };
 
