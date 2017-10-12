@@ -119,8 +119,11 @@ void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 			{
 				cout << "나간 사실을 모두에게 알림" << endl;
 				Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::RemovePanel, targetPos, nullptr);
-				(*roomIter)->Broadcast(packet);
-				(*roomIter)->NotReadyTogether(); // 누군가 한사람이라도 나가면 Ready 풀림
+				{
+					ScopeLock<MUTEX> MU(mRAII_CommandMUTEX); // lock
+					(*roomIter)->Broadcast(packet);
+					(*roomIter)->NotReadyTogether(); // 누군가 한사람이라도 나가면 Ready 풀림
+				}
 			}
 		}
 	}
@@ -138,10 +141,7 @@ void CCommandController::DeleteClientSocket(const LinkPtr & shared_clientInfo)
 	if (NoneRoom == myRoomNum)
 	{
 		// 채널일때
-		if (mChannelManager.ExitChannel(shared_clientInfo))
-		{
-			//cout << "channel에서 나갔습니다." << endl;
-		}
+		mChannelManager.ExitChannel(shared_clientInfo);
 	}
 	else
 	{

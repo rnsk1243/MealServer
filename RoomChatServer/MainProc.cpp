@@ -102,6 +102,9 @@ int thSendRecv(void* v_clientSocket, void* isAccept)
 		case ProtocolInfo::ServerCommend:
 			CommandControllerStatic->CommandHandling(shared_clientInfo, packet);
 			break;
+		case ProtocolInfo::ExitGameProcess:
+			//cout << packet.InfoValue << endl;
+			break;
 		//case ProtocolInfo::SceneChange:
 		//	shared_clientInfo.get()->SetMySceneState((ProtocolSceneName)packet.InfoTagIndex);
 		//	break;

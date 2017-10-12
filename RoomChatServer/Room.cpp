@@ -235,8 +235,12 @@ void CRoom::EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagInd
 	Packet packetName(ProtocolInfo::ClientCommend, ProtocolDetail::NameChange, tagIndex, shared_client.get()->GetMyName().c_str());
 	Packet packetImage(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[InitCharacter].c_str());
 	shared_client.get()->SetMyPosition(tagIndex);
-	Broadcast(packetName);
-	Broadcast(packetImage);
+	Talk(shared_client, packetName);
+	Talk(shared_client, packetImage);
+	packetName.InfoProtocolDetail = ProtocolDetail::MyInfoName;
+	packetImage.InfoProtocolDetail = ProtocolDetail::MyInfoImage;
+	shared_client.get()->SendnMine(packetName);
+	shared_client.get()->SendnMine(packetImage);
 }
 
 void CRoom::TeachNewPeople(const LinkPtr & shared_client)
@@ -286,7 +290,9 @@ void CRoom::ChangeCharacterBroadcast(const LinkPtr & shared_client, const Protoc
 	if (mUsePosition[client->GetMyPosition()] == Used)
 	{
 		Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, client->GetMyPosition(), ProtocolCharacterImageName[characterImageIndex].c_str());
-		Broadcast(packet);
+		Talk(shared_client, packet);
+		packet.InfoProtocolDetail = ProtocolDetail::MyInfoImage;
+		shared_client.get()->SendnMine(packet);
 		client->SetMyCharacter(characterImageIndex);
 		client->SetNoReadyGame();
 	}

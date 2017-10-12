@@ -22,7 +22,8 @@ enum ProtocolInfo       // 대분류
 	ChattingMessage,    // 채팅 메세지
 	ClientCommend,		// 클라이언트 명령
 	RequestResult,		// 요청 결과
-	SceneChange         // 씬 변경
+	SceneChange,         // 씬 변경
+	ExitGameProcess
 	//PlayerInfo          // 플레이어 정보( 캐릭터, 이름 )
 };
 
@@ -46,7 +47,9 @@ enum ProtocolDetail     // 소분류
 	GetHostIP,
 	SuccessRequest,       // 요청 성공
 	FailRequest,            // 요청 실패
-	RemovePanel             // 나간 사람 패널 지우기
+	RemovePanel,             // 나간 사람 패널 지우기
+	MyInfoImage,                 // 내정보
+	MyInfoName
 };
 
 enum ProtocolCharacterImageNameIndex
