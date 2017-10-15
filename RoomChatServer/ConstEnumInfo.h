@@ -49,7 +49,9 @@ enum ProtocolDetail     // 소분류
 	FailRequest,            // 요청 실패
 	RemovePanel,             // 나간 사람 패널 지우기
 	MyInfoImage,                 // 내정보
-	MyInfoName
+	MyInfoName,
+	OutMainGameScene,        // 게임씬에서 룸으로 이동
+	ReadyInfo
 };
 
 enum ProtocolCharacterImageNameIndex
@@ -88,6 +90,16 @@ enum ProtocolSceneName
 	FrontScene, ChannelScene, RoomScene, MainScene
 };
 
+//enum ProtocolSceneName
+//{
+//	FrontScene, ChannelScene, RoomScene, TestScene
+//};
+
+enum ProtocolRoomSceneObj
+{
+	Room, ButtonTofu, ButtonMandu, ButtonTangsuyuk, ButtonBack, ButtonReady, ButtonLockCharacter, ButtonLockExit
+};
+
 enum ProtocolTeamAmount
 {
 	OneTeam, TwoTeam, ThreeTeam
@@ -101,7 +113,7 @@ enum State	// 클라이언트 상태
 	ClientMakeRoom, ClientOption,
 	ClientGame,/*0926추가됨*/
 	ClientRequestGaemReady, ClientReady,       // 쌍으로 세트임
-	ClientRequestGaemNotReady, ClientNotReady/*룸에서의 기본 상태*/, // 1001추가됨
+	ClientRequestGaemNotReady, ClientNotReady, ClientNotAllReady,/*룸에서의 기본 상태*/ // 1001추가됨
 	ClientRequestMatching, ClientMatching,
 	ClientRequestCancleMactching, /*채널 기본*/
 	ClientRequestCharacterChange, /*룸기본*/
@@ -119,8 +131,10 @@ const ProtocolCharacterImageNameIndex InitCharacter = ProtocolCharacterImageName
 //const string ProtocolCharacterTagIndexName[6] = { "RedName01", "RedName02", "RedName03", "BlueName01", "BlueName02", "BlueName03" };
 const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "BlueImage01", "RedImage02", "BlueImage02", "RedImage03", "BlueImage03" };
 const string ProtocolCharacterTagIndexName[6] = { "RedName01", "BlueName01", "RedName02", "BlueName02", "RedName03", "BlueName03" };
+const string ProtocolCharacterTagIndexReady[6] = { "RedReadyImage01", "BlueReadyImage01", "RedReadyImage02", "BlueReadyImage02", "RedReadyImage03", "BlueReadyImage03" };
 const string MessageTag[1] = { "TextView" };
 const string ProtocolSceneNameString[4] = { "FrontScene", "ChannelScene", "RoomScene", "Main" };
+//const string ProtocolSceneNameString[4] = { "FrontScene", "ChannelScene", "RoomScene", "TestScene" };
 const string CommandEnter = "e"; // 방 입장
 const string CommandChannal = "c"; // 채널 변경
 const string CommandMakeRoom = "m"; // 방 만들기

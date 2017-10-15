@@ -131,9 +131,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Room.h">
-      <Filter>Room</Filter>
-    </ClInclude>
     <ClInclude Include="Channel.h">
       <Filter>Channel</Filter>
     </ClInclude>
@@ -193,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="BasicExcel.hpp">
       <Filter>ExcelReder</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Room</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

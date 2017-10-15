@@ -77,6 +77,20 @@ void CRoomManager::GetHostIP(const LinkPtr & shared_clientInfo)
 	}
 }
 
+void CRoomManager::BackRoom(const LinkPtr & shared_clientInfo)
+{
+	CLink* client = shared_clientInfo.get();
+	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
+	(*myRoomIter).get()->BackRoomScene();
+}
+
+void CRoomManager::SendMyReadyInfo(const LinkPtr & shared_clientInfo)
+{
+	CLink* client = shared_clientInfo.get();
+	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
+	(*myRoomIter).get()->SendMyReadyInfo(shared_clientInfo);
+}
+
 RoomListIt CRoomManager::EraseRoom(RoomListIt deleteTargetRoomIter)
 {
 	ScopeLock<MUTEX> MU(mRAII_RoomManagerMUTEX);
@@ -148,14 +162,17 @@ bool CRoomManager::EnterRoom(const LinkPtr& shared_clientInfo, int targetRoomNum
 	
 	if (mRooms.end() != targetRoomIter)
 	{
-		if ((*targetRoomIter).get()->GetLimitEnterRoomPeople() <= (*targetRoomIter).get()->GetAmountPeople())
+		if (((*targetRoomIter).get()->GetLimitEnterRoomPeople() <= (*targetRoomIter).get()->GetAmountPeople()) || (*targetRoomIter).get()->IsGame())
 		{
 			shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
-			//cout << "방 꽉 차서 못 들어감" << endl;
+			//cout << "방 꽉 차거나 게임중임" << endl;
 			return false;
 		}
-		(*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer);
-		return true;
+		if ((*targetRoomIter)->PushClient(shared_clientInfo, targetRoomNumBer))
+		{
+			return true;
+		}
+		return false;
 	}
 	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::FailRequest, State::ClientChannelMenu, nullptr));
 	// 없는 방이라 못 들어감

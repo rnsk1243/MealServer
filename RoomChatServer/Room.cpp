@@ -13,7 +13,8 @@ CRoom::CRoom(int roomNum, int channelNum, const string& roomName, const Protocol
 	mIsNewRoom(true),
 	mEnterRoomPeopleLimit(teamAmount),
 	mRoomPW(roomPW),
-	mIsSpecialRoom(isSpecialRoom)
+	mIsSpecialRoom(isSpecialRoom),
+	mPlayingGame(false)
 {
 	mIsPublicRoom = (0 == RoomPWNone.compare(mRoomPW));
 	cout << "mIsPublicRoom = " << mIsPublicRoom << endl;
@@ -131,11 +132,16 @@ bool CRoom::IsAllReady()
 	{
 		CLink* client = (*iterBegin).get();
 		if (false == client->GetReadyGame())
-		{
+		{			
 			return false;
 		}
 	}
-	//SetGame();
+	iterBegin = mClientInfos.begin();
+	for (; iterBegin != mClientInfos.end(); ++iterBegin)
+	{
+		(*iterBegin).get()->SetMySceneState(ProtocolSceneName::MainScene);
+	}
+	SetGame(true);
 	return true;
 }
 
@@ -192,7 +198,7 @@ bool CRoom::PushClient(const LinkPtr& shared_client, const int& enterRoomNumber)
 
 bool CRoom::PushClientSpecialRoom(const LinkPtr & shared_client, const int & enterRoomNumber, const string & pw)
 {
-	if (GetLimitEnterRoomPeople() <= mAmountPeople)
+	if (GetLimitEnterRoomPeople() <= mAmountPeople || mPlayingGame)
 	{
 		return false;
 	}
@@ -215,6 +221,21 @@ bool CRoom::PushClientSpecialRoom(const LinkPtr & shared_client, const int & ent
 	return true;
 }
 
+void CRoom::BackRoomScene()
+{
+	LinkListIt iterBegin = mClientInfos.begin();
+	for (; iterBegin != mClientInfos.end(); ++iterBegin)
+	{
+		EnterBroadcast(*iterBegin, (*iterBegin).get()->GetMyPosition(), true); // 신입이 방에 있던 나(client)포함 모든 사람들에게 알려줌
+	}
+	for (LinkListIt clientBegin = mClientInfos.begin(); clientBegin != mClientInfos.end(); ++clientBegin)
+	{
+		NoticRoomIn(*clientBegin);
+	}
+	NotReadyTogether();
+	SetGame(false);
+}
+
 void CRoom::NoticRoomIn(const LinkPtr & shared_client)
 {
 	shared_client.get()->SetMySceneState(ProtocolSceneName::RoomScene);
@@ -224,23 +245,31 @@ void CRoom::NoticRoomIn(const LinkPtr & shared_client)
 }
 
 // 대상, 위치
-void CRoom::EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex)
+void CRoom::EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex, const bool& isBackRoom)
 {
-	if (Used == mUsePosition[tagIndex])
+	if (Used == mUsePosition[tagIndex] && isBackRoom == false)
 	{
 		ErrorHandStatic->ErrorHandler(ERROR_ENTER_ROOM, shared_client);
 		return;
 	}
 	mUsePosition[tagIndex] = Used; // 사용중 표시
 	Packet packetName(ProtocolInfo::ClientCommend, ProtocolDetail::NameChange, tagIndex, shared_client.get()->GetMyName().c_str());
-	Packet packetImage(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[InitCharacter].c_str());
+	Packet* packetImage = nullptr;
+	if (isBackRoom)
+	{
+		packetImage = &Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[shared_client.get()->GetMyCharacter()].c_str());
+	}
+	else
+	{
+		packetImage = &Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[InitCharacter].c_str());
+	}
 	shared_client.get()->SetMyPosition(tagIndex);
 	Talk(shared_client, packetName);
-	Talk(shared_client, packetImage);
+	Talk(shared_client, *packetImage);
 	packetName.InfoProtocolDetail = ProtocolDetail::MyInfoName;
-	packetImage.InfoProtocolDetail = ProtocolDetail::MyInfoImage;
+	packetImage->InfoProtocolDetail = ProtocolDetail::MyInfoImage;
 	shared_client.get()->SendnMine(packetName);
-	shared_client.get()->SendnMine(packetImage);
+	shared_client.get()->SendnMine(*packetImage);
 }
 
 void CRoom::TeachNewPeople(const LinkPtr & shared_client)
@@ -272,7 +301,7 @@ void CRoom::NoticSoloEnterRoomIn(const LinkPtr & shared_client)
 			NoticRoomIn(shared_client);
 			return;
 		}
-		++index;
+		++index; 
 	}
 }
 
@@ -294,7 +323,7 @@ void CRoom::ChangeCharacterBroadcast(const LinkPtr & shared_client, const Protoc
 		packet.InfoProtocolDetail = ProtocolDetail::MyInfoImage;
 		shared_client.get()->SendnMine(packet);
 		client->SetMyCharacter(characterImageIndex);
-		client->SetNoReadyGame();
+		client->SetNoReadyGame(State::ClientNotReady);
 	}
 	else
 	{
@@ -314,10 +343,30 @@ void CRoom::ChangeCharacterBroadcast(const LinkPtr & shared_client, const Protoc
 //	return true;
 //}
 
-//bool CRoom::IsGame()
-//{
-//	return mPlayingGame;
-//}
+bool CRoom::IsGame()
+{
+	return mPlayingGame;
+}
+
+void CRoom::SetGame(bool isGame)
+{
+	mPlayingGame = isGame;
+}
+
+void CRoom::SendMyReadyInfo(const LinkPtr& myClient)
+{
+	//cout << "SendAllReadyInfo 호출" << endl;
+	Packet* readyInfoPacket = nullptr;
+	if (myClient.get()->GetReadyGame())
+	{
+		readyInfoPacket = &Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ReadyInfo, myClient.get()->GetMyPosition(), "Ready");
+	}
+	else
+	{
+		readyInfoPacket = &Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ReadyInfo, myClient.get()->GetMyPosition(), "NotReady");
+	}
+	Broadcast(*readyInfoPacket);
+}
 
 void CRoom::Broadcast(const Packet& packet, int flags)
 {
@@ -365,7 +414,7 @@ void CRoom::NotReadyTogether()
 	LinkListIt clientIterBegin = mClientInfos.begin();
 	for (; clientIterBegin != mClientInfos.end(); ++clientIterBegin)
 	{
-		(*clientIterBegin).get()->SetNoReadyGame();
+		(*clientIterBegin).get()->SetNoReadyGame(State::ClientNotAllReady);
 	}
 }
 

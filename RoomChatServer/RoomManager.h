@@ -51,5 +51,8 @@ public:
 	void ChangeMyCharacter(const LinkPtr & shared_clientInfo, const Packet & packet);
 	// 호스트 ip 가져오기
 	void GetHostIP(const LinkPtr & shared_clientInfo);
+	// 방으로 다시 돌아가기
+	void BackRoom(const LinkPtr & shared_clientInfo);
+	void SendMyReadyInfo(const LinkPtr & shared_clientInfo);
 };
  

@@ -158,7 +158,7 @@ void CCommandController::SendAllReadyGameNotice(const LinkPtr & shared_clientInf
 		//cout << "모두 레디 함" << endl;
 		// 룸메니저를 통해 방 멤버 함수 호출 할 것.
 		// mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, "모든 플레이어가 준비 되었습니다."));
-		mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::SceneChange, ProtocolDetail::NoneDetail, ProtocolSceneName::MainScene, nullptr));
+		//mRoomManager.Broadcast(shared_clientInfo, Packet(ProtocolInfo::SceneChange, ProtocolDetail::NoneDetail, ProtocolSceneName::TestScene, nullptr));
 	}
 }
 
@@ -231,11 +231,13 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		else if (ProtocolDetail::SetReadyGame == packet.InfoProtocolDetail)
 		{
 			shared_clientInfo.get()->SetReadyGame();
+			mRoomManager.SendMyReadyInfo(shared_clientInfo);
 			SendAllReadyGameNotice(shared_clientInfo);
 		}
 		else if (ProtocolDetail::NotReadyGame == packet.InfoProtocolDetail)
 		{
-			shared_clientInfo.get()->SetNoReadyGame();
+			shared_clientInfo.get()->SetNoReadyGame(State::ClientNotReady);
+			mRoomManager.SendMyReadyInfo(shared_clientInfo);
 		}
 		else if (ProtocolDetail::ChangeCharacter == packet.InfoProtocolDetail)
 		{
@@ -244,6 +246,10 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		else if (ProtocolDetail::GetHostIP == packet.InfoProtocolDetail)
 		{
 			GetHostIP(shared_clientInfo);
+		}
+		else if (ProtocolDetail::OutMainGameScene == packet.InfoProtocolDetail)
+		{
+			mRoomManager.BackRoom(shared_clientInfo);
 		}
 	}
 	catch (const std::exception&)

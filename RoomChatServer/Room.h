@@ -21,7 +21,7 @@ class CRoom
 	MUTEX mRAII_RoomMUTEX;
 	//CRITICALSECTION CT;
 	//int mBettingMoney;
-	//bool mPlayingGame; // 게임중?
+	bool mPlayingGame; // 게임중?
 	bool mIsNewRoom; // 새로운 방인가?
 	bool mIsSpecialRoom; // 직접 만든 방인가?
 	bool mIsPublicRoom; // 공개방인가?
@@ -34,9 +34,10 @@ class CRoom
 	//bool AllCalculateMoney(); // 방에 있는 사람 모두 정산(.txt 저장)
 	// 방에 들어왔음 알려주기
 	void NoticRoomIn(const LinkPtr& shared_client);
-	void EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex); // 방 처음 입장 함수 // 모두에게 내 표시위치와 이름 보내기
+	void EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagIndex tagIndex, const bool& isBackRoom = false); // 방 처음 입장 함수 // 모두에게 내 표시위치와 이름 보내기
 	void TeachNewPeople(const LinkPtr& shared_client); // 새로 들어온 사람에게 현재 방얘들 이름이랑 고른 캐릭터 알려주기
 	void NoticSoloEnterRoomIn(const LinkPtr & shared_client);
+	void SetGame(bool isGame);
 public:
 	CRoom(const CRoom&) = delete;
 	CRoom& operator=(const CRoom&) = delete;
@@ -44,6 +45,7 @@ public:
 	~CRoom();
 	bool PushClient(const LinkPtr& shared_client, const int& enterRoomNumber);
 	bool PushClientSpecialRoom(const LinkPtr& shared_client, const int& enterRoomNumber, const string & pw);
+	void BackRoomScene();
 	LinkListIt EraseClient(const LinkPtr& shared_client);
 	int GetRoomNum();
 	int GetChannelNum();
@@ -53,7 +55,7 @@ public:
 	//int GetBattingMoney();
 	bool IsAllReady();
 	//void GameResult();	// 게임 결과
-	//bool IsGame();
+	bool IsGame();
 	//bool AllInitBetting();
 	void Broadcast(const Packet& packet, int flags = 0);
 	void ChangeCharacterBroadcast(const LinkPtr & shared_client, const ProtocolCharacterImageNameIndex& characterImageIndex); // 모두에게 캐릭터 변경 보내기
@@ -63,5 +65,6 @@ public:
 	int GetLimitEnterRoomPeople();
 	bool IsSpecialRoom();
 	bool IsPublicroom();
+	void SendMyReadyInfo(const LinkPtr& myClient);
 };
 

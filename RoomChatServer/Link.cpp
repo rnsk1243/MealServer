@@ -86,10 +86,10 @@ void CLink::SetReadyGame()
 	mIsGameOK = true;
 	SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientReady, nullptr));
 }
-void CLink::SetNoReadyGame()
+void CLink::SetNoReadyGame(State isAll)
 {
 	mIsGameOK = false;
-	SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, State::ClientNotReady, nullptr));
+	SendnMine(Packet(ProtocolInfo::RequestResult, ProtocolDetail::SuccessRequest, isAll, nullptr));
 }
 bool CLink::GetReadyGame()
 {
@@ -158,7 +158,7 @@ void CLink::SetMySceneState(ProtocolSceneName curMySceneState)
 {
 	if (curMySceneState != mCurMySceneState) // 같지 않으면 바꿔라
 	{
-		cout << curMySceneState << " 으로 씬 변경" << endl;
+		//cout << curMySceneState << " 으로 씬 변경" << endl;
 		mCurMySceneState = curMySceneState;
 		SendnMine(Packet(ProtocolInfo::SceneChange, ProtocolDetail::NoneDetail, curMySceneState, nullptr));
 	}	

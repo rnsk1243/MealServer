@@ -55,7 +55,7 @@ public:
 	const int GetMyPKNumber()const;
 	void SetReadyGame(); //준비완료
 	//void SetReadyGame(const int& battingMoney);
-	void SetNoReadyGame();
+	void SetNoReadyGame(State isAll);
 	bool GetReadyGame();
 	ProtocolCharacterTagIndex GetMyPosition();
 	void SetMyPosition(ProtocolCharacterTagIndex newPosition);
