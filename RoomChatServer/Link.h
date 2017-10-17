@@ -69,6 +69,7 @@ public:
 	void SetSocketError();
 	void SetMySceneState(ProtocolSceneName curMySceneState);
 	ProtocolSceneName GetMySceneState();
+	void GetMyReadyInfoPacket(Packet& readyInfoPacket);
 	//bool IsZeroMoney();
 	//void SetZeroMoney();
 	//const int GetMyMoney();

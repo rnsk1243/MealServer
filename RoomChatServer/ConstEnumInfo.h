@@ -23,7 +23,8 @@ enum ProtocolInfo       // 대분류
 	ClientCommend,		// 클라이언트 명령
 	RequestResult,		// 요청 결과
 	SceneChange,         // 씬 변경
-	ExitGameProcess
+	ExitGameProcess,
+	RoomInfo
 	//PlayerInfo          // 플레이어 정보( 캐릭터, 이름 )
 };
 
@@ -51,7 +52,13 @@ enum ProtocolDetail     // 소분류
 	MyInfoImage,                 // 내정보
 	MyInfoName,
 	OutMainGameScene,        // 게임씬에서 룸으로 이동
-	ReadyInfo
+	ReadyInfo,
+	RequestRoomInfo 
+};
+
+enum ProtocolRoomPrivatePublic
+{
+	Private, Public
 };
 
 enum ProtocolCharacterImageNameIndex

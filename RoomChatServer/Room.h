@@ -66,5 +66,6 @@ public:
 	bool IsSpecialRoom();
 	bool IsPublicroom();
 	void SendMyReadyInfo(const LinkPtr& myClient);
+	void SendRoomInfo(const LinkPtr& shared_client);
 };
 

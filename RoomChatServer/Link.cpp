@@ -161,12 +161,28 @@ void CLink::SetMySceneState(ProtocolSceneName curMySceneState)
 		//cout << curMySceneState << " À¸·Î ¾À º¯°æ" << endl;
 		mCurMySceneState = curMySceneState;
 		SendnMine(Packet(ProtocolInfo::SceneChange, ProtocolDetail::NoneDetail, curMySceneState, nullptr));
-	}	
+	}
+	else
+	{
+		cout << "°°¾Æ¼­ Scene ¸ø ¹Ù²Þ = " << curMySceneState << endl;
+	}
 }
 
 ProtocolSceneName CLink::GetMySceneState()
 {
 	return mCurMySceneState;
+}
+
+void CLink::GetMyReadyInfoPacket(Packet & readyInfoPacket)
+{
+	if (mIsGameOK)
+	{
+		readyInfoPacket = Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ReadyInfo, mMyPosition, "Ready");
+	}
+	else
+	{
+		readyInfoPacket = Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ReadyInfo, mMyPosition, "NotReady");
+	}
 }
 
 // µ· °ü·Ã ÇÔ¼ö

@@ -54,5 +54,6 @@ public:
 	// 방으로 다시 돌아가기
 	void BackRoom(const LinkPtr & shared_clientInfo);
 	void SendMyReadyInfo(const LinkPtr & shared_clientInfo);
+	void SendMyRoomInfo(const LinkPtr & shared_clientInfo);
 };
  

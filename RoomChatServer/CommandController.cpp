@@ -251,6 +251,10 @@ void CCommandController::CommandHandling(const LinkPtr& shared_clientInfo, Packe
 		{
 			mRoomManager.BackRoom(shared_clientInfo);
 		}
+		else if (ProtocolDetail::RequestRoomInfo == packet.InfoProtocolDetail)
+		{
+			mRoomManager.SendMyRoomInfo(shared_clientInfo);
+		}
 	}
 	catch (const std::exception&)
 	{

@@ -238,6 +238,7 @@ void CRoom::BackRoomScene()
 
 void CRoom::NoticRoomIn(const LinkPtr & shared_client)
 {
+	SendRoomInfo(shared_client);
 	shared_client.get()->SetMySceneState(ProtocolSceneName::RoomScene);
 	string message(shared_client.get()->GetMyName() + "님이 방에 입장 하셨습니다.");
 	Packet welcomePacket(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, message.c_str());
@@ -275,6 +276,7 @@ void CRoom::EnterBroadcast(const LinkPtr& shared_client, ProtocolCharacterTagInd
 void CRoom::TeachNewPeople(const LinkPtr & shared_client)
 {
 	LinkListIt peopleBegin = mClientInfos.begin();
+	Packet readyInfoPacket;
 	for (; peopleBegin != mClientInfos.end(); ++peopleBegin)
 	{
 		if (shared_client != (*peopleBegin))
@@ -282,8 +284,10 @@ void CRoom::TeachNewPeople(const LinkPtr & shared_client)
 			ProtocolCharacterTagIndex tagIndex = (*peopleBegin).get()->GetMyPosition();
 			Packet packetName(ProtocolInfo::ClientCommend, ProtocolDetail::NameChange, tagIndex, (*peopleBegin).get()->GetMyName().c_str());
 			Packet packetImage(ProtocolInfo::ClientCommend, ProtocolDetail::ImageChange, tagIndex, ProtocolCharacterImageName[(*peopleBegin).get()->GetMyCharacter()].c_str());
+			(*peopleBegin).get()->GetMyReadyInfoPacket(readyInfoPacket);
 			shared_client.get()->SendnMine(packetName);
 			shared_client.get()->SendnMine(packetImage);
+			shared_client.get()->SendnMine(readyInfoPacket);
 		}
 	}
 }
@@ -356,16 +360,20 @@ void CRoom::SetGame(bool isGame)
 void CRoom::SendMyReadyInfo(const LinkPtr& myClient)
 {
 	//cout << "SendAllReadyInfo 호출" << endl;
-	Packet* readyInfoPacket = nullptr;
-	if (myClient.get()->GetReadyGame())
+	Packet readyInfoPacket;
+	myClient.get()->GetMyReadyInfoPacket(readyInfoPacket);
+	Broadcast(readyInfoPacket);
+}
+
+void CRoom::SendRoomInfo(const LinkPtr & shared_client)
+{
+	ProtocolRoomPrivatePublic isPublic = ProtocolRoomPrivatePublic::Private;
+	if (mIsPublicRoom)
 	{
-		readyInfoPacket = &Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ReadyInfo, myClient.get()->GetMyPosition(), "Ready");
+		isPublic = ProtocolRoomPrivatePublic::Public;
 	}
-	else
-	{
-		readyInfoPacket = &Packet(ProtocolInfo::ClientCommend, ProtocolDetail::ReadyInfo, myClient.get()->GetMyPosition(), "NotReady");
-	}
-	Broadcast(*readyInfoPacket);
+	Packet roomInfoPacket(ProtocolInfo::RoomInfo, isPublic, mEnterRoomPeopleLimit, IntToString(mRoomNum).c_str());
+	shared_client.get()->SendnMine(roomInfoPacket);
 }
 
 void CRoom::Broadcast(const Packet& packet, int flags)

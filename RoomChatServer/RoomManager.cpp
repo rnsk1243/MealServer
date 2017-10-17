@@ -91,6 +91,13 @@ void CRoomManager::SendMyReadyInfo(const LinkPtr & shared_clientInfo)
 	(*myRoomIter).get()->SendMyReadyInfo(shared_clientInfo);
 }
 
+void CRoomManager::SendMyRoomInfo(const LinkPtr & shared_clientInfo)
+{
+	CLink* client = shared_clientInfo.get();
+	RoomListIt myRoomIter = GetMyRoomIter(client->GetMyChannelNum(), client->GetMyRoomNum());
+	(*myRoomIter).get()->SendRoomInfo(shared_clientInfo); //SendMyReadyInfo(shared_clientInfo);
+}
+
 RoomListIt CRoomManager::EraseRoom(RoomListIt deleteTargetRoomIter)
 {
 	ScopeLock<MUTEX> MU(mRAII_RoomManagerMUTEX);
