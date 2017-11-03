@@ -94,7 +94,7 @@ enum ProtocolChannelMenuTag
 
 enum ProtocolSceneName
 {
-	FrontScene, ChannelScene, RoomScene, MainScene
+	StartScene, FrontScene, ChannelScene, RoomScene, MainScene
 };
 
 //enum ProtocolSceneName
@@ -114,6 +114,7 @@ enum ProtocolTeamAmount
 
 enum State	// 클라이언트 상태
 {
+	ClientStart,
 	ClientNone, ClientFrontMenu/*front씬에서의 기본 상태*/,
 	ClientLogin/*login을 선택한 상태*/, ClientJoin/*회원가입을 선택한 상태*/, ClientGuest/*guest 로그인 상태*/,
 	ClientChannelMenu/*채널씬에서의 기본 상태*/,
@@ -140,7 +141,7 @@ const string ProtocolCharacterTagIndexImage[6] = { "RedImage01", "BlueImage01", 
 const string ProtocolCharacterTagIndexName[6] = { "RedName01", "BlueName01", "RedName02", "BlueName02", "RedName03", "BlueName03" };
 const string ProtocolCharacterTagIndexReady[6] = { "RedReadyImage01", "BlueReadyImage01", "RedReadyImage02", "BlueReadyImage02", "RedReadyImage03", "BlueReadyImage03" };
 const string MessageTag[1] = { "TextView" };
-const string ProtocolSceneNameString[4] = { "FrontScene", "ChannelScene", "RoomScene", "Main" };
+const string ProtocolSceneNameString[5] = { "StartScene", "FrontScene", "ChannelScene", "RoomScene", "Main" };
 //const string ProtocolSceneNameString[4] = { "FrontScene", "ChannelScene", "RoomScene", "TestScene" };
 const string CommandEnter = "e"; // 방 입장
 const string CommandChannal = "c"; // 채널 변경

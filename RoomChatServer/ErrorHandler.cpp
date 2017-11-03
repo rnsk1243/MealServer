@@ -72,7 +72,7 @@ EnumErrorCode CErrorHandler::TakeError(EnumErrorCode code, LinkPtr client)
 
 CErrorHandler::CErrorHandler()
 {
-	cout << "ErrorHandler 생성자 호출" << endl;
+	//cout << "ErrorHandler 생성자 호출" << endl;
 }
 
 

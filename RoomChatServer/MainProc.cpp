@@ -128,7 +128,7 @@ void main()
 	{
 		if (isAccept)
 		{
-			cout << "¸¸µë" << endl;
+			//cout << "¸¸µë" << endl;
 			SOCKET* clientSocket = new SOCKET();
 			thread clientThread(thSendRecv, clientSocket, &isAccept);
 			clientThread.detach();

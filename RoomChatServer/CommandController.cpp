@@ -117,7 +117,7 @@ void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 		{
 			if (ProtocolSceneName::RoomScene == oldSceneState)	// RoomScene에서 나갔으면 모두에게 나갔음을 알리고 패널에서 자신을 지우게 시킴
 			{
-				cout << "나간 사실을 모두에게 알림" << endl;
+			//	cout << "나간 사실을 모두에게 알림" << endl;
 				Packet packet(ProtocolInfo::ClientCommend, ProtocolDetail::RemovePanel, targetPos, nullptr);
 				{
 					ScopeLock<MUTEX> MU(mRAII_CommandMUTEX); // lock

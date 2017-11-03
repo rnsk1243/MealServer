@@ -84,6 +84,7 @@ enum EnumErrorCode
 	ERROR_BATTING_RESULT_ALONE = 197, // 배팅 결과 혼자임.
 	ERROR_SAVE_MONEY_ZERO = 199, //  .txt저장 하는데 0원을 더하거나 빼려고함.
 	ERROR_ROOM_CHANGET_CHARACTER = 201, // 잘못된 캐릭터 변경 요청
+	ERROR_SCENECHANGE_SAME = 203, // 같은 씬이라 못바꿈.
 	//////////////////////////////////////////////
 	// 예외처리가 안된 오류
 	ERROR_EXCEPTION = 9876

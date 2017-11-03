@@ -164,7 +164,8 @@ void CLink::SetMySceneState(ProtocolSceneName curMySceneState)
 	}
 	else
 	{
-		cout << "같아서 Scene 못 바꿈 = " << curMySceneState << endl;
+		//ErrorHandStatic->ErrorHandler(EnumErrorCode::ERROR_SCENECHANGE_SAME);
+		//cout << "같아서 Scene 못 바꿈 = " << curMySceneState << endl;
 	}
 }
 

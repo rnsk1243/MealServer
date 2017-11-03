@@ -17,7 +17,7 @@ CRoom::CRoom(int roomNum, int channelNum, const string& roomName, const Protocol
 	mPlayingGame(false)
 {
 	mIsPublicRoom = (0 == RoomPWNone.compare(mRoomPW));
-	cout << "mIsPublicRoom = " << mIsPublicRoom << endl;
+	//cout << "mIsPublicRoom = " << mIsPublicRoom << endl;
 	//InitializeCriticalSection(&CS_MyInfoList);
 	//cout << "sizeof(ProtocolCharacterTagIndex) = " << sizeof(ProtocolCharacterTagIndex) << endl;
 	mUsePosition.reserve(GetLimitEnterRoomPeople());
@@ -204,7 +204,7 @@ bool CRoom::PushClientSpecialRoom(const LinkPtr & shared_client, const int & ent
 	}
 	if (0 != mRoomPW.compare(pw))
 	{
-		cout << "입장 비번 틀림" << endl;
+		//cout << "입장 비번 틀림" << endl;
 		return false;
 	}
 	{
