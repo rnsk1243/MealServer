@@ -4871,7 +4871,7 @@ char * BasicExcel::CharToMultiByte(BasicExcelCell * cell)
 	return strMultibyte;
 }
 
-void BasicExcel::SelectSaveCols(int objCol, BasicExcelCell * cell, int & characterNumber, int & characterLVCols)
+void BasicExcel::SelectSaveCols(int objCol, BasicExcelCell * cell, int & characterNumber, float & characterLVCols)
 {
 	switch (objCol)
 	{
@@ -4879,7 +4879,7 @@ void BasicExcel::SelectSaveCols(int objCol, BasicExcelCell * cell, int & charact
 		characterNumber = (int)cell->GetDouble();
 		break;
 	case CharacterLVCols:
-		characterLVCols = (int)cell->GetDouble();
+		characterLVCols = (float)cell->GetDouble();
 		break;
 	default:
 		break;
@@ -4903,7 +4903,7 @@ bool BasicExcel::ReadExcel(char * excelName)
 		for (size_t r = 1; r<maxRows; ++r)
 		{
 			int characterNumber = 0;
-			int characterLVCols = 0; // 레벨
+			float characterLVCols = 0; // 레벨
 			char* name = nullptr;
 
 			for (size_t c = 0; c<maxCols; ++c)
@@ -4918,8 +4918,10 @@ bool BasicExcel::ReadExcel(char * excelName)
 			}
 			if (nullptr != name)
 			{
-//				cout << "액셀 읽기 성공" << endl;
-//				cout << "읽은 이름 : " << name << endl;
+				cout << "액셀 읽기 성공" << endl;
+				cout << "읽은 캐릭터 번호 : " << characterNumber << endl;
+				cout << "읽은 이름 : " << name << endl;
+				cout << "읽은 레벨 : " << characterLVCols << endl;
 				//여기서 읽은것을 가지고 객체를 만들 것.
 				//Card* card = new Card(characterNumber, name, prob, stat, giveExp);
 				//shared_ptr<Card> shardCard(card);
@@ -4928,8 +4930,8 @@ bool BasicExcel::ReadExcel(char * excelName)
 			else { cout << "excel 읽기 실패" << endl; return false; }
 		}
 	}
-//	cout << "====================================================" << endl;
-//	cout << "Excel 파일 읽기 완료" << endl;
+	cout << "====================================================" << endl;
+	cout << "Excel 파일 읽기 완료" << endl;
 	return true;
 }
 

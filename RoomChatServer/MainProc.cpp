@@ -1,4 +1,4 @@
-//#pragma comment(lib,"version.lib")
+#pragma comment(lib,"version.lib")
 #include<iostream>
 #include"ReadyNetWork.h"
 #include"CommandController.h"
@@ -81,10 +81,6 @@ int thSendRecv(void* v_clientSocket, void* isAccept)
 	// EnterChannelNum 채널에 입장
 	//vector<string> commandChannel;
 	CommandControllerStatic->SetEnterChannel(shared_clientInfo, StartEnterChannelNum);
-	/*if (false == ReadHandlerStatic->ReadUserGoods(shared_clientInfo, NameMemberGoodsTxt))
-		return 0;*/
-
-	//cout << "보유 재화 = " << shared_clientInfo->GetMyMoney() << endl;
 	string welcomeMessage = "환영합니다. " + shared_clientInfo.get()->GetMyName() + " 님";
 	shared_clientInfo.get()->SendnMine(Packet(ProtocolInfo::ChattingMessage, ProtocolDetail::Message, ProtocolMessageTag::Text, welcomeMessage.c_str()));
 	//shared_clientInfo.get()->SendnMine("로그인 성공");
