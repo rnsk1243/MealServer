@@ -98,6 +98,7 @@ void CCommandController::OutRoom(const LinkPtr & shared_clientInfo)
 	//cout << "outRoom 호출" << endl;
 	ProtocolCharacterTagIndex targetPos = shared_clientInfo.get()->GetMyPosition();
 	ProtocolSceneName oldSceneState = shared_clientInfo.get()->GetMySceneState();
+	shared_clientInfo.get()->SetMyCharacter(ProtocolCharacterImageNameIndex::Tofu); // 나갈땐 두부로 초기화
 	RoomListIt roomIter;
 	bool isSucces = false;
 	{
